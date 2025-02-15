@@ -25,45 +25,11 @@ local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 local camera = workspace.CurrentCamera
 local stickEnabled = false
-local stickOffset = Vector3.new(0, -5, 0)
-local transparentObjects = {}
+local stickOffset = Vector3.new(0, -5, 0)  -- Offset below the player's feet
 
--- Function to make objects transparent
-local function setTransparency(object, transparency)
-    if object:IsA("BasePart") then
-        if not transparentObjects[object] then
-            transparentObjects[object] = object.LocalTransparencyModifier
-        end
-        object.LocalTransparencyModifier = transparency
-    end
-end
-
--- Function to check and update transparency between camera and character
-local function updateTransparency()
-    -- Reset all previously modified objects
-    for object, originalTransparency in pairs(transparentObjects) do
-        object.LocalTransparencyModifier = originalTransparency
-    end
-    transparentObjects = {}
-
-    if not stickEnabled then return end
-    
-    local targetPos = camera.CFrame.Position
-    local characterPos = humanoidRootPart.Position
-    
-    -- Ray cast to find objects between camera and character
-    local ray = Ray.new(targetPos, (characterPos - targetPos).Unit * 1000)
-    local ignoreList = {character}
-    
-    while true do
-        local hit, pos, normal, material = workspace:FindPartOnRayWithIgnoreList(ray, ignoreList)
-        if not hit then break end
-        
-        -- Make the hit object semi-transparent
-        setTransparency(hit, 0.8)
-        table.insert(ignoreList, hit)
-    end
-end
+-- Set up camera behavior
+camera.CameraType = Enum.CameraType.Custom
+camera.UseScreenInsets = false
 
 -- Function to get the closest player
 local function getClosestPlayer(position)
@@ -87,11 +53,18 @@ local function updateCharacterPosition()
         local closestPlayer = getClosestPlayer(humanoidRootPart.Position)
         if closestPlayer and closestPlayer.Character and closestPlayer.Character:FindFirstChild("HumanoidRootPart") then
             local targetPosition = closestPlayer.Character.HumanoidRootPart.Position
+            -- Place the character below the nearest player
             local newPosition = targetPosition + stickOffset
             humanoidRootPart.CFrame = CFrame.new(newPosition, newPosition + Vector3.new(0, 1, 0))
         end
     end
 end
+
+-- Character respawn handling
+player.CharacterAdded:Connect(function(newCharacter)
+    character = newCharacter
+    humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+end)
 
 -- Toggle button functionality
 toggleButton.MouseButton1Click:Connect(function()
@@ -100,23 +73,14 @@ toggleButton.MouseButton1Click:Connect(function()
     toggleButton.BackgroundColor3 = stickEnabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
     stickToggleEvent:FireServer(stickEnabled)
     
-    -- Reset transparency when disabled
-    if not stickEnabled then
-        for object, originalTransparency in pairs(transparentObjects) do
-            object.LocalTransparencyModifier = originalTransparency
-        end
-        transparentObjects = {}
+    -- Toggle camera collision
+    if stickEnabled then
+        camera.CameraSubject = character:WaitForChild("Humanoid")
+        player.DevCameraOcclusionMode = Enum.DevCameraOcclusionMode.Invisicam
+    else
+        player.DevCameraOcclusionMode = Enum.DevCameraOcclusionMode.Zoom
     end
 end)
 
--- Character respawn handling
-player.CharacterAdded:Connect(function(newCharacter)
-    character = newCharacter
-    humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-end)
-
--- Update position and transparency every frame
-RunService.RenderStepped:Connect(function()
-    updateCharacterPosition()
-    updateTransparency()
-end)
+-- Update position every frame
+RunService.Heartbeat:Connect(updateCharacterPosition)
