@@ -1,0 +1,196 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+
+-- Create ScreenGui
+local gui = Instance.new("ScreenGui")
+gui.Name = "TeleportGUI"
+gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+-- Create main frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 200, 0, 120)
+mainFrame.Position = UDim2.new(0.5, -100, 0.1, 0)
+mainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = gui
+
+-- Add corner radius to frame
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 8)
+corner.Parent = mainFrame
+
+-- Create title
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "Player Teleport"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 16
+title.Font = Enum.Font.GothamBold
+title.Parent = mainFrame
+
+-- Create dropdown button
+local dropdownButton = Instance.new("TextButton")
+dropdownButton.Name = "DropdownButton"
+dropdownButton.Size = UDim2.new(0.9, 0, 0, 25)
+dropdownButton.Position = UDim2.new(0.05, 0, 0.3, 0)
+dropdownButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+dropdownButton.Text = "Select Player"
+dropdownButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+dropdownButton.TextSize = 14
+dropdownButton.Font = Enum.Font.Gotham
+dropdownButton.Parent = mainFrame
+
+-- Add corner radius to dropdown button
+local dropdownCorner = Instance.new("UICorner")
+dropdownCorner.CornerRadius = UDim.new(0, 6)
+dropdownCorner.Parent = dropdownButton
+
+-- Create dropdown frame
+local dropdownFrame = Instance.new("Frame")
+dropdownFrame.Name = "DropdownFrame"
+dropdownFrame.Size = UDim2.new(0.9, 0, 0, 100)
+dropdownFrame.Position = UDim2.new(0.05, 0, 1.1, 0)
+dropdownFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+dropdownFrame.Visible = false
+dropdownFrame.Parent = mainFrame
+dropdownFrame.ZIndex = 2
+
+-- Add corner radius to dropdown frame
+local dropdownFrameCorner = Instance.new("UICorner")
+dropdownFrameCorner.CornerRadius = UDim.new(0, 6)
+dropdownFrameCorner.Parent = dropdownFrame
+
+-- Create teleport button
+local teleportButton = Instance.new("TextButton")
+teleportButton.Name = "TeleportButton"
+teleportButton.Size = UDim2.new(0.9, 0, 0, 25)
+teleportButton.Position = UDim2.new(0.05, 0, 0.6, 0)
+teleportButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+teleportButton.Text = "Teleport"
+teleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+teleportButton.TextSize = 14
+teleportButton.Font = Enum.Font.GothamBold
+teleportButton.Parent = mainFrame
+
+-- Add corner radius to teleport button
+local teleportCorner = Instance.new("UICorner")
+teleportCorner.CornerRadius = UDim.new(0, 6)
+teleportCorner.Parent = teleportButton
+
+-- Variables
+local selectedPlayer = nil
+local isDropdownOpen = false
+
+-- Function to update player list
+local function updatePlayerList()
+    -- Clear existing buttons
+    for _, child in pairs(dropdownFrame:GetChildren()) do
+        if child:IsA("TextButton") then
+            child:Destroy()
+        end
+    end
+    
+    -- Add button for each player
+    local yPosition = 0
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            local playerButton = Instance.new("TextButton")
+            playerButton.Size = UDim2.new(1, 0, 0, 25)
+            playerButton.Position = UDim2.new(0, 0, 0, yPosition)
+            playerButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+            playerButton.Text = player.Name
+            playerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+            playerButton.TextSize = 14
+            playerButton.Font = Enum.Font.Gotham
+            playerButton.Parent = dropdownFrame
+            playerButton.ZIndex = 2
+            
+            -- Add corner radius to player button
+            local playerButtonCorner = Instance.new("UICorner")
+            playerButtonCorner.CornerRadius = UDim.new(0, 4)
+            playerButtonCorner.Parent = playerButton
+            
+            playerButton.MouseButton1Click:Connect(function()
+                selectedPlayer = player
+                dropdownButton.Text = player.Name
+                dropdownFrame.Visible = false
+                isDropdownOpen = false
+            end)
+            
+            yPosition = yPosition + 30
+        end
+    end
+    
+    -- Update dropdown frame size
+    dropdownFrame.Size = UDim2.new(0.9, 0, 0, math.min(100, yPosition))
+end
+
+-- Toggle dropdown visibility
+dropdownButton.MouseButton1Click:Connect(function()
+    isDropdownOpen = not isDropdownOpen
+    dropdownFrame.Visible = isDropdownOpen
+    if isDropdownOpen then
+        updatePlayerList()
+    end
+end)
+
+-- Teleport functionality
+teleportButton.MouseButton1Click:Connect(function()
+    if selectedPlayer and selectedPlayer.Character and LocalPlayer.Character then
+        local targetHRP = selectedPlayer.Character:FindFirstChild("HumanoidRootPart")
+        local localHRP = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+        
+        if targetHRP and localHRP then
+            -- Teleport under the player with a small offset
+            local offset = Vector3.new(0, -3, 0) -- Adjust this value as needed
+            localHRP.CFrame = targetHRP.CFrame + offset
+        end
+    end
+end)
+
+-- Make frame draggable
+local dragging
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+    local delta = input.Position - dragStart
+    mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X,
+        startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+mainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = mainFrame.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+mainFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
+
+-- Update player list when players join/leave
+Players.PlayerAdded:Connect(updatePlayerList)
+Players.PlayerRemoving:Connect(updatePlayerList)
