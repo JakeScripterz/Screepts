@@ -1,31 +1,46 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
- -- Create RemoteEvent for server communication
+
+-- Create RemoteEvent for server communication
 local stickToggleEvent = Instance.new("RemoteEvent")
 stickToggleEvent.Name = "StickToggleEvent"
 stickToggleEvent.Parent = ReplicatedStorage
- -- Create a screen GUI and button
+
+-- Variables
+local player = Players.LocalPlayer
+local character = nil
+local humanoidRootPart = nil
+local stickEnabled = false
+local stickOffset = Vector3.new(0, -5, 0)
+
+-- Create a screen GUI and button
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "StickToggleGui"
-screenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
- local toggleButton = Instance.new("TextButton")
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local toggleButton = Instance.new("TextButton")
 toggleButton.Size = UDim2.new(0, 100, 0, 30)
 toggleButton.Position = UDim2.new(0, 10, 0, 10)
-toggleButton.Text = "Toggle Stick"
+toggleButton.Text = "Toggle Stick: Off"
+toggleButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 toggleButton.Parent = screenGui
- -- Variables
-local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-local stickEnabled = false
-local stickOffset = Vector3.new(0, -5, 0)  -- Offset below the player’s feet
- -- Function to get the closest player
+
+-- Function to initialize character
+local function setupCharacter(newCharacter)
+    character = newCharacter
+    humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+end
+
+-- Function to get the closest player
 local function getClosestPlayer(position)
     local closestPlayer = nil
     local shortestDistance = math.huge
+    
     for _, p in ipairs(Players:GetPlayers()) do
-        if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+        if p ~= player and 
+           p.Character and 
+           p.Character:FindFirstChild("HumanoidRootPart") then
             local distance = (p.Character.HumanoidRootPart.Position - position).magnitude
             if distance < shortestDistance then
                 shortestDistance = distance
@@ -33,25 +48,39 @@ local function getClosestPlayer(position)
             end
         end
     end
-    return closestPlayer
+    return closestPlayer, shortestDistance
 end
- -- Function to stick to the nearest player
+
+-- Function to stick to the nearest player
 local function updateCharacterPosition()
-    if stickEnabled then
-        local closestPlayer = getClosestPlayer(humanoidRootPart.Position)
-        if closestPlayer and closestPlayer.Character and closestPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            local targetPosition = closestPlayer.Character.HumanoidRootPart.Position
-            -- Place the character below the nearest player
-            local newPosition = targetPosition + stickOffset
-            humanoidRootPart.CFrame = CFrame.new(newPosition, newPosition + Vector3.new(0, 1, 0))
-        end
+    if not stickEnabled or not character or not humanoidRootPart then return end
+    
+    local closestPlayer, distance = getClosestPlayer(humanoidRootPart.Position)
+    if closestPlayer and 
+       closestPlayer.Character and 
+       closestPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        local targetPosition = closestPlayer.Character.HumanoidRootPart.Position
+        local newPosition = targetPosition + stickOffset
+        humanoidRootPart.CFrame = CFrame.new(newPosition, newPosition + Vector3.new(0, 1, 0))
     end
 end
- -- Toggle button functionality
+
+-- Toggle button functionality
 toggleButton.MouseButton1Click:Connect(function()
     stickEnabled = not stickEnabled
+    toggleButton.Text = "Toggle Stick: " .. (stickEnabled and "On" or "Off")
+    toggleButton.BackgroundColor3 = stickEnabled and 
+        Color3.fromRGB(0, 255, 0) or 
+        Color3.fromRGB(255, 0, 0)
     stickToggleEvent:FireServer(stickEnabled)
 end)
- -- Update position every frame
+
+-- Character loading
+if player.Character then
+    setupCharacter(player.Character)
+end
+
+player.CharacterAdded:Connect(setupCharacter)
+
+-- Update position every frame
 RunService.Heartbeat:Connect(updateCharacterPosition)
- 
