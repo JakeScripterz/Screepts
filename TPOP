@@ -1,5 +1,6 @@
--- Combined Local Script for Sticking and Toggle Button
- local Players = game:GetService("Players")
+if game.PlaceId == 10449761463 then
+
+local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
  -- Create RemoteEvent for server communication
