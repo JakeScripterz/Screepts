@@ -1,53 +1,95 @@
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
-local LocalPlayer = Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
 
--- Create ScreenGui
+-- Create RemoteEvent
+local InvisibilityRemote = Instance.new("RemoteEvent")
+InvisibilityRemote.Name = "InvisibilityToggle"
+InvisibilityRemote.Parent = ReplicatedStorage
+
+-- GUI Creation
+local LocalPlayer = Players.LocalPlayer
 local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "InvisibilityGUI"
 ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
--- Create main frame
+-- Main Frame
 local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0, 150, 0, 75)
+Frame.Size = UDim2.new(0, 200, 0, 100)
 Frame.Position = UDim2.new(0.8, 0, 0.1, 0)
-Frame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+Frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 Frame.BorderSizePixel = 0
-Frame.Parent = ScreenGui
+Frame.ClipsDescendants = true
 
--- Create drag handle/title bar
-local DragBar = Instance.new("Frame")
-DragBar.Size = UDim2.new(1, 0, 0.2, 0)
-DragBar.Position = UDim2.new(0, 0, 0, 0)
-DragBar.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-DragBar.BorderSizePixel = 0
-DragBar.Parent = Frame
+-- Add corner radius
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 8)
+UICorner.Parent = Frame
 
--- Create toggle button
+-- Add shadow
+local Shadow = Instance.new("ImageLabel")
+Shadow.Size = UDim2.new(1, 47, 1, 47)
+Shadow.Position = UDim2.new(0, -23, 0, -23)
+Shadow.BackgroundTransparency = 1
+Shadow.Image = "rbxassetid://6015897843"
+Shadow.ImageColor3 = Color3.new(0, 0, 0)
+Shadow.ImageTransparency = 0.5
+Shadow.Parent = Frame
+
+-- Title Bar
+local TitleBar = Instance.new("Frame")
+TitleBar.Size = UDim2.new(1, 0, 0, 30)
+TitleBar.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+TitleBar.BorderSizePixel = 0
+TitleBar.Parent = Frame
+
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 8)
+TitleCorner.Parent = TitleBar
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 1, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "Invisibility Toggle"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 14
+Title.Font = Enum.Font.GothamBold
+Title.Parent = TitleBar
+
+-- Toggle Button
 local Button = Instance.new("TextButton")
-Button.Size = UDim2.new(0.8, 0, 0.5, 0)
-Button.Position = UDim2.new(0.1, 0, 0.35, 0)
+Button.Size = UDim2.new(0.8, 0, 0, 40)
+Button.Position = UDim2.new(0.1, 0, 0.5, -20)
 Button.BackgroundColor3 = Color3.fromRGB(65, 65, 65)
 Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-Button.Text = "Toggle Invisible"
+Button.Text = "Become Invisible"
 Button.TextSize = 14
+Button.Font = Enum.Font.GothamSemibold
 Button.Parent = Frame
 
--- Dragging functionality
-local dragging
-local dragStart
-local startPos
+local ButtonCorner = Instance.new("UICorner")
+ButtonCorner.CornerRadius = UDim.new(0, 6)
+ButtonCorner.Parent = Button
 
+Frame.Parent = ScreenGui
+
+-- Dragging functionality
+local dragging, dragStart, startPos
 local function updateDrag(input)
     local delta = input.Position - dragStart
-    Frame.Position = UDim2.new(
+    local targetPosition = UDim2.new(
         startPos.X.Scale,
         startPos.X.Offset + delta.X,
         startPos.Y.Scale,
         startPos.Y.Offset + delta.Y
     )
+    
+    local tweenInfo = TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    TweenService:Create(Frame, tweenInfo, {Position = targetPosition}):Play()
 end
 
-DragBar.InputBegan:Connect(function(input)
+TitleBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = true
         dragStart = input.Position
@@ -67,23 +109,45 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
--- Invisibility toggle function
-local function toggleInvisibility()
-    local character = LocalPlayer.Character
+-- Invisibility Toggle Logic
+local isInvisible = false
+Button.MouseButton1Click:Connect(function()
+    isInvisible = not isInvisible
+    InvisibilityRemote:FireServer(isInvisible)
+    
+    local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    local buttonColor = isInvisible and Color3.fromRGB(0, 255, 127) or Color3.fromRGB(65, 65, 65)
+    local buttonText = isInvisible and "Become Visible" or "Become Invisible"
+    
+    TweenService:Create(Button, tweenInfo, {BackgroundColor3 = buttonColor}):Play()
+    Button.Text = buttonText
+end)
+task.wait(0.1)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local InvisibilityRemote = ReplicatedStorage:WaitForChild("InvisibilityToggle")
+
+InvisibilityRemote.OnServerEvent:Connect(function(player, invisible)
+    local character = player.Character
     if character then
-        local isInvisible = character.Transparency == 1
-        
-        -- Toggle transparency for all character parts
+        -- Set transparency for all character parts
         for _, part in pairs(character:GetDescendants()) do
-            if part:IsA("BasePart") or part:IsA("Decal") then
-                part.Transparency = isInvisible and 0 or 1
+            if part:IsA("BasePart") or part:IsA("Decal") or part:IsA("Texture") then
+                part.Transparency = invisible and 1 or 0
             end
         end
         
-        Button.BackgroundColor3 = isInvisible and 
-            Color3.fromRGB(65, 65, 65) or 
-            Color3.fromRGB(0, 255, 0)
+        -- Handle special cases
+        if character:FindFirstChild("Head") then
+            local head = character.Head
+            if head:FindFirstChild("face") then
+                head.face.Transparency = invisible and 1 or 0
+            end
+        end
+        
+        -- Disable character collision when invisible
+        local humanoid = character:FindFirstChild("Humanoid")
+        if humanoid then
+            humanoid.DisplayDistanceType = invisible and Enum.HumanoidDisplayDistanceType.None or Enum.HumanoidDisplayDistanceType.Viewer
+        end
     end
-end
-
-Button.MouseButton1Click:Connect(toggleInvisibility)
+end)
