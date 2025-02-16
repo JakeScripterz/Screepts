@@ -2,6 +2,10 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+-- Ensure script runs on the client
+local player = Players.LocalPlayer
+if not player then return end
+
 -- Create RemoteEvent for server communication
 local stickToggleEvent = Instance.new("RemoteEvent")
 stickToggleEvent.Name = "StickToggleEvent"
@@ -10,7 +14,7 @@ stickToggleEvent.Parent = ReplicatedStorage
 -- Create a screen GUI and button
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "StickToggleGui"
-screenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+screenGui.Parent = player:WaitForChild("PlayerGui")
 
 local toggleButton = Instance.new("TextButton")
 toggleButton.Size = UDim2.new(0, 100, 0, 30)
@@ -20,16 +24,9 @@ toggleButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 toggleButton.Parent = screenGui
 
 -- Variables
-local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-local camera = workspace.CurrentCamera
 local stickEnabled = false
-local stickOffset = Vector3.new(0, -5, 0)  -- Offset below the player's feet
-
--- Set up camera behavior
-camera.CameraType = Enum.CameraType.Custom
-camera.UseScreenInsets = false
 
 -- Function to get the closest player
 local function getClosestPlayer(position)
@@ -47,40 +44,23 @@ local function getClosestPlayer(position)
     return closestPlayer
 end
 
--- Function to stick to the nearest player
-local function updateCharacterPosition()
-    if stickEnabled then
-        local closestPlayer = getClosestPlayer(humanoidRootPart.Position)
-        if closestPlayer and closestPlayer.Character and closestPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            local targetPosition = closestPlayer.Character.HumanoidRootPart.Position
-            -- Place the character below the nearest player
-            local newPosition = targetPosition + stickOffset
-            humanoidRootPart.CFrame = CFrame.new(newPosition, newPosition + Vector3.new(0, 1, 0))
-        end
-    end
-end
-
--- Character respawn handling
-player.CharacterAdded:Connect(function(newCharacter)
-    character = newCharacter
-    humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-end)
-
 -- Toggle button functionality
 toggleButton.MouseButton1Click:Connect(function()
     stickEnabled = not stickEnabled
     toggleButton.Text = "Toggle Stick: " .. (stickEnabled and "On" or "Off")
     toggleButton.BackgroundColor3 = stickEnabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
     stickToggleEvent:FireServer(stickEnabled)
-    
-    -- Toggle camera collision
-    if stickEnabled then
-        camera.CameraSubject = character:WaitForChild("Humanoid")
-        player.DevCameraOcclusionMode = Enum.DevCameraOcclusionMode.Invisicam
-    else
-        player.DevCameraOcclusionMode = Enum.DevCameraOcclusionMode.Zoom
-    end
 end)
 
 -- Update position every frame
-RunService.Heartbeat:Connect(updateCharacterPosition)
+RunService.Heartbeat:Connect(function()
+    if stickEnabled then
+        local closestPlayer = getClosestPlayer(humanoidRootPart.Position)
+        if closestPlayer and closestPlayer.Character and closestPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local targetPosition = closestPlayer.Character.HumanoidRootPart.Position
+            -- Place the character below the nearest player
+            local newPosition = targetPosition + Vector3.new(0, -5, 0)
+            humanoidRootPart.CFrame = CFrame.new(newPosition, newPosition + Vector3.new(0, 1, 0))
+        end
+    end
+end)
