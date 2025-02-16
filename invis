@@ -1,0 +1,89 @@
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+
+-- Create ScreenGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+-- Create main frame
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 150, 0, 75)
+Frame.Position = UDim2.new(0.8, 0, 0.1, 0)
+Frame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+Frame.BorderSizePixel = 0
+Frame.Parent = ScreenGui
+
+-- Create drag handle/title bar
+local DragBar = Instance.new("Frame")
+DragBar.Size = UDim2.new(1, 0, 0.2, 0)
+DragBar.Position = UDim2.new(0, 0, 0, 0)
+DragBar.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+DragBar.BorderSizePixel = 0
+DragBar.Parent = Frame
+
+-- Create toggle button
+local Button = Instance.new("TextButton")
+Button.Size = UDim2.new(0.8, 0, 0.5, 0)
+Button.Position = UDim2.new(0.1, 0, 0.35, 0)
+Button.BackgroundColor3 = Color3.fromRGB(65, 65, 65)
+Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+Button.Text = "Toggle Invisible"
+Button.TextSize = 14
+Button.Parent = Frame
+
+-- Dragging functionality
+local dragging
+local dragStart
+local startPos
+
+local function updateDrag(input)
+    local delta = input.Position - dragStart
+    Frame.Position = UDim2.new(
+        startPos.X.Scale,
+        startPos.X.Offset + delta.X,
+        startPos.Y.Scale,
+        startPos.Y.Offset + delta.Y
+    )
+end
+
+DragBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = Frame.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement and dragging then
+        updateDrag(input)
+    end
+end)
+
+-- Invisibility toggle function
+local function toggleInvisibility()
+    local character = LocalPlayer.Character
+    if character then
+        local isInvisible = character.Transparency == 1
+        
+        -- Toggle transparency for all character parts
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") or part:IsA("Decal") then
+                part.Transparency = isInvisible and 0 or 1
+            end
+        end
+        
+        Button.BackgroundColor3 = isInvisible and 
+            Color3.fromRGB(65, 65, 65) or 
+            Color3.fromRGB(0, 255, 0)
+    end
+end
+
+Button.MouseButton1Click:Connect(toggleInvisibility)
