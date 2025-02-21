@@ -36,6 +36,7 @@ uiCorner.Parent = toggleButton
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 local stickEnabled = false
+local currentTarget = nil
 
 -- Function to get the closest player
 local function getClosestPlayer(position)
@@ -59,14 +60,19 @@ toggleButton.MouseButton1Click:Connect(function()
     toggleButton.Text = "Toggle Stick: " .. (stickEnabled and "On" or "Off")
     toggleButton.BackgroundColor3 = stickEnabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
     stickToggleEvent:FireServer(stickEnabled)
+    if not stickEnabled then
+        currentTarget = nil
+    end
 end)
 
 -- Update position every frame
 RunService.Heartbeat:Connect(function()
     if stickEnabled then
-        local closestPlayer = getClosestPlayer(humanoidRootPart.Position)
-        if closestPlayer and closestPlayer.Character and closestPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            local targetPosition = closestPlayer.Character.HumanoidRootPart.Position
+        if not currentTarget or not currentTarget.Character or not currentTarget.Character:FindFirstChild("HumanoidRootPart") then
+            currentTarget = getClosestPlayer(humanoidRootPart.Position)
+        end
+        if currentTarget and currentTarget.Character and currentTarget.Character:FindFirstChild("HumanoidRootPart") then
+            local targetPosition = currentTarget.Character.HumanoidRootPart.Position
             -- Place the character below the nearest player
             local newPosition = targetPosition + Vector3.new(0, -5, 0)
             humanoidRootPart.CFrame = CFrame.new(newPosition, newPosition + Vector3.new(0, 1, 0))
