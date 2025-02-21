@@ -58,7 +58,7 @@ end
 toggleButton.MouseButton1Click:Connect(function()
     stickEnabled = not stickEnabled
     toggleButton.Text = "Toggle Stick: " .. (stickEnabled and "On" or "Off")
-    toggleButton.BackgroundColor3 = stickEnabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+    toggleButton.BackgroundColor3 = stickEnabled and Color3.fromRGB(0, 0, 139) or Color3.fromRGB(27, 27, 27)
     stickToggleEvent:FireServer(stickEnabled)
     if not stickEnabled then
         currentTarget = nil
