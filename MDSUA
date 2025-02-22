@@ -1,0 +1,20 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+local function Rotate()
+    if character then
+        for _, item in ipairs(character:GetChildren()) do
+            if item.Name == "NoRotate" then
+                item:Destroy() 
+                break 
+            end
+        end
+    end
+end
+
+
+game:GetService("RunService").RenderStepped:Connect(Rotate)
+
+character:WaitForChild("Humanoid")
+Rotate()
