@@ -1,0 +1,1 @@
+L=game:service'Players'.LocalPlayer;game:service'RunService'.Heartbeat:Connect(function()if L.Character and L.Character:FindFirstChild'HumanoidRootPart'then local B=workspace:FindFirstChild'Football'if B and B.AssemblyLinearVelocity.Magnitude<100 then B:ApplyImpulse((L.Character.HumanoidRootPart.Position+Vector3.new(0,-2.5,0)-B.Position).Unit*18)end end end)
