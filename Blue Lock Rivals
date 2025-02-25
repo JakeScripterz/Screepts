@@ -1,3 +1,2 @@
-loadstring(game:HttpGet("https://rawscripts.net/raw/Blue-Lock:-Rivals-whaa-hub-26962"))()
-task.wait(0.1)
+
 loadstring(game:HttpGet("https://raw.githubusercontent.com/JakeScripterz/Screepts/refs/heads/main/Magnetic%20Balls"))()
