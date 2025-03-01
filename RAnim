@@ -1,0 +1,51 @@
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local animator = humanoid:WaitForChild("Animator")
+
+local animationId = "rbxassetid://18508551562" -- Replace with your animation ID
+local animation = Instance.new("Animation")
+animation.AnimationId = animationId
+
+local animationTrack
+local isMoving = false
+
+local function playAnimation()
+    if not animationTrack then
+        animationTrack = animator:LoadAnimation(animation)
+    end
+    
+    if not isMoving then
+        isMoving = true
+        animationTrack:Play()
+    end
+end
+
+local function stopAnimation()
+    if isMoving and animationTrack then
+        isMoving = false
+        animationTrack:Stop()
+    end
+end
+
+local function onHumanoidChanged()
+    if humanoid.MoveDirection.Magnitude > 0 then
+        playAnimation()
+    else
+        stopAnimation()
+    end
+end
+
+humanoid:GetPropertyChangedSignal("MoveDirection"):Connect(onHumanoidChanged)
+
+onHumanoidChanged()
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local animator = humanoid:WaitForChild("Animator")
+
+local animationId = "rbxassetid://96255204467936" -- Replace with your animation ID
+local animation = Instance.new("Animation")
+animation.AnimationId = animationId
+
