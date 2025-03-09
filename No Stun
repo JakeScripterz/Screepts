@@ -1,17 +1,23 @@
 -- WALK SPEED BOOST & NO STUN SCRIPT
 
-
 local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
 
+local function setupCharacter(character)
+    local humanoid = character:WaitForChild("Humanoid")
+    humanoid.WalkSpeed = 35
 
-humanoid.WalkSpeed = 35
-
-local function maintainSpeed()
-    if humanoid.WalkSpeed < 35 then
-        humanoid.WalkSpeed = 35
+    local function maintainSpeed()
+        if humanoid.WalkSpeed < 35 then
+            humanoid.WalkSpeed = 35
+        end
     end
+
+    humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(maintainSpeed)
 end
 
-humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(maintainSpeed)
+player.CharacterAdded:Connect(setupCharacter)
+
+-- If the character is added before the script runs, set it up directly
+if player.Character then
+    setupCharacter(player.Character)
+end
