@@ -1,0 +1,14 @@
+-- Replace Arcade with the font you want
+local function Font(object)
+    if (object:IsA("TextLabel") or object:IsA("TextButton") or object:IsA("TextBox")) and object.Font ~= Enum.Font.FredokaOne then
+        object.Font = Enum.Font.Arcade
+    end
+end
+
+for _, descendant in ipairs(game:GetDescendants()) do
+    Font(descendant)
+end
+
+game.DescendantAdded:Connect(function(descendant)
+    Font(descendant)
+end)
