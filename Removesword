@@ -1,0 +1,18 @@
+      		-- This for atomic samurai 
+local l = game.Players.LocalPlayer.Character
+l.Sheathe:Destroy()
+l["#KATANAWEAPON"]:Destroy()
+
+-- this for sonic 
+local l = game.Players.LocalPlayer.Character
+l.Sheathed:Destroy()
+l["#NinjaKATANA"]:Destroy()
+
+-- This for Metal bat 
+game.Players.LocalPlayer.Character["#BATWEAPON"]:Destroy()
+
+-- This is for genos
+if game.Players.LocalPlayer.Character:WaitForChild("Right ArmR") and game.Players.LocalPlayer.Character:WaitForChild("Left ArmL") then
+game.Players.LocalPlayer.Character:WaitForChild("Right ArmR"):Destroy()
+game.Players.LocalPlayer.Character:WaitForChild("Left ArmL"):Destroy()
+end
