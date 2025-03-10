@@ -1,0 +1,55 @@
+local ultimatename = "100 percent"
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local playerGui = player:WaitForChild("PlayerGui") -- dont edit these 3
+local screenGui = playerGui:WaitForChild("ScreenGui") -- dont edit these 3
+local magicHealth = screenGui:WaitForChild("MagicHealth") -- dont edit these 3
+
+local bary = magicHealth.Health -- dont edit this part
+
+local bary2 = bary.Bar.Bar -- dont edit this part
+
+bary2.ImageColor3 = Color3.fromRGB(0, 155, 155)
+
+-- dont edit under this
+
+local textLabel = game.Players.LocalPlayer.PlayerGui.ScreenGui:WaitForChild("MagicHealth"):WaitForChild("TextLabel"):WaitForChild("TextLabel")
+
+textLabel:Destroy()
+
+local textLabel = magicHealth:WaitForChild("TextLabel")
+
+textLabel.FontFace = Font.new("rbxassetid://12187375716", Enum.FontWeight.Regular)
+textLabel.Text = ultimatename
+textLabel.TextSize = 26
+textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+textLabel.Position = textLabel.Position + UDim2.new(0, 0, 0, -15) -- Move text up
+
+local uistroke = Instance.new("UIStroke")
+uistroke.Parent = textLabel
+uistroke.Thickness = 1
+uistroke.Transparency = 0
+
+local bar = Instance.new("Frame")
+bar.AnchorPoint = Vector2.new(0.5, 1)
+bar.Position = UDim2.new(0.5, 0, 1, 0)
+bar.Size = UDim2.new(1, 0, 1, 0)
+bar.BackgroundTransparency = 0.5
+bar.Parent = magicHealth
+
+local highlighto = Instance.new("UIStroke")
+highlighto.Transparency = 0.5
+highlighto.Thickness = 1.5
+highlighto.Parent = bar
+
+for _, ez in pairs(bary:GetChildren()) do 
+    if ez.Name == "Bar" then 
+        ez.Parent = magicHealth
+    else
+        ez:Destroy()
+    end
+end
+
+bary2.Image = "rbxassetid://78556255932509"
