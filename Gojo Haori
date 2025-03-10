@@ -1,0 +1,107 @@
+getgenv().Time = 0.2
+getgenv().Torso = {15938044462} -- Torso accessory
+getgenv().LeftShoulder = {15937600822} -- Left Shoulder accessory
+getgenv().RightShoulder = {15937597257} -- Right Shoulder accessory
+
+local lastDeathPosition = nil
+
+local function weldParts(part0, part1, c0, c1)
+local weld = Instance.new("Weld")
+weld.Part0 = part0
+weld.Part1 = part1
+weld.C0 = c0
+weld.C1 = c1
+weld.Parent = part0
+return weld
+end
+
+local function findAttachment(rootPart, name)
+for _, descendant in pairs(rootPart:GetDescendants()) do
+if descendant:IsA("Attachment") and descendant.Name == name then
+return descendant
+end
+end
+end
+
+local function addAccessoryToCharacter(accessoryId, parentPart)
+local accessory = game:GetObjects("rbxassetid://" .. tostring(accessoryId))[1]
+if not accessory then return end
+
+local character = game.Players.LocalPlayer.Character
+accessory.Parent = game.Workspace
+
+local handle = accessory:FindFirstChild("Handle")
+if handle then
+handle.CanCollide = false
+local attachment = handle:FindFirstChildOfClass("Attachment")
+if attachment then
+local parentAttachment = findAttachment(parentPart, attachment.Name)
+if parentAttachment then
+weldParts(parentPart, handle, parentAttachment.CFrame, attachment.CFrame)
+end
+else
+weldParts(parentPart, handle, CFrame.new(0, 0.5, 0), CFrame.new())
+end
+end
+accessory.Parent = character
+end
+
+local function loadAccessories(character)
+-- Add torso accessory
+local torsoPart = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
+if torsoPart then
+for _, accessoryId in ipairs(getgenv().Torso) do
+addAccessoryToCharacter(accessoryId, torsoPart)
+end
+end
+
+-- Add left shoulder accessory
+local leftShoulder = character:FindFirstChild("LeftUpperArm") or character:FindFirstChild("Left Arm")
+if leftShoulder then
+for _, accessoryId in ipairs(getgenv().LeftShoulder) do
+addAccessoryToCharacter(accessoryId, leftShoulder)
+end
+end
+
+-- Add right shoulder accessory
+local rightShoulder = character:FindFirstChild("RightUpperArm") or character:FindFirstChild("Right Arm")
+if rightShoulder then
+for _, accessoryId in ipairs(getgenv().RightShoulder) do
+addAccessoryToCharacter(accessoryId, rightShoulder)
+end
+end
+end
+
+local function onCharacterAdded(character)
+wait(getgenv().Time)
+
+-- Load accessories (torso, left shoulder, right shoulder)
+loadAccessories(character)
+end
+
+local function onCharacterDied()
+local character = game.Players.LocalPlayer.Character
+if character then
+local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+if humanoidRootPart then
+lastDeathPosition = humanoidRootPart.Position
+end
+end
+end
+
+local function onPlayerRespawn(character)
+if lastDeathPosition then
+character:SetPrimaryPartCFrame(CFrame.new(lastDeathPosition))
+end
+onCharacterAdded(character) -- Reapply accessories on respawn
+end
+
+game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
+character:WaitForChild("Humanoid").Died:Connect(onCharacterDied)
+onPlayerRespawn(character) -- Ensure it reloads on respawn
+end)
+
+if game.Players.LocalPlayer.Character then
+game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Died:Connect(onCharacterDied)
+onCharacterAdded(game.Players.LocalPlayer.Character)
+end
