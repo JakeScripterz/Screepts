@@ -1,0 +1,50 @@
+-- Script to disable player collisions infinitely
+-- Make sure to execute this script using a Roblox executor
+
+-- Function to disable collisions for a specific part
+local function disableCollision(part)
+    if part:IsA("BasePart") then
+        part.CanCollide = false
+    end
+end
+
+-- Function to disable collisions for all parts in a character
+local function disableCharacterCollisions(character)
+    for _, part in pairs(character:GetChildren()) do
+        disableCollision(part)
+    end
+end
+
+-- Hook function to disable collisions for new characters
+local function onCharacterAdded(character)
+    disableCharacterCollisions(character)
+end
+
+-- Disable collisions for all existing players
+for _, player in pairs(game.Players:GetPlayers()) do
+    if player.Character then
+        disableCharacterCollisions(player.Character)
+    end
+    player.CharacterAdded:Connect(onCharacterAdded)
+end
+
+-- Disable collisions for new players
+game.Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(onCharacterAdded)
+end)
+
+-- Disable collisions for the executing player's character
+local localPlayer = game.Players.LocalPlayer
+if localPlayer and localPlayer.Character then
+    disableCharacterCollisions(localPlayer.Character)
+end
+
+-- Set up a loop to continuously check for new characters
+while true do
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player.Character then
+            disableCharacterCollisions(player.Character)
+        end
+    end
+    wait(0.1) -- Adjust the wait time as needed
+end
