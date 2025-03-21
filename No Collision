@@ -1,14 +1,19 @@
 -- Script to disable player collisions infinitely and reapply after respawn
+-- Also prevents clipping through the ground when ragdolled
 -- Make sure to execute this script using a Roblox executor
 
--- Function to disable collisions for a specific part
+-- Function to disable collisions for a specific part, except with the ground
 local function disableCollision(part)
     if part:IsA("BasePart") then
-        part.CanCollide = false
+        if part.Name == "HumanoidRootPart" then
+            part.CanCollide = true -- Allow collision with the ground for HumanoidRootPart
+        else
+            part.CanCollide = false
+        end
     end
 end
 
--- Function to disable collisions for all parts in a character
+-- Function to disable collisions for all parts in a character, except with the ground
 local function disableCharacterCollisions(character)
     for _, part in pairs(character:GetChildren()) do
         disableCollision(part)
@@ -51,5 +56,5 @@ while true do
             disableCharacterCollisions(player.Character)
         end
     end
-    wait(1) -- Adjust the wait time as needed
+    wait(0.1) -- Adjust the wait time as needed
 end
