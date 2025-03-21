@@ -1,4 +1,4 @@
--- Script to disable player collisions infinitely
+-- Script to disable player collisions infinitely and reapply after respawn
 -- Make sure to execute this script using a Roblox executor
 
 -- Function to disable collisions for a specific part
@@ -35,8 +35,13 @@ end)
 
 -- Disable collisions for the executing player's character
 local localPlayer = game.Players.LocalPlayer
-if localPlayer and localPlayer.Character then
-    disableCharacterCollisions(localPlayer.Character)
+if localPlayer then
+    localPlayer.CharacterAdded:Connect(function(character)
+        disableCharacterCollisions(character)
+    end)
+    if localPlayer.Character then
+        disableCharacterCollisions(localPlayer.Character)
+    end
 end
 
 -- Set up a loop to continuously check for new characters
@@ -46,5 +51,5 @@ while true do
             disableCharacterCollisions(player.Character)
         end
     end
-    wait(0.1) -- Adjust the wait time as needed
+    wait(1) -- Adjust the wait time as needed
 end
