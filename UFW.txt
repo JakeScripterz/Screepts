@@ -1,0 +1,2386 @@
+local SkillName = "Unlimited Flex Works" --[ skills cant have the same name or it will bug, ]
+local CooldownLengh = 27.6
+local Burning = true -- [ the KJ UFW burning effect ]
+
+local Activated = function()
+--code here
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+local function deleteInventory()
+    for _, tool in pairs(player.Backpack:GetChildren()) do
+        if tool:IsA("Tool") or tool:IsA("HopperBin") then
+            tool:Destroy()
+        end
+    end
+
+    for _, tool in pairs(character:GetChildren()) do
+        if tool:IsA("Tool") or tool:IsA("HopperBin") then
+            tool:Destroy()
+        end
+    end
+end
+
+deleteInventory()
+
+player.CharacterAdded:Connect(function(newCharacter)
+    character = newCharacter
+    deleteInventory()
+end)
+
+task.spawn(function()
+wait(26.1)
+
+local TweenService = game:GetService("TweenService")
+local Lighting = game:GetService("Lighting")
+
+-- Set the initial time to night (0)
+Lighting.ClockTime = 0
+
+-- Create a Tween to transition from night to day
+local tweenInfo = TweenInfo.new(
+    0.3, -- Duration of the transition (0.3 seconds)
+    Enum.EasingStyle.Linear, -- Easing style for smooth transition
+    Enum.EasingDirection.InOut, -- Easing direction
+    0, -- Times to repeat (0 means no repeat)
+    false, -- Reverses the tween once it's completed (false to not reverse)
+    0 -- Delay before starting the tween (0 means no delay)
+)
+
+local goal = {ClockTime = 12} -- Target time (day)
+
+-- Create the tween
+local tween = TweenService:Create(Lighting, tweenInfo, goal)
+
+-- Play the tween to transition to day
+tween:Play()
+end)
+
+task.spawn(function()
+wait(26.1)
+
+        local v22653 = {};
+        v22653.__index = v22653;
+        local v22654 = require(game.ReplicatedStorage.library);
+        local l_PlayAttachment_3 = v22654.PlayAttachment;
+        local l_Maid_17 = v22654.Maid;
+        local l_PlayTween_3 = v22654.PlayTween;
+        local _ = v22654.CamShake;
+        local _ = v22654.PlayFlipBook;
+        local l_dtwait_3 = v22654.dtwait;
+        local _ = v22654.EFP;
+        local l_PlayMesh_3 = v22654.PlayMesh;
+        local _ = v22654.Impact;
+        local _ = v22654.GlassLight;
+        local _ = v22654.RaiseZIndex;
+        local l_Able_3 = v22654.Able;
+        local l_LifeScale_3 = v22654.LifeScale;
+        local l_QuickFX_3 = v22654.QuickFX;
+        local _ = v22654.QuickWeld;
+        local _ = v22654.Yield;
+        local _ = v22654.ProcessPart;
+        local _ = v22654.WeldObject;
+        local _ = v22654.Bezier;
+        local _ = Random.new();
+        local l_vfx_0 = game.ReplicatedStorage.Resources.UFW.vfx;
+        local v22676 = setmetatable({}, v22653);
+        v22676._maid = l_Maid_17.new();
+        local _ = {};
+        local v22678 = false;
+        local l_v22676_0 = v22676 --[[ copy: 27 -> 207 ]];
+        do
+            local l_v22678_0 = v22678;
+            local function _() --[[ Line: 45933 ]] --[[ Name: Clean ]]
+                if not l_v22678_0 then
+                    l_v22678_0 = true;
+                    l_v22676_0._maid:doCleaning();
+                end;
+            end;
+            task.delay(10, function() --[[ Line: 45940 ]]
+                if not l_v22678_0 then
+                    l_v22678_0 = true;
+                    l_v22676_0._maid:doCleaning();
+                end;
+            end);
+            local l_PrimaryPart_98 = game.Players.LocalPlayer.Character.PrimaryPart;
+            local l_Thrown_41 = workspace.Thrown;
+            local l_UFW_0 = game.ReplicatedStorage.Resources.UFW;
+            local l_TweenService_56 = game:GetService("TweenService");
+            local l_l_vfx_0_0 = l_vfx_0 --[[ copy: 26 -> 208 ]];
+            local l_l_dtwait_3_0 = l_dtwait_3 --[[ copy: 11 -> 209 ]];
+            local l_l_TweenService_56_0 = l_TweenService_56 --[[ copy: 35 -> 210 ]];
+            local l_l_PrimaryPart_98_0 = l_PrimaryPart_98 --[[ copy: 32 -> 211 ]];
+            local l_l_QuickFX_3_0 = l_QuickFX_3 --[[ copy: 19 -> 212 ]];
+            local l_l_Able_3_0 = l_Able_3 --[[ copy: 17 -> 213 ]];
+            local l_l_PlayMesh_3_0 = l_PlayMesh_3 --[[ copy: 13 -> 214 ]];
+            local l_l_Thrown_41_0 = l_Thrown_41 --[[ copy: 33 -> 215 ]];
+            local l_l_UFW_0_0 = l_UFW_0 --[[ copy: 34 -> 216 ]];
+            local l_l_PlayAttachment_3_0 = l_PlayAttachment_3 --[[ copy: 6 -> 217 ]];
+            local l_l_LifeScale_3_0 = l_LifeScale_3 --[[ copy: 18 -> 218 ]];
+            local l_l_PlayTween_3_0 = l_PlayTween_3 --[[ copy: 8 -> 219 ]];
+            spawn(function() --[[ Line: 45952 ]]
+                (function() --[[ Line: 45953 ]] --[[ Name: FinalPunch ]]
+                    local l_PunchFX_0 = l_l_vfx_0_0.PunchFX;
+                    local _ = l_Character_4;
+                    local v22700 = {};
+                    task.spawn(function() --[[ Line: 45958 ]]
+                        local v22701 = tick();
+                        while tick() - v22701 < 5 do
+                            for _, v22703 in pairs(v22700) do
+                                if v22703.Parent then
+                                    for _, v22705 in pairs(v22700) do
+                                        v22705.OffsetStudsU = v22705.OffsetStudsU + 0.3;
+                                        v22705.OffsetStudsV = v22705.OffsetStudsV + 0.3;
+                                    end;
+                                end;
+                            end;
+                            l_l_dtwait_3_0(0.01);
+                        end;
+                    end);
+                    local function v22710(v22706, v22707) --[[ Line: 45974 ]] --[[ Name: PlayTextures ]]
+                        for _, v22709 in pairs(v22706:GetDescendants()) do
+                            if v22709:IsA("Texture") then
+                                table.insert(v22700, v22709);
+                                l_l_TweenService_56_0:Create(v22709, TweenInfo.new(v22707, Enum.EasingStyle.Sine), {
+                                    Transparency = 1
+                                }):Play();
+                            end;
+                        end;
+                    end;
+                    local l_l_l_PrimaryPart_98_0_0 = l_l_PrimaryPart_98_0;
+                    local function v22718() --[[ Line: 45987 ]] --[[ Name: Start ]]
+                        local _ = l_l_l_PrimaryPart_98_0_0.CFrame * CFrame.new(0, -l_l_l_PrimaryPart_98_0_0.Size.Y * 1.5, 0);
+                        local v22713 = l_l_QuickFX_3_0({
+                            FX = l_PunchFX_0.Charge, 
+                            Maid = l_v22676_0._maid, 
+                            Anchor = l_l_l_PrimaryPart_98_0_0.CFrame * CFrame.new(0, 0, -3)
+                        });
+                        v22713:ScaleTo(3);
+                        l_l_Able_3_0({
+                            FX = v22713, 
+                            On = true
+                        });
+                        for _, v22715 in pairs(v22713:GetDescendants()) do
+                            if v22715:IsA("ParticleEmitter") then
+                                v22715.Rate = v22715.Rate * 5;
+                            end;
+                        end;
+                        game.Debris:AddItem(v22713, 0.15);
+                        local v22716 = l_l_QuickFX_3_0({
+                            FX = l_PunchFX_0.EnabledPunch, 
+                            Maid = l_v22676_0._maid, 
+                            Anchor = l_l_l_PrimaryPart_98_0_0.CFrame * CFrame.new(0, 0, -60)
+                        });
+                        v22716:ScaleTo(4);
+                        l_l_Able_3_0({
+                            FX = v22716, 
+                            On = true
+                        });
+                        task.delay(0.25, function() --[[ Line: 46013 ]]
+                            l_l_Able_3_0({
+                                FX = v22716, 
+                                On = false
+                            });
+                        end);
+                        local v22717 = l_PunchFX_0.Flash:Clone();
+                        v22717:ScaleTo(4);
+                        l_l_PlayMesh_3_0({
+                            Model = v22717, 
+                            Anchor = l_l_l_PrimaryPart_98_0_0.CFrame * CFrame.new(0, 0, 40) * CFrame.Angles(0, 0, 0), 
+                            Info = TweenInfo.new(0.5, Enum.EasingStyle.Exponential)
+                        });
+                        v22710(v22717, 0.5);
+                        game.Debris:AddItem(v22717, 0.15);
+                    end;
+                    local function v22753() --[[ Line: 46027 ]] --[[ Name: Main1 ]]
+                        local v22719 = l_v22676_0._maid:give(l_PunchFX_0.Shard:Clone());
+                        v22719:ScaleTo(2);
+                        l_l_PlayMesh_3_0({
+                            Model = v22719, 
+                            T = 0, 
+                            EndT = 0, 
+                            Anchor = l_l_l_PrimaryPart_98_0_0.CFrame * CFrame.new(0, 0, -66) * CFrame.Angles(0, 1.5707963267948966, 0), 
+                            Info = TweenInfo.new(0.1, Enum.EasingStyle.Exponential)
+                        });
+                        local v22720 = l_l_l_PrimaryPart_98_0_0.CFrame * CFrame.new(0, 0, -10) * CFrame.Angles(1.5707963267948966, 0, 0);
+                        local v22721 = l_v22676_0._maid:give(l_PunchFX_0.StartThing:Clone());
+                        v22721:PivotTo(v22720);
+                        v22721.Parent = l_l_Thrown_41_0;
+                        game.Debris:AddItem(v22721, 2);
+                        local v22722 = l_v22676_0._maid:give(l_PunchFX_0.EndThing:Clone());
+                        v22722:PivotTo(v22720);
+                        v22722.Parent = l_l_Thrown_41_0;
+                        task.spawn(function() --[[ Line: 46045 ]]
+                            l_v22676_0.Impact1 = l_v22676_0._maid:give(l_l_UFW_0_0:FindFirstChild("1"):Clone());
+                            l_v22676_0.Impact1.Parent = game.Lighting;
+                            l_l_dtwait_3_0(0.07);
+                            l_v22676_0.Impact1:Destroy();
+                            l_v22676_0.Impact2 = l_v22676_0._maid:give(l_l_UFW_0_0:FindFirstChild("2"):Clone());
+                            l_v22676_0.Impact2.Parent = game.Lighting;
+                            l_l_dtwait_3_0(0.07);
+                            l_v22676_0.Impact2:Destroy();
+                        end);
+                        for _, v22724 in pairs(v22721:GetChildren()) do
+                            local l_v22722_FirstChild_0 = v22722:FindFirstChild(v22724.Name);
+                            if l_v22722_FirstChild_0 then
+                                l_l_TweenService_56_0:Create(v22724, TweenInfo.new(0.1, Enum.EasingStyle.Sine), {
+                                    Size = l_v22722_FirstChild_0.Size, 
+                                    CFrame = l_v22722_FirstChild_0.CFrame
+                                }):Play();
+                            end;
+                        end;
+                        game.Debris:AddItem(v22721, 0.05);
+                        local v22726 = l_l_QuickFX_3_0({
+                            FX = l_PunchFX_0.groundsmoke, 
+                            Anchor = l_l_l_PrimaryPart_98_0_0.CFrame * CFrame.new(0, -l_l_l_PrimaryPart_98_0_0.Size.Y * 1.5, 0) * CFrame.Angles(0, 3.141592653589793, 0), 
+                            Maid = l_v22676_0._maid
+                        });
+                        l_l_PlayAttachment_3_0(v22726);
+                        v22726:ScaleTo(2);
+                        l_l_LifeScale_3_0({
+                            FX = v22726, 
+                            Scale = 2
+                        });
+                        l_l_LifeScale_3_0({
+                            FX = v22726.PrimaryPart.emitLeft, 
+                            Scale = 0.2
+                        });
+                        l_l_LifeScale_3_0({
+                            FX = v22726.PrimaryPart.emitRight, 
+                            Scale = 0.2
+                        });
+                        task.spawn(function() --[[ Line: 46076 ]]
+                            for v22727 = 1, 3 do
+                                local v22728 = l_l_QuickFX_3_0({
+                                    FX = l_PunchFX_0.Wind, 
+                                    Anchor = l_l_l_PrimaryPart_98_0_0.CFrame * CFrame.new(0, -l_l_l_PrimaryPart_98_0_0.Size.Y * 1.5, 10) * CFrame.Angles(0, 0, 0), 
+                                    Maid = l_v22676_0._maid
+                                });
+                                v22728:ScaleTo(v22727 * 2);
+                                l_l_LifeScale_3_0({
+                                    FX = v22728, 
+                                    Scale = 0.5 * (v22727 * 0.8)
+                                });
+                                l_l_PlayAttachment_3_0(v22728);
+                                l_l_dtwait_3_0(0.05);
+                            end;
+                        end);
+                        local v22729 = l_v22676_0._maid:give(l_PunchFX_0.ohyea:Clone());
+                        v22729:ScaleTo(8);
+                        l_l_PlayMesh_3_0({
+                            Model = v22729, 
+                            T = 0, 
+                            Anchor = l_l_l_PrimaryPart_98_0_0.CFrame * CFrame.new(0, 0, -20) * CFrame.Angles(0, -1.5707963267948966, 0), 
+                            Info = TweenInfo.new(3, Enum.EasingStyle.Exponential)
+                        });
+                        local v22730 = l_PunchFX_0.Next:Clone();
+                        v22730:ScaleTo(4);
+                        l_l_PlayMesh_3_0({
+                            Model = v22730, 
+                            T = 0, 
+                            Anchor = l_l_l_PrimaryPart_98_0_0.CFrame * CFrame.new(0, 0, -20) * CFrame.Angles(0, 1.5707963267948966, 0), 
+                            Info = TweenInfo.new(4, Enum.EasingStyle.Exponential)
+                        });
+                        local v22731 = l_PunchFX_0.BallThing:Clone();
+                        v22731:ScaleTo(4);
+                        l_l_PlayMesh_3_0({
+                            Model = v22731, 
+                            Anchor = l_l_l_PrimaryPart_98_0_0.CFrame * CFrame.new(0, 0, -20) * CFrame.Angles(0, 0, 0), 
+                            Info = TweenInfo.new(3, Enum.EasingStyle.Exponential)
+                        });
+                        v22710(v22731, 1);
+                        task.spawn(function() --[[ Line: 46101 ]]
+                            for v22732 = 1, 3 do
+                                local v22733 = l_PunchFX_0.Test:Clone();
+                                v22733:ScaleTo(8 - v22732 * 0.7);
+                                l_l_PlayMesh_3_0({
+                                    Model = v22733, 
+                                    T = 0.3, 
+                                    Anchor = l_l_l_PrimaryPart_98_0_0.CFrame * CFrame.new(0, 0, -10 * v22732 * 2) * CFrame.Angles(-1.5707963267948966, -1.5707963267948966, 0), 
+                                    Info = TweenInfo.new(0.4 * v22732, Enum.EasingStyle.Exponential)
+                                });
+                                l_l_dtwait_3_0(0.05);
+                            end;
+                        end);
+                        local v22734 = l_l_QuickFX_3_0({
+                            FX = l_PunchFX_0.PunchBig, 
+                            Maid = l_v22676_0._maid, 
+                            Anchor = l_l_l_PrimaryPart_98_0_0.CFrame * CFrame.new(0, 0, -100)
+                        });
+                        v22734:ScaleTo(1.4);
+                        l_l_LifeScale_3_0({
+                            FX = v22734, 
+                            Scale = 0.4
+                        });
+                        l_l_PlayAttachment_3_0(v22734);
+                        local v22735 = l_l_QuickFX_3_0({
+                            FX = l_PunchFX_0.ParticlesEnd, 
+                            Anchor = l_l_l_PrimaryPart_98_0_0.CFrame * CFrame.new(0, 5, 30), 
+                            Maid = l_v22676_0._maid
+                        });
+                        v22735:ScaleTo(2);
+                        l_l_LifeScale_3_0({
+                            FX = v22735, 
+                            Scale = 2
+                        });
+                        l_l_PlayAttachment_3_0(v22735);
+                        local v22736 = l_l_QuickFX_3_0({
+                            FX = l_PunchFX_0.Emit, 
+                            Anchor = l_l_l_PrimaryPart_98_0_0.CFrame * CFrame.new(0, 0, -100), 
+                            Maid = l_v22676_0._maid
+                        });
+                        v22736:ScaleTo(1.4);
+                        l_l_LifeScale_3_0({
+                            FX = v22736, 
+                            Scale = 2
+                        });
+                        for _, v22738 in pairs(v22736:GetDescendants()) do
+                            if v22738:IsA("ParticleEmitter") then
+                                v22738:SetAttribute("EmitCount", v22738:GetAttribute("EmitCount") * 0.5);
+                            end;
+                        end;
+                        l_l_PlayAttachment_3_0(v22736);
+                        local v22739 = l_l_QuickFX_3_0({
+                            FX = l_PunchFX_0.Beam, 
+                            Maid = l_v22676_0._maid, 
+                            Anchor = l_l_l_PrimaryPart_98_0_0.CFrame * CFrame.new(0, 0, -240)
+                        });
+                        v22739:ScaleTo(1.4);
+                        for _, v22741 in pairs(v22739:GetDescendants()) do
+                            if v22741.Name:find("Far") then
+                                local l_CFrame_95 = v22741.CFrame;
+                                local v22743, v22744, v22745 = l_CFrame_95:ToOrientation();
+                                v22741.CFrame = CFrame.new(0, 0, -v22741.CFrame.Position.Z) * CFrame.Angles(v22743, v22744, v22745);
+                                l_l_TweenService_56_0:Create(v22741, TweenInfo.new(0.4, Enum.EasingStyle.Sine), {
+                                    CFrame = l_CFrame_95
+                                }):Play();
+                            elseif v22741:IsA("Beam") then
+                                l_l_TweenService_56_0:Create(v22741, TweenInfo.new(3, Enum.EasingStyle.Sine), {
+                                    TextureSpeed = 0
+                                }):Play();
+                                l_l_PlayTween_3_0(v22741, {
+                                    Time = 2, 
+                                    EasingStyle = "Sine", 
+                                    Goal = {
+                                        Transparency = NumberSequence.new({
+                                            NumberSequenceKeypoint.new(0, 1), 
+                                            NumberSequenceKeypoint.new(1, 1)
+                                        })
+                                    }
+                                });
+                                game.Debris:AddItem(v22741, 2);
+                            end;
+                        end;
+                        local v22746 = l_l_QuickFX_3_0({
+                            FX = l_PunchFX_0.NewBeams, 
+                            Maid = l_v22676_0._maid, 
+                            Anchor = l_l_l_PrimaryPart_98_0_0.CFrame * CFrame.new(0, 0, -44) * CFrame.Angles(0, 0, -0.5235987755982988)
+                        });
+                        v22746:ScaleTo(4);
+                        l_l_dtwait_3_0(0.5);
+                        for _, v22748 in pairs(v22746:GetDescendants()) do
+                            if v22748.Name:find("Far") then
+                                local l_CFrame_96 = v22748.CFrame;
+                                local v22750, v22751, v22752 = l_CFrame_96:ToOrientation();
+                                v22748.CFrame = CFrame.new(0, 0, -v22748.CFrame.Position.Z) * CFrame.Angles(v22750, v22751, v22752);
+                                print(v22748.CFrame.Position);
+                                l_l_TweenService_56_0:Create(v22748, TweenInfo.new(0.4, Enum.EasingStyle.Sine), {
+                                    CFrame = l_CFrame_96
+                                }):Play();
+                            elseif v22748:IsA("Beam") then
+                                l_l_TweenService_56_0:Create(v22748, TweenInfo.new(3, Enum.EasingStyle.Sine), {
+                                    TextureSpeed = 0
+                                }):Play();
+                                l_l_PlayTween_3_0(v22748, {
+                                    Time = 2, 
+                                    EasingStyle = "Sine", 
+                                    Goal = {
+                                        Transparency = NumberSequence.new({
+                                            NumberSequenceKeypoint.new(0, 1), 
+                                            NumberSequenceKeypoint.new(1, 1)
+                                        })
+                                    }
+                                });
+                                game.Debris:AddItem(v22748, 2);
+                            end;
+                        end;
+                        l_l_dtwait_3_0(1);
+                    end;
+                    v22718();
+                    l_l_dtwait_3_0(0.15);
+                    v22753();
+                end)();
+            end);
+            local v22754 = game.ReplicatedStorage.Resources.UFW.RB:Clone();
+            v22754:SetPrimaryPartCFrame(l_PrimaryPart_98.CFrame * CFrame.new(0, 0, -4));
+            v22754.Parent = l_Thrown_41;
+            v22754:ScaleTo(7);
+            local v22755 = v22754.AnimationController:LoadAnimation(l_UFW_0.lastthing);
+            v22755:Play();
+            v22755.TimePosition = 1.4;
+            game.Debris:AddItem(v22754, 3);
+            local l_v22754_0 = v22754 --[[ copy: 36 -> 220 ]];
+            task.delay(1, function() --[[ Line: 46204 ]]
+                for _, v22758 in pairs(l_v22754_0:GetChildren()) do
+                    if v22758:IsA("BasePart") then
+                        l_l_TweenService_56_0:Create(v22758, TweenInfo.new(0.5, Enum.EasingStyle.Sine), {
+                            Transparency = 1
+                        }):Play();
+                    end;
+                end;
+            end);
+        end;
+end)
+
+local function GetGitSound(GithubSnd, SoundName)
+    local url = GithubSnd
+    if not isfile(SoundName .. ".mp3") then
+        writefile(SoundName .. ".mp3", game:HttpGet(url))
+    end
+    local sound = Instance.new("Sound")
+    sound.SoundId = (getcustomasset or getsynasset)(SoundName .. ".mp3")
+    sound.Volume = 1  -- Set volume to 1
+    sound.Name = SoundName  -- Name the sound
+    sound.Parent = workspace
+    return sound
+end
+
+-- Play the sound and name it "UFW HBG"
+local sound = GetGitSound("https://github.com/NetlessScripter/Vegito-/blob/5b18eff599792df498ac4b8cfeb0ab8a70943bbd/copy_69C40F4E-A613-49B0-B4D2-E78D2A033FED.mp3?raw=true", "UFW HBG")
+sound:Play()
+
+local anm = 77727115892579
+local a = Instance.new("Animation")
+a.AnimationId = "rbxassetid://" .. anm
+local e = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(a)
+e:Play()
+        local v22793 = game.ReplicatedStorage.Resources.UFW.RB:Clone();
+        v22793:SetPrimaryPartCFrame(CFrame.new(1000000, 1000000, 1000000));
+        v22793.Parent = workspace.Thrown;
+        v22793:ScaleTo(7);
+        local v22794 = v22793.AnimationController:LoadAnimation(game.ReplicatedStorage.Resources.UFW.lastthing);
+        v22794:Play();
+        v22794.TimePosition = 1.4;
+        game.Debris:AddItem(v22793, 3);
+        local l_Part_32 = Instance.new("Part");
+        l_Part_32.Anchored = true;
+        l_Part_32.Transparency = 1;
+        l_Part_32.CanCollide = false;
+        l_Part_32.CanQuery = false;
+        l_Part_32.CanTouch = false;
+        l_Part_32.CFrame = CFrame.new(40000, 40000, 40000);
+        l_Part_32.Parent = workspace.Thrown;
+        game.Debris:AddItem(l_Part_32, 10);
+        local l_l_Part_32_0 = l_Part_32 --[[ copy: 6 -> 179 ]];
+        spawn(function() --[[ Line: 46403 ]]
+            local v22797 = {};
+            for _, v22799 in pairs(game.ReplicatedStorage.Resources.UFW.vfx.Pillar.Preload:GetDescendants()) do
+                if v22799:IsA("Decal") and v22799.Texture ~= "" and not table.find(v22797, v22799.Texture) then
+                    table.insert(v22797, v22799.Texture);
+                end;
+            end;
+            for _, v22801 in pairs(v22797) do
+                local l_Decal_860 = Instance.new("Decal");
+                l_Decal_860.Parent = l_l_Part_32_0;
+                game.Debris:AddItem(l_Decal_860, 3);
+                l_Decal_860.Texture = v22801;
+                task.wait(0.0065);
+            end;
+        end);
+        local l_Accessory_5 = Instance.new("Accessory");
+        l_Accessory_5.Name = "HideUlt";
+        l_Accessory_5:SetAttribute("Force", true);
+        l_Accessory_5.Parent = l_Character_4;
+        game.Debris:AddItem(l_Accessory_5, 28);
+        local l_UFW_2 = game.ReplicatedStorage.Resources.UFW;
+        local l_RunService_1 = game:GetService("RunService");
+        local l_TweenService_58 = game:GetService("TweenService");
+        local _ = game:GetService("KeyframeSequenceProvider");
+        local v22808 = require(l_UFW_2.TekrinnDialogue);
+        local l_LocalPlayer_1 = game.Players.LocalPlayer;
+        local v22810 = {};
+        local v22811 = {
+            [1] = {
+                {
+                    Text = "Because with this... ", 
+                    Color = ColorSequence.new({
+                        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)), 
+                        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 17, 17)), 
+                        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
+                    }), 
+                    TextStrokeColor = Color3.new(0, 0, 0), 
+                    Bold = false, 
+                    Italic = false, 
+                    Shake = {
+                        Enabled = false, 
+                        Intensity = 1, 
+                        Lifetime = 2
+                    }, 
+                    TypeSpeed = 0.06
+                }, 
+                {
+                    Text = "IT'S OVER!", 
+                    Color = ColorSequence.new({
+                        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)), 
+                        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 17, 17))
+                    }), 
+                    TextStrokeColor = Color3.new(0, 0, 0), 
+                    Bold = true, 
+                    Italic = true, 
+                    Shake = {
+                        Enabled = true, 
+                        Intensity = 5, 
+                        Lifetime = 1
+                    }, 
+                    TypeSpeed = 0.06
+                }
+            }, 
+            [2] = {
+                {
+                    Text = "KJ's... ", 
+                    Color = ColorSequence.new({
+                        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)), 
+                        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 0, 0)), 
+                        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
+                    }), 
+                    TextStrokeColor = Color3.new(0, 0, 0), 
+                    Bold = false, 
+                    Italic = false, 
+                    Shake = {
+                        Enabled = false, 
+                        Intensity = 1, 
+                        Lifetime = 2
+                    }, 
+                    TypeSpeed = 0.07
+                }, 
+                {
+                    Text = "21 SERIES.", 
+                    Color = ColorSequence.new({
+                        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)), 
+                        ColorSequenceKeypoint.new(0.2, Color3.fromRGB(255, 17, 17)), 
+                        ColorSequenceKeypoint.new(0.4, Color3.fromRGB(255, 255, 127)), 
+                        ColorSequenceKeypoint.new(0.6, Color3.fromRGB(85, 170, 255)), 
+                        ColorSequenceKeypoint.new(0.8, Color3.fromRGB(255, 0, 255)), 
+                        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
+                    }), 
+                    TextStrokeColor = Color3.fromRGB(85, 0, 0), 
+                    Bold = true, 
+                    Italic = true, 
+                    Shake = {
+                        Enabled = true, 
+                        Intensity = 4, 
+                        Lifetime = 1
+                    }, 
+                    TypeSpeed = 0.08
+                }
+            }
+        };
+        local function v22822(v22812, v22813, v22814, _) --[[ Line: 46510 ]] --[[ Name: impactFrame ]]
+            local l_v22813_0 = v22813;
+            local v22817 = v22813 - 1;
+            local v22818 = true;
+            local v22821 = shared.loop(function() --[[ Line: 46515 ]]
+                if not v22818 or v22814 < l_v22813_0 then
+                    if v22812:FindFirstChild(v22814) then
+                        v22812[v22814].ImageTransparency = 1;
+                    end;
+                    v22818 = false;
+                    return;
+                else
+                    local l_v22812_FirstChild_0 = v22812:FindFirstChild((tostring(v22817)));
+                    if l_v22812_FirstChild_0 then
+                        l_v22812_FirstChild_0.ImageTransparency = 1;
+                    end;
+                    local l_v22812_FirstChild_1 = v22812:FindFirstChild((tostring(l_v22813_0)));
+                    if l_v22812_FirstChild_1 then
+                        l_v22812_FirstChild_1.ImageTransparency = 0;
+                        l_v22812_FirstChild_1.Size = UDim2.new(1, 0, 1, 0);
+                    end;
+                    v22817 = l_v22813_0;
+                    l_v22813_0 = l_v22813_0 + 1;
+                    return;
+                end;
+            end, 34);
+            task.delay(5, function() --[[ Line: 46539 ]]
+                if v22821 then
+                    v22821();
+                end;
+            end);
+        end;
+        local l_char_57 = game.Players.LocalPlayer.Character;
+        local l_Humanoid_16 = l_char_57:FindFirstChild("Humanoid");
+        local l_RootPart_0 = l_Humanoid_16.RootPart;
+        local v22826 = l_UFW_2.CamRigWithLetterBox:Clone();
+        table.insert(v22810, v22826);
+        local l_RootPart_1 = v22826.RootPart;
+        l_RootPart_1.CFrame = l_RootPart_1.CFrame * CFrame.new(0, 0, 1000000);
+        v22826.Parent = workspace;
+        l_RootPart_1 = v22826.AnimationController.Animator:LoadAnimation(l_UFW_2.Camera);
+        l_RootPart_1:Play();
+        local v22828 = nil;
+        for _, v22830 in pairs(l_Humanoid_16:GetPlayingAnimationTracks()) do
+            if v22830.Animation.AnimationId == "rbxassetid://77727115892579" then
+                v22828 = v22830;
+                break;
+            end;
+        end;
+        local l_l_RootPart_1_0 = l_RootPart_1 --[[ copy: 21 -> 180 ]];
+        v22828.Stopped:Connect(function() --[[ Line: 46567 ]]
+            l_l_RootPart_1_0:Stop();
+            workspace.CurrentCamera.CameraType = Enum.CameraType.Custom;
+        end);
+        local v22832 = l_UFW_2.ImpactFrames:Clone();
+        v22832.Parent = l_LocalPlayer_1.PlayerGui;
+        for _, v22834 in v22832:GetChildren() do
+            v22834.Size = UDim2.new(0, 0, 0, 1);
+            v22834.ImageTransparency = 0;
+        end;
+        for _, v22836 in l_UFW_2.Flexworks:GetChildren() do
+            local v22837 = v22836:Clone();
+            v22837.Size = UDim2.new(0, 0, 0, 1);
+            v22837.Position = UDim2.new(0, 0, 0, 0);
+            v22837.Parent = v22832;
+            task.delay(2, function() --[[ Line: 46584 ]]
+                v22837:Destroy();
+            end);
+        end;
+        local v22838 = nil;
+        local v22839 = nil;
+        local l_l_UFW_2_0 = l_UFW_2 --[[ copy: 8 -> 181 ]];
+        local l_l_LocalPlayer_1_0 = l_LocalPlayer_1 --[[ copy: 13 -> 182 ]];
+        local l_l_char_57_0 = l_char_57 --[[ copy: 17 -> 183 ]];
+        local l_l_RunService_1_0 = l_RunService_1 --[[ copy: 9 -> 184 ]];
+        local l_v22826_0 = v22826 --[[ copy: 20 -> 185 ]];
+        local l_l_RootPart_0_0 = l_RootPart_0 --[[ copy: 19 -> 186 ]];
+        local l_l_TweenService_58_0 = l_TweenService_58 --[[ copy: 10 -> 187 ]];
+        local l_v22822_0 = v22822 --[[ copy: 16 -> 188 ]];
+        do
+            local l_v22838_0, l_v22839_0 = v22838, v22839;
+            task.spawn(function() --[[ Line: 46589 ]]
+                local v22850 = l_l_UFW_2_0.Flash:Clone();
+                local l_Viewport_0 = v22850.Flashup.Viewport.Viewport;
+                local v22852 = Instance.new("Camera", l_Viewport_0);
+                l_Viewport_0.CurrentCamera = v22852;
+                v22850.Parent = l_l_LocalPlayer_1_0.PlayerGui;
+                l_l_char_57_0.Archivable = true;
+                l_v22838_0 = l_l_char_57_0:Clone();
+                l_v22838_0.PrimaryPart.Anchored = true;
+                for _, v22854 in pairs(l_v22838_0:GetDescendants()) do
+                    if v22854.ClassName:find("Script") then
+                        v22854:Destroy();
+                    end;
+                end;
+                for _, v22856 in l_v22838_0:GetChildren() do
+                    if v22856:IsA("BasePart") then
+                        v22856.Anchored = true;
+                    end;
+                end;
+                for _, v22858 in pairs(l_v22838_0:GetDescendants()) do
+                    if v22858:IsA("Highlight") then
+                        v22858:Destroy("");
+                    end;
+                end;
+                l_v22838_0.Parent = l_Viewport_0.Body;
+                l_v22839_0 = l_v22838_0.Humanoid:LoadAnimation(l_l_UFW_2_0.User);
+                local v22863 = l_l_RunService_1_0.RenderStepped:Connect(function() --[[ Line: 46619 ]]
+                    l_v22826_0.RootPart.CFrame = l_l_RootPart_0_0.CFrame * CFrame.new(0, -3, 0) * CFrame.Angles(0, 3.141592653589793, 0);
+                    v22852.CFrame = l_v22826_0.camera.CFrame;
+                    for _, v22860 in l_v22838_0:GetChildren() do
+                        if v22860:IsA("BasePart") then
+                            local l_l_l_char_57_0_FirstChild_0 = l_l_char_57_0:FindFirstChild(v22860.Name);
+                            if l_l_l_char_57_0_FirstChild_0 then
+                                v22860.CFrame = l_l_l_char_57_0_FirstChild_0.CFrame;
+                            end;
+                        end;
+                    end;
+                    local l_Position_100 = (l_v22838_0.Head.CFrame * CFrame.new(0.2, 0.2, -0.5)).Position;
+                    l_Position_100 = v22852:WorldToScreenPoint(l_Position_100);
+                    v22850.EyeFlash.Position = UDim2.fromScale((l_Position_100.X - 0.5) * l_Viewport_0.AbsoluteSize.Y / l_Viewport_0.AbsoluteSize.X + 0.5, (l_Position_100.Y - 0.5) * l_Viewport_0.AbsoluteSize.X / l_Viewport_0.AbsoluteSize.Y + 0.5);
+                end);
+                task.delay(0.2, function() --[[ Line: 46636 ]]
+                    v22850.Flashup.Viewport.BackgroundColor3 = Color3.new(0, 0, 0);
+                    v22850.Flashup.Viewport.Viewport.ImageColor3 = Color3.fromRGB(20, 20, 20);
+                    l_l_TweenService_58_0:Create(v22850.Flashup.Viewport, TweenInfo.new(1, Enum.EasingStyle.Quad), {
+                        BackgroundColor3 = Color3.new(1, 1, 1)
+                    }):Play();
+                    l_l_TweenService_58_0:Create(v22850.Flashup.Viewport.Viewport, TweenInfo.new(0.8, Enum.EasingStyle.Quad), {
+                        ImageColor3 = Color3.new(1, 1, 1)
+                    }):Play();
+                    v22850.EyeFlash.Visible = true;
+                    l_l_TweenService_58_0:Create(v22850.EyeFlash, TweenInfo.new(0.5, Enum.EasingStyle.Quad), {
+                        Rotation = 90
+                    }):Play();
+                    task.wait(0.2);
+                    v22850.EyeFlash.Visible = false;
+                    task.wait(0.025);
+                    v22850.EyeFlash.Size = UDim2.fromScale(0.2, 0.2);
+                    v22850.EyeFlash.Visible = true;
+                    task.wait(0.025);
+                    v22850.EyeFlash.Visible = false;
+                    task.wait(0.025);
+                    v22850.EyeFlash.Size = UDim2.fromScale(0.25, 0.25);
+                    v22850.EyeFlash.Visible = true;
+                    task.wait(0.05);
+                    v22850.EyeFlash.Visible = false;
+                    task.wait(0.05);
+                    v22850.EyeFlash.Size = UDim2.fromScale(0.1, 0.1);
+                    v22850.EyeFlash.Visible = true;
+                    task.wait(0.05);
+                    v22850.EyeFlash.Visible = false;
+                end);
+                local v22864 = TweenInfo.new(2.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out);
+                l_l_TweenService_58_0:Create(v22850.Flashup, v22864, {
+                    Size = UDim2.new(1, 0, 0.3, 0)
+                }):Play();
+                l_l_TweenService_58_0:Create(v22852, TweenInfo.new(2, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {
+                    FieldOfView = 120
+                }):Play();
+                task.wait(2);
+                l_l_TweenService_58_0:Create(v22852, TweenInfo.new(1.7, Enum.EasingStyle.Exponential, Enum.EasingDirection.InOut), {
+                    FieldOfView = 70
+                }):Play();
+                l_l_TweenService_58_0:Create(v22850.Flashup, TweenInfo.new(1, Enum.EasingStyle.Exponential, Enum.EasingDirection.In), {
+                    Size = UDim2.new(1, 0, 1, 0)
+                }):Play();
+                task.wait(1);
+                v22863:Disconnect();
+                task.delay(0.05, function() --[[ Line: 46667 ]]
+                    shared.SetCore(false);
+                    l_v22822_0(v22832, 1, 2, 0.07);
+                    v22832.Frame.Visible = true;
+                    task.wait(0.05);
+                    v22832.Frame.Visible = false;
+                end);
+                l_v22838_0.Parent = workspace;
+                v22850:Destroy();
+                for _, v22866 in l_v22838_0:GetChildren() do
+                    if v22866:IsA("BasePart") and v22866.Name ~= "HumanoidRootPart" then
+                        v22866.Anchored = false;
+                    end;
+                end;
+            end);
+            v22808.Speak(l_char_57, v22811[1]);
+            task.wait(3);
+            v22828.TimePosition = 3;
+            l_RootPart_1.TimePosition = 3;
+            l_v22839_0:Play(0);
+            l_v22839_0.TimePosition = 3;
+            warn("sync");
+            local l_HumanoidRootPart_17 = l_v22838_0.HumanoidRootPart;
+            local v22868 = CFrame.new(math.random(4000, 100000), 0, 0);
+            table.insert(v22810, l_v22838_0);
+            workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable;
+            local l_l_HumanoidRootPart_17_0 = l_HumanoidRootPart_17 --[[ copy: 26 -> 189 ]];
+            local l_v22868_0 = v22868 --[[ copy: 27 -> 190 ]];
+            local l_l_RootPart_1_1 = l_RootPart_1 --[[ copy: 21 -> 191 ]];
+            table.insert(v22810, (l_RunService_1.RenderStepped:Connect(function() --[[ Line: 46701 ]]
+                l_l_HumanoidRootPart_17_0.CFrame = l_v22868_0;
+                if l_v22826_0 and l_v22826_0.Parent then
+                    l_v22826_0.RootPart.CFrame = l_v22868_0 * CFrame.new(0, -3, 0) * CFrame.Angles(0, 3.141592653589793, 0);
+                    local v22872 = math.ceil(l_l_RootPart_1_1.TimePosition * 60);
+                    local l_FirstChild_32 = l_l_UFW_2_0.Camera.FOV:FindFirstChild((tonumber((math.ceil(v22872)))));
+                    workspace.CurrentCamera.CFrame = l_v22826_0.camera.CFrame;
+                    if l_FirstChild_32 then
+                        workspace.CurrentCamera.FieldOfView = l_FirstChild_32.Value;
+                    end;
+                end;
+            end)));
+            local v22874 = l_UFW_2.ImpactFrames:Clone();
+            v22874.Parent = l_LocalPlayer_1.PlayerGui;
+            local v22875 = l_UFW_2.Flexworks:Clone();
+            v22875.Vignette.Visible = true;
+            v22875.Parent = l_LocalPlayer_1.PlayerGui;
+            table.insert(v22810, v22875);
+            table.insert(v22810, v22874);
+            local v22876 = l_UFW_2.CloneArms:Clone();
+            v22876["Right Arm"].Color = l_v22838_0["Right Arm"].Color;
+            v22876["Left Arm"].Color = l_v22838_0["Left Arm"].Color;
+            local v22877 = v22876["Right Arm"]["Right Arm"];
+            local v22878 = v22876["Left Arm"]["Left Arm"];
+            local l_Shirt_0 = l_v22838_0:FindFirstChildWhichIsA("Shirt");
+            if l_Shirt_0 then
+                l_Shirt_0:Clone().Parent = v22876;
+            end;
+            v22876.Parent = l_v22838_0;
+            v22877.Part0 = l_v22838_0["Right Arm"];
+            v22877.Parent = l_v22838_0["Right Arm"];
+            v22878.Part0 = l_v22838_0["Left Arm"];
+            v22878.Parent = l_v22838_0["Left Arm"];
+            table.insert(v22810, v22876);
+            local v22880 = l_UFW_2.BG:Clone();
+            v22880:PivotTo(v22868 * CFrame.Angles(0, 1.5707963267948966, 0));
+            v22880.light2.SpotLight.Brightness = 20;
+            v22880.Parent = workspace;
+            game.Lighting.ClockTime = 22;
+            v22880.Floor.Decal.Transparency = 0.99;
+            v22880.Wall2.Decal.Transparency = 0.99;
+            table.insert(v22810, v22880);
+            local l_ColorCorrectionEffect_3 = Instance.new("ColorCorrectionEffect");
+            l_ColorCorrectionEffect_3.Brightness = -0.15;
+            l_ColorCorrectionEffect_3.Parent = game.Lighting;
+            table.insert(v22810, l_ColorCorrectionEffect_3);
+            local v22882 = {};
+            v22882.__index = v22882;
+            local v22883 = require(game.ReplicatedStorage.library);
+            local l_PlayAttachment_4 = v22883.PlayAttachment;
+            local l_Maid_18 = v22883.Maid;
+            local l_PlayTween_4 = v22883.PlayTween;
+            local _ = v22883.CamShake;
+            local _ = v22883.PlayFlipBook;
+            local l_dtwait_4 = v22883.dtwait;
+            local l_EFP_4 = v22883.EFP;
+            local l_PlayMesh_4 = v22883.PlayMesh;
+            local _ = v22883.Impact;
+            local _ = v22883.GlassLight;
+            local l_RaiseZIndex_4 = v22883.RaiseZIndex;
+            local l_Able_4 = v22883.Able;
+            local l_LifeScale_4 = v22883.LifeScale;
+            local l_QuickFX_4 = v22883.QuickFX;
+            local _ = v22883.QuickWeld;
+            local _ = v22883.Yield;
+            local _ = v22883.ProcessPart;
+            local _ = v22883.WeldObject;
+            local _ = v22883.Bezier;
+            local v22903 = Random.new();
+            local l_vfx_1 = game.ReplicatedStorage.Resources.UFW.vfx;
+            local v22905 = setmetatable({}, v22882);
+            v22905._maid = l_Maid_18.new();
+            local _ = {};
+            local v22907 = false;
+            local function _() --[[ Line: 46785 ]] --[[ Name: Clean ]]
+                if not v22907 then
+                    v22907 = true;
+                    v22905._maid:doCleaning();
+                end;
+            end;
+            task.delay(10, function() --[[ Line: 46792 ]]
+                if not v22907 then
+                    v22907 = true;
+                    v22905._maid:doCleaning();
+                end;
+            end);
+            local l_BG_0 = v22880.BG;
+            local l_l_v22838_0_0 = l_v22838_0;
+            local l_CurrentCamera_32 = game.Workspace.CurrentCamera;
+            local _ = function() --[[ Line: 46801 ]] --[[ Name: GetTorsoCF ]]
+                local _, v22913, _ = l_l_v22838_0_0.HumanoidRootPart.CFrame:ToOrientation();
+                return CFrame.new(l_l_v22838_0_0.Torso.Position) * CFrame.Angles(0, v22913, 0);
+            end;
+            local l_l_TweenService_58_1 = l_TweenService_58 --[[ copy: 10 -> 192 ]];
+            local function v22928() --[[ Line: 46807 ]] --[[ Name: PunchEvent ]]
+                warn("theyung");
+                local v22917 = v22905._maid:give(l_vfx_1["Right Arm"]:Clone());
+                for _, v22919 in pairs(v22917:GetChildren()) do
+                    v22905._maid:give(v22919);
+                    v22919.Parent = l_l_v22838_0_0["Right Arm"];
+                    game.Debris:AddItem(v22919, 0.6);
+                end;
+                local l_Highlight_14 = Instance.new("Highlight");
+                l_Highlight_14.FillTransparency = 1;
+                l_Highlight_14.FillColor = Color3.new(1, 1, 1);
+                l_Highlight_14.OutlineTransparency = 0.5;
+                l_Highlight_14.OutlineColor = Color3.fromRGB(0, 0, 0);
+                l_Highlight_14.Parent = l_l_v22838_0_0["Right Arm"];
+                game.Debris:AddItem(l_Highlight_14, 0.6);
+                local v22921 = v22905._maid:give(l_vfx_1.ArmThing:Clone());
+                local l_Weld_67 = Instance.new("Weld");
+                l_Weld_67.Part0 = v22921.PrimaryPart;
+                l_Weld_67.Part1 = l_l_v22838_0_0["Right Arm"];
+                l_Weld_67.Parent = v22921;
+                l_Weld_67.C0 = CFrame.new(0.8, 0, 0) * CFrame.Angles(0, 0, -1.5707963267948966);
+                v22921.Parent = l_EFP_4;
+                l_l_TweenService_58_1:Create(v22921.PrimaryPart.Mesh, TweenInfo.new(0.5, Enum.EasingStyle.Sine), {
+                    Scale = v22921.End.Mesh.Scale
+                }):Play();
+                l_l_TweenService_58_1:Create(l_Weld_67, TweenInfo.new(0.5, Enum.EasingStyle.Sine), {
+                    C0 = l_Weld_67.C0 * CFrame.new(0, -0.4, 0) * CFrame.Angles(0, 3.141592653589793, 0)
+                }):Play();
+                for _, v22924 in pairs(v22921.PrimaryPart:GetChildren()) do
+                    if v22924:IsA("Decal") then
+                        v22924.Transparency = 0;
+                        l_l_TweenService_58_1:Create(v22924, TweenInfo.new(1, Enum.EasingStyle.Sine), {
+                            Transparency = 1
+                        }):Play();
+                    end;
+                end;
+                task.delay(0.2, function() --[[ Line: 46848 ]]
+                    for _, v22926 in pairs(l_l_v22838_0_0["Right Arm"]:GetChildren()) do
+                        if v22926:IsA("ParticleEmitter") then
+
+                        end;
+                    end;
+                end);
+                task.delay(0.3, function() --[[ Line: 46856 ]]
+                    local v22927 = l_vfx_1.Upwave:Clone();
+                    v22927:ScaleTo(0.1);
+                    l_PlayMesh_4({
+                        Model = v22927, 
+                        Anchor = l_l_v22838_0_0["Right Arm"].CFrame * CFrame.new(0, 0, 0) * CFrame.Angles(0, 0, 1.5707963267948966), 
+                        Info = TweenInfo.new(0.3, Enum.EasingStyle.Quad)
+                    });
+                end);
+                l_dtwait_4(0.5);
+                v22921:Destroy();
+            end;
+            local function _(v22929) --[[ Line: 46868 ]] --[[ Name: Darkness ]]
+                warn("creppytpyeryeryea");
+                task.spawn(function() --[[ Line: 46870 ]]
+                    if v22929 then
+                        l_l_TweenService_58_1:Create(game.Lighting, TweenInfo.new(1.827, Enum.EasingStyle.Quad), {
+                            Brightness = 0, 
+                            Ambient = Color3.fromRGB(0, 0, 0), 
+                            OutdoorAmbient = Color3.fromRGB(25, 25, 25)
+                        }):Play();
+                        l_l_TweenService_58_1:Create(game.Lighting, TweenInfo.new(0.65, Enum.EasingStyle.Quad), {
+                            ClockTime = 0
+                        }):Play();
+                        return;
+                    else
+                        l_l_TweenService_58_1:Create(game.Lighting, TweenInfo.new(1.827, Enum.EasingStyle.Quad), {
+                            Brightness = 2, 
+                            Ambient = Color3.fromRGB(138, 138, 138), 
+                            OutdoorAmbient = Color3.fromRGB(70, 70, 70)
+                        }):Play();
+                        l_l_TweenService_58_1:Create(game.Lighting, TweenInfo.new(0.65, Enum.EasingStyle.Quad), {
+                            ClockTime = 13
+                        }):Play();
+                        return;
+                    end;
+                end);
+            end;
+            local l_l_UFW_2_1 = l_UFW_2 --[[ copy: 8 -> 193 ]];
+            local function v22944() --[[ Line: 46888 ]] --[[ Name: PunchCloseEvent ]]
+                local function v22937() --[[ Line: 46889 ]] --[[ Name: ImpactFrames ]]
+                    local v22932 = nil;
+                    local v22933 = 1;
+                    v22905.Impact = v22905._maid:give(l_l_UFW_2_1.Impact:Clone());
+                    v22905.Impact.Enabled = false;
+                    v22905.Impact.Parent = game.Players.LocalPlayer.PlayerGui;
+                    local l_Impact_6 = v22905.Impact;
+                    local v22935 = nil;
+                    v22935 = shared.loop(function() --[[ Line: 46899 ]]
+                        local l_l_Impact_6_FirstChild_0 = l_Impact_6:FindFirstChild((tostring(v22933)));
+                        if not l_l_Impact_6_FirstChild_0 then
+                            if l_Impact_6 and l_Impact_6.Parent then
+                                l_Impact_6:Destroy();
+                            end;
+                            if v22932 and v22932.Parent then
+                                v22932:Destroy();
+                            end;
+                            return v22935();
+                        else
+                            v22933 = v22933 + 1;
+                            l_l_Impact_6_FirstChild_0.Size = UDim2.new(1, 0, 1, 0);
+                            if v22932 then
+                                v22932:Destroy();
+                            end;
+                            v22932 = l_l_Impact_6_FirstChild_0;
+                            return;
+                        end;
+                    end, 34);
+                    task.delay(5, function() --[[ Line: 46922 ]]
+                        if v22935 then
+                            return v22935();
+                        else
+                            return;
+                        end;
+                    end);
+                end;
+                local v22938 = v22905._maid:give(l_vfx_1.NextArm:Clone());
+                for _, v22940 in pairs(v22938:GetChildren()) do
+                    v22905._maid:give(v22940);
+                    v22940.Parent = l_l_v22838_0_0["Right Arm"];
+                    game.Debris:AddItem(v22940, 0.6);
+                end;
+                for _, v22942 in pairs(l_l_v22838_0_0["Right Arm"]:GetDescendants()) do
+                    if v22942:IsA("Beam") then
+                        l_l_TweenService_58_1:Create(v22942, TweenInfo.new(0.3, Enum.EasingStyle.Sine), {
+                            TextureSpeed = 0
+                        }):Play();
+                    end;
+                end;
+                v22937();
+                local v22943 = l_QuickFX_4({
+                    FX = l_vfx_1.Break, 
+                    Anchor = l_l_v22838_0_0["Right Arm"].CFrame * CFrame.new(0, -2, 0), 
+                    Maid = v22905._maid
+                });
+                l_LifeScale_4({
+                    FX = v22943, 
+                    Scale = 0.5
+                });
+                l_PlayAttachment_4(v22943);
+            end;
+            local function v22955() --[[ Line: 46952 ]] --[[ Name: WallEvent ]]
+                local v22945 = l_QuickFX_4({
+                    FX = l_vfx_1.FinalCrack, 
+                    Anchor = v22880.KJWallBreak.PrimaryPart.CFrame * CFrame.Angles(1.5707963267948966, 0, 0), 
+                    Maid = v22905._maid
+                });
+                for _, v22947 in pairs(v22945:GetDescendants()) do
+                    if v22947:IsA("Beam") then
+                        l_l_TweenService_58_1:Create(v22947, TweenInfo.new(0.4, Enum.EasingStyle.Sine), {
+                            TextureSpeed = 0
+                        }):Play();
+                    end;
+                end;
+                l_dtwait_4(0.1);
+                (function() --[[ Line: 46963 ]] --[[ Name: ImpactFrames ]]
+                    local v22948 = nil;
+                    local v22949 = 1;
+                    v22905.Impact = v22905._maid:give(l_l_UFW_2_1.Impact3:Clone());
+                    v22905.Impact.Enabled = false;
+                    v22905.Impact.Parent = game.Players.LocalPlayer.PlayerGui;
+                    local l_Impact_7 = v22905.Impact;
+                    local v22951 = nil;
+                    v22951 = shared.loop(function() --[[ Line: 46973 ]]
+                        local l_l_Impact_7_FirstChild_0 = l_Impact_7:FindFirstChild((tostring(v22949)));
+                        if not l_l_Impact_7_FirstChild_0 then
+                            if l_Impact_7 and l_Impact_7.Parent then
+                                l_Impact_7:Destroy();
+                            end;
+                            if v22948 and v22948.Parent then
+                                v22948:Destroy();
+                            end;
+                            return v22951();
+                        else
+                            v22949 = v22949 + 1;
+                            l_l_Impact_7_FirstChild_0.Size = UDim2.new(1, 0, 1, 0);
+                            if v22948 then
+                                v22948:Destroy();
+                            end;
+                            v22948 = l_l_Impact_7_FirstChild_0;
+                            return;
+                        end;
+                    end, 34);
+                    task.delay(5, function() --[[ Line: 46996 ]]
+                        if v22951 then
+                            return v22951();
+                        else
+                            return;
+                        end;
+                    end);
+                end)();
+                v22905.Impact1 = v22905._maid:give(l_l_UFW_2_1:FindFirstChild("1"):Clone());
+                v22905.Impact1.Parent = game.Lighting;
+                l_dtwait_4(0.05);
+                v22905.Impact1:Destroy();
+                v22905.Impact2 = v22905._maid:give(l_l_UFW_2_1:FindFirstChild("2"):Clone());
+                v22905.Impact2.Parent = game.Lighting;
+                l_dtwait_4(0.05);
+                v22905.Impact2:Destroy();
+                l_dtwait_4(0.1);
+                for _, v22954 in pairs(v22945:GetDescendants()) do
+                    if v22954:IsA("Beam") then
+                        l_PlayTween_4(v22954, {
+                            Time = 0.1, 
+                            EasingStyle = "Sine", 
+                            Goal = {
+                                Transparency = NumberSequence.new({
+                                    NumberSequenceKeypoint.new(0, 1), 
+                                    NumberSequenceKeypoint.new(1, 1)
+                                })
+                            }
+                        });
+                        game.Debris:AddItem(v22954, 0.1);
+                    end;
+                end;
+            end;
+            local function v22971() --[[ Line: 47025 ]] --[[ Name: SwapEvent ]]
+                v22875.Flexworks.Visible = false;
+                task.spawn(function() --[[ Line: 47029 ]]
+                    local v22956 = CFrame.new(0, 0, -20) * CFrame.Angles(0, 3.141592653589793, 0);
+                    local v22957 = l_QuickFX_4({
+                        FX = l_vfx_1.BeamCam, 
+                        Anchor = l_CurrentCamera_32.CFrame * v22956 * CFrame.Angles(0, 0, 0), 
+                        Maid = v22905._maid
+                    });
+                    for _, v22959 in pairs(v22957:GetDescendants()) do
+                        if v22959:IsA("Beam") then
+                            local l_Transparency_9 = v22959.Transparency;
+                            v22959.Transparency = NumberSequence.new({
+                                NumberSequenceKeypoint.new(0, 1), 
+                                NumberSequenceKeypoint.new(1, 1)
+                            });
+                            l_PlayTween_4(v22959, {
+                                Time = 2, 
+                                EasingStyle = "Sine", 
+                                Goal = {
+                                    Transparency = l_Transparency_9
+                                }
+                            });
+                            v22959.TextureSpeed = 0;
+                            l_l_TweenService_58_1:Create(v22959, TweenInfo.new(3, Enum.EasingStyle.Exponential), {
+                                TextureSpeed = 8
+                            }):Play();
+                        end;
+                    end;
+                    local v22961 = tick();
+                    while tick() - v22961 < 1 do
+                        warn("le bossuuuu");
+                        v22957:setPrimaryPartCFrame(l_CurrentCamera_32.CFrame * v22956);
+                        l_dtwait_4(0.02);
+                    end;
+                    for _, v22963 in pairs(v22957:GetDescendants()) do
+                        if v22963:IsA("Beam") then
+                            l_PlayTween_4(v22963, {
+                                Time = 0.15, 
+                                EasingStyle = "Sine", 
+                                Goal = {
+                                    Transparency = NumberSequence.new({
+                                        NumberSequenceKeypoint.new(0, 1), 
+                                        NumberSequenceKeypoint.new(1, 1)
+                                    })
+                                }
+                            });
+                            game.Debris:AddItem(v22963, 0.15);
+                        end;
+                    end;
+                end);
+                task.spawn(function() --[[ Line: 47061 ]]
+                    for _ = 1, 8 do
+                        local l_l_QuickFX_4_0 = l_QuickFX_4;
+                        local v22966 = {
+                            FX = l_vfx_1.TP, 
+                            Maid = v22905._maid
+                        };
+                        local _, v22968, _ = l_l_v22838_0_0.HumanoidRootPart.CFrame:ToOrientation();
+                        v22966.Anchor = CFrame.new(l_l_v22838_0_0.Torso.Position) * CFrame.Angles(0, v22968, 0) * CFrame.Angles(0, 0, 1.5707963267948966);
+                        l_l_QuickFX_4_0 = l_l_QuickFX_4_0(v22966);
+                        l_LifeScale_4({
+                            FX = l_l_QuickFX_4_0, 
+                            Scale = 0.4
+                        });
+                        l_RaiseZIndex_4({
+                            FX = l_l_QuickFX_4_0, 
+                            Count = 1
+                        });
+                        l_PlayAttachment_4(l_l_QuickFX_4_0);
+                        l_dtwait_4(0.04);
+                    end;
+                end);
+                l_l_TweenService_58_1:Create(v22875.Black, TweenInfo.new(2, Enum.EasingStyle.Quad), {
+                    Size = UDim2.new(1.35, 0, 1.35, 0)
+                }):Play();
+                l_dtwait_4(0.4);
+                local v22970 = l_QuickFX_4({
+                    FX = l_vfx_1.Glint, 
+                    Anchor = l_CurrentCamera_32.CFrame * CFrame.new(0, 0, -10), 
+                    Maid = v22905._maid
+                });
+                l_PlayAttachment_4(v22970);
+            end;
+            local function v22995() --[[ Line: 47079 ]] --[[ Name: ZoomEvent ]]
+                local v22972 = l_vfx_1.UpTime:Clone();
+                v22972:ScaleTo(0.2);
+                l_PlayMesh_4({
+                    Model = v22972, 
+                    T = 0, 
+                    Anchor = l_CurrentCamera_32.CFrame * CFrame.new(0, 0, -10) * CFrame.Angles(0, 1.5707963267948966, 0), 
+                    Info = TweenInfo.new(0.2, Enum.EasingStyle.Exponential)
+                });
+                for v22973 = 1, 5 do
+                    local v22974 = l_vfx_1.Upwave:Clone();
+                    v22974:ScaleTo(0.2 * (v22973 * 0.4));
+                    l_PlayMesh_4({
+                        Model = v22974, 
+                        T = 0, 
+                        Anchor = l_CurrentCamera_32.CFrame * CFrame.new(0, 0, -10) * CFrame.Angles(0, 1.5707963267948966, 0), 
+                        Info = TweenInfo.new(0.3 + v22973 / 10, Enum.EasingStyle.Exponential)
+                    });
+                    local v22975 = l_vfx_1.UpTimeReverse:Clone();
+                    v22975:ScaleTo(0.2 * (v22973 * 0.4));
+                    l_PlayMesh_4({
+                        Model = v22975, 
+                        T = 0, 
+                        EndT = 0, 
+                        Anchor = l_CurrentCamera_32.CFrame * CFrame.new(0, 0, -10) * CFrame.Angles(0, 1.5707963267948966, 0), 
+                        Info = TweenInfo.new(0.5 + v22973 / 10, Enum.EasingStyle.Exponential)
+                    });
+                    l_dtwait_4(0.04);
+                end;
+                local function v22993() --[[ Line: 47104 ]] --[[ Name: RealStar ]]
+                    local v22976 = CFrame.new(0, -7, -150) * CFrame.Angles(0, 3.141592653589793, 0);
+                    local v22977 = l_CurrentCamera_32.CFrame * v22976;
+                    local v22978 = v22905._maid:give(l_vfx_1.ThingStart:Clone());
+                    v22978:PivotTo(v22977);
+                    v22978.Parent = l_EFP_4;
+                    l_BG_0.Color = Color3.new(0.117647, 0.117647, 0.117647);
+                    game.Debris:AddItem(v22978, 2);
+                    local v22979 = v22905._maid:give(l_vfx_1.ThingMiddle:Clone());
+                    v22979:PivotTo(v22977);
+                    v22979.Parent = l_EFP_4;
+                    for _, v22981 in pairs(v22978:GetChildren()) do
+                        local l_v22979_FirstChild_0 = v22979:FindFirstChild(v22981.Name);
+                        if l_v22979_FirstChild_0 then
+                            l_l_TweenService_58_1:Create(v22981, TweenInfo.new(0.7, Enum.EasingStyle.Sine), {
+                                Size = l_v22979_FirstChild_0.Size, 
+                                CFrame = l_v22979_FirstChild_0.CFrame
+                            }):Play();
+                        end;
+                    end;
+                    l_dtwait_4(0.7);
+                    local v22983 = v22905._maid:give(l_vfx_1.ThingEnd:Clone());
+                    v22983:PivotTo(v22977);
+                    v22983.Parent = l_EFP_4;
+                    task.spawn(function() --[[ Line: 47133 ]]
+                        local v22984 = tick();
+                        while tick() - v22984 < 2 do
+                            if v22978:FindFirstChild("star") then
+                                v22978.star.CFrame = v22978.star.CFrame * CFrame.Angles(0, 0, 0.08726646259971647);
+                            end;
+                            l_dtwait_4(0.01);
+                        end;
+                    end);
+                    for _, v22986 in pairs(v22978:GetChildren()) do
+                        local l_v22983_FirstChild_0 = v22983:FindFirstChild(v22986.Name);
+                        if l_v22983_FirstChild_0 and not v22986.Name:find("SH") and not v22986.Name:find("sh") then
+                            if v22986.Name == "star" then
+                                l_l_TweenService_58_1:Create(v22986, TweenInfo.new(3, Enum.EasingStyle.Sine), {
+                                    Size = l_v22983_FirstChild_0.Size
+                                }):Play();
+                            else
+                                l_l_TweenService_58_1:Create(v22986, TweenInfo.new(3, Enum.EasingStyle.Sine), {
+                                    Size = l_v22983_FirstChild_0.Size, 
+                                    CFrame = l_v22983_FirstChild_0.CFrame
+                                }):Play();
+                            end;
+                        end;
+                    end;
+                    l_dtwait_4(0.4);
+                    local v22988 = l_QuickFX_4({
+                        FX = l_vfx_1.Particles, 
+                        Maid = v22905._maid, 
+                        Anchor = l_CurrentCamera_32.CFrame * CFrame.new(0, 0, -20)
+                    });
+                    l_Able_4({
+                        FX = v22988, 
+                        On = true
+                    });
+                    local v22989 = tick();
+                    task.spawn(function() --[[ Line: 47162 ]]
+                        while tick() - v22989 < 1.5 do
+                            v22988:PivotTo(l_CurrentCamera_32.CFrame * CFrame.new(0, 0, -20));
+                            l_dtwait_4(0.02);
+                        end;
+                        v22988:Destroy();
+                    end);
+                    l_dtwait_4(0.3);
+                    local v22990 = v22905._maid:give(Instance.new("ColorCorrectionEffect"));
+                    v22990.Parent = game.Lighting;
+                    l_l_TweenService_58_1:Create(v22990, TweenInfo.new(0.3, Enum.EasingStyle.Sine), {
+                        Brightness = 1
+                    }):Play();
+                    warn("creppytpyeryeryea");
+                    local l_spawn_3 = task.spawn;
+                    local v22992 = true;
+                    l_spawn_3(function() --[[ Line: 46870 ]]
+                        if v22992 then
+                            l_l_TweenService_58_1:Create(game.Lighting, TweenInfo.new(1.827, Enum.EasingStyle.Quad), {
+                                Brightness = 0, 
+                                Ambient = Color3.fromRGB(0, 0, 0), 
+                                OutdoorAmbient = Color3.fromRGB(25, 25, 25)
+                            }):Play();
+                            l_l_TweenService_58_1:Create(game.Lighting, TweenInfo.new(0.65, Enum.EasingStyle.Quad), {
+                                ClockTime = 0
+                            }):Play();
+                            return;
+                        else
+                            l_l_TweenService_58_1:Create(game.Lighting, TweenInfo.new(1.827, Enum.EasingStyle.Quad), {
+                                Brightness = 2, 
+                                Ambient = Color3.fromRGB(138, 138, 138), 
+                                OutdoorAmbient = Color3.fromRGB(70, 70, 70)
+                            }):Play();
+                            l_l_TweenService_58_1:Create(game.Lighting, TweenInfo.new(0.65, Enum.EasingStyle.Quad), {
+                                ClockTime = 13
+                            }):Play();
+                            return;
+                        end;
+                    end);
+                    l_dtwait_4(0.3);
+                    v22978:Destroy();
+                    v22979:Destroy();
+                    v22983:Destroy();
+                    l_Able_4({
+                        FX = v22988, 
+                        On = false
+                    });
+                    l_l_TweenService_58_1:Create(v22990, TweenInfo.new(0.1, Enum.EasingStyle.Sine), {
+                        Brightness = 0
+                    }):Play();
+                end;
+                local l_l_BG_0_0 = l_BG_0;
+                l_l_BG_0_0.Size = l_l_BG_0_0.Size * 6;
+                l_dtwait_4(0.1);
+                v22993();
+            end;
+            local function v23006() --[[ Line: 47200 ]] --[[ Name: SpaceThing ]]
+                local v22996 = CFrame.new(0, -3.5, -80) * CFrame.Angles(0, 0, 0);
+                local v22997 = l_QuickFX_4({
+                    FX = l_vfx_1.Space, 
+                    Maid = v22905._maid, 
+                    Anchor = l_CurrentCamera_32.CFrame * v22996
+                });
+                l_Able_4({
+                    FX = v22997, 
+                    On = false
+                });
+                for _, v22999 in pairs(v22997:GetDescendants()) do
+                    if v22999.Name == "A1" then
+                        local l_CFrame_98 = v22999.CFrame;
+                        v22999.CFrame = v22999.CFrame * CFrame.new(-v22999.CFrame.Position.Y * -50, 0, -v22999.CFrame.Position.Z);
+                        l_l_TweenService_58_1:Create(v22999, TweenInfo.new(1, Enum.EasingStyle.Sine), {
+                            CFrame = l_CFrame_98
+                        }):Play();
+                    elseif v22999.Name == "Glint" then
+                        local l_CFrame_99 = v22999.CFrame;
+                        v22999.CFrame = v22999.CFrame * CFrame.new(0, 0, -v22999.CFrame.Position.Z);
+                        l_l_TweenService_58_1:Create(v22999, TweenInfo.new(5, Enum.EasingStyle.Sine), {
+                            CFrame = l_CFrame_99
+                        }):Play();
+                    elseif v22999:IsA("Beam") then
+                        local l_Width0_7 = v22999.Width0;
+                        local l_Width1_7 = v22999.Width1;
+                        local l_TextureSpeed_0 = v22999.TextureSpeed;
+                        v22999.Width0 = v22999.Width0 * 0.001;
+                        v22999.Width1 = v22999.Width1 * 0.001;
+                        v22999.TextureSpeed = -l_TextureSpeed_0 * 0.5;
+                        l_l_TweenService_58_1:Create(v22999, TweenInfo.new(3, Enum.EasingStyle.Sine), {
+                            Width0 = l_Width0_7, 
+                            Width1 = l_Width1_7
+                        }):Play();
+                        task.delay(0.4, function() --[[ Line: 47222 ]]
+                            l_l_TweenService_58_1:Create(v22999, TweenInfo.new(4, Enum.EasingStyle.Sine), {
+                                TextureSpeed = l_TextureSpeed_0 * 2
+                            }):Play();
+                            l_Able_4({
+                                FX = v22997, 
+                                On = true
+                            });
+                        end);
+                    end;
+                end;
+                local v23005 = tick();
+                task.spawn(function() --[[ Line: 47231 ]]
+                    while tick() - v23005 < 2.5 do
+                        v22997:PivotTo(l_CurrentCamera_32.CFrame * v22996);
+                        l_dtwait_4(0.02);
+                    end;
+                    v22997:Destroy();
+                end);
+                return v22997;
+            end;
+            local function v23019() --[[ Line: 47246 ]] --[[ Name: StarSpace ]]
+                warn("creppytpyeryeryea");
+                local l_spawn_4 = task.spawn;
+                local v23008 = true;
+                local l_v23008_0 = v23008 --[[ copy: 2 -> 5 ]];
+                l_spawn_4(function() --[[ Line: 46870 ]]
+                    if l_v23008_0 then
+                        l_l_TweenService_58_1:Create(game.Lighting, TweenInfo.new(1.827, Enum.EasingStyle.Quad), {
+                            Brightness = 0, 
+                            Ambient = Color3.fromRGB(0, 0, 0), 
+                            OutdoorAmbient = Color3.fromRGB(25, 25, 25)
+                        }):Play();
+                        l_l_TweenService_58_1:Create(game.Lighting, TweenInfo.new(0.65, Enum.EasingStyle.Quad), {
+                            ClockTime = 0
+                        }):Play();
+                        return;
+                    else
+                        l_l_TweenService_58_1:Create(game.Lighting, TweenInfo.new(1.827, Enum.EasingStyle.Quad), {
+                            Brightness = 2, 
+                            Ambient = Color3.fromRGB(138, 138, 138), 
+                            OutdoorAmbient = Color3.fromRGB(70, 70, 70)
+                        }):Play();
+                        l_l_TweenService_58_1:Create(game.Lighting, TweenInfo.new(0.65, Enum.EasingStyle.Quad), {
+                            ClockTime = 13
+                        }):Play();
+                        return;
+                    end;
+                end);
+                v22880:Destroy();
+                l_spawn_4 = tick();
+                local v23010 = l_QuickFX_4({
+                    FX = l_vfx_1.Space1, 
+                    Anchor = l_CurrentCamera_32.CFrame * CFrame.new(0, 0, -100) * CFrame.Angles(0, 1.5707963267948966, 0), 
+                    Maid = v22905._maid
+                });
+                task.spawn(function() --[[ Line: 47253 ]]
+                    for _, v23012 in pairs(v23010:GetDescendants()) do
+                        if v23012.Name:find("smoke") then
+                            l_l_TweenService_58_1:Create(v23012, TweenInfo.new(0.6, Enum.EasingStyle.Sine), {
+                                TimeScale = 0.05
+                            }):Play();
+                            v23012:Emit(10);
+                            print("did");
+                        elseif v23012:IsA("ParticleEmitter") then
+                            v23012:Emit(5);
+                        end;
+                    end;
+                    task.spawn(function() --[[ Line: 47266 ]]
+                        for _ = 1, 10 do
+                            for _, v23015 in pairs(v23010.Attachment:GetChildren()) do
+                                if v23015.Name == "star" then
+                                    v23015:Emit(1);
+                                end;
+                            end;
+                            l_dtwait_4(0.2);
+                        end;
+                    end);
+                end);
+                l_LifeScale_4({
+                    FX = v23010, 
+                    Scale = 0.5
+                });
+                l_LifeScale_4({
+                    FX = v23010.Attachment, 
+                    Scale = 2
+                });
+                l_RaiseZIndex_4({
+                    FX = v23010.Attachment, 
+                    Count = 5
+                });
+                task.spawn(function() --[[ Line: 47285 ]]
+                    while tick() - l_spawn_4 < 1.5 do
+                        if tick() - l_spawn_4 < 1 then
+                            v23010.CFrame = l_CurrentCamera_32.CFrame * CFrame.new(0, 0, -222500);
+                        else
+                            v23010.CFrame = l_CurrentCamera_32.CFrame * CFrame.new(0, 0, -100);
+                        end;
+                        l_dtwait_4(0.01);
+                    end;
+                end);
+                l_dtwait_4(2.5);
+                v23010:Destroy();
+                v23008 = v23006();
+                local v23016 = l_QuickFX_4({
+                    FX = l_vfx_1.Scene, 
+                    Anchor = l_CurrentCamera_32.CFrame * CFrame.new(0, 0, -10000) * CFrame.Angles(0, 1.5707963267948966, 0), 
+                    Maid = v22905._maid
+                });
+                l_dtwait_4(2.15);
+                v23008:Destroy();
+                local v23017 = tick();
+                task.spawn(function() --[[ Line: 47309 ]]
+                    local v23018 = 0;
+                    while tick() - v23017 < 1.5 do
+                        v23018 = v23018 + 2;
+                        v23016:PivotTo(l_CurrentCamera_32.CFrame * CFrame.new(0, -10, -450) * CFrame.Angles(0.6108652381980153, 1.5707963267948966, 0) * CFrame.Angles(0, 0, 0));
+                        l_dtwait_4(0.01);
+                    end;
+                end);
+                game.Debris:AddItem(v23016, 3);
+            end;
+            local l_l_char_57_1 = l_char_57 --[[ copy: 17 -> 194 ]];
+            local l_l_HumanoidRootPart_17_1 = l_HumanoidRootPart_17 --[[ copy: 26 -> 195 ]];
+            local function v23072() --[[ Line: 47322 ]] --[[ Name: HyperEvent ]]
+                warn("creppytpyeryeryea");
+                local l_spawn_5 = task.spawn;
+                local v23023 = false;
+                local l_v23023_0 = v23023 --[[ copy: 2 -> 16 ]];
+                l_spawn_5(function() --[[ Line: 46870 ]]
+                    if l_v23023_0 then
+                        l_l_TweenService_58_1:Create(game.Lighting, TweenInfo.new(1.827, Enum.EasingStyle.Quad), {
+                            Brightness = 0, 
+                            Ambient = Color3.fromRGB(0, 0, 0), 
+                            OutdoorAmbient = Color3.fromRGB(25, 25, 25)
+                        }):Play();
+                        l_l_TweenService_58_1:Create(game.Lighting, TweenInfo.new(0.65, Enum.EasingStyle.Quad), {
+                            ClockTime = 0
+                        }):Play();
+                        return;
+                    else
+                        l_l_TweenService_58_1:Create(game.Lighting, TweenInfo.new(1.827, Enum.EasingStyle.Quad), {
+                            Brightness = 2, 
+                            Ambient = Color3.fromRGB(138, 138, 138), 
+                            OutdoorAmbient = Color3.fromRGB(70, 70, 70)
+                        }):Play();
+                        l_l_TweenService_58_1:Create(game.Lighting, TweenInfo.new(0.65, Enum.EasingStyle.Quad), {
+                            ClockTime = 13
+                        }):Play();
+                        return;
+                    end;
+                end);
+                l_spawn_5 = CFrame.new(0, 0, -100) * CFrame.Angles(1.5707963267948966, 0, 0);
+                local v23025 = l_QuickFX_4({
+                    FX = l_vfx_1.Pillar, 
+                    Maid = v22905._maid, 
+                    Anchor = l_CurrentCamera_32.CFrame * l_spawn_5
+                });
+                v23023 = l_l_char_57_1.CloneGot.Value;
+                v23023.Name = game.Players.LocalPlayer.Name .. "Rig";
+                game.Debris:AddItem(v23023, 10);
+                local v23026 = l_l_HumanoidRootPart_17_1.CFrame * CFrame.new(0.265625, -4.92593479, -57.606514);
+                local v23027 = v22905._maid:give(Instance.new("NumberValue"));
+                v23027.Value = -208;
+                l_l_TweenService_58_1:Create(v23027, TweenInfo.new(3, Enum.EasingStyle.Sine), {
+                    Value = 0
+                }):Play();
+                v23023:SetPrimaryPartCFrame(v23026);
+                v23023.Parent = l_EFP_4;
+                v22905._maid:give(v23027.Changed:Connect(function() --[[ Line: 47344 ]]
+                    v23023:SetPrimaryPartCFrame(v23026 * CFrame.new(0, 0, v23027.Value));
+                end));
+                local v23028 = v23023.Humanoid:LoadAnimation(l_l_UFW_2_1.MainRig);
+                v23028:Play();
+                v23028.TimePosition = 21.13;
+                for _, v23030 in pairs(v23023:GetChildren()) do
+                    if v23030:IsA("Model") and v23030:FindFirstChild("Humanoid") then
+                        local l_Humanoid_17 = v23030:FindFirstChild("Humanoid");
+                        if l_Humanoid_17 then
+                            local v23032 = l_Humanoid_17:LoadAnimation(l_l_UFW_2_1.EachRig);
+                            v23032:Play();
+                            v23032.TimePosition = 21.13;
+                        end;
+                    end;
+                end;
+                local v23033 = l_QuickFX_4({
+                    FX = l_vfx_1.Everything:Clone(), 
+                    Maid = v22905._maid, 
+                    Anchor = v23025.PrimaryPart.CFrame * CFrame.new(0, 500, 0)
+                });
+                game.Debris:AddItem(v23033, 5);
+                local v23034 = v22905._maid:give(Instance.new("NumberValue"));
+                v23034.Value = 1;
+                l_l_TweenService_58_1:Create(v23034, TweenInfo.new(3, Enum.EasingStyle.Sine), {
+                    Value = 4
+                }):Play();
+                local v23035 = CFrame.new(0, 0, 0) * CFrame.Angles(1.5707963267948966, -3.141592653589793, 0);
+                task.spawn(function() --[[ Line: 47374 ]]
+                    local v23036 = tick();
+                    while tick() - v23036 < 5 do
+                        for _, v23038 in pairs(v23033:GetChildren()) do
+                            if v23038.Name == "Clouds" then
+                                for _, v23040 in pairs(v23038:GetChildren()) do
+                                    if v23040.Name:find("Cloud") then
+                                        v23040.Name = v22903:NextNumber(-2, -0.5);
+                                    end;
+                                    v23040.CFrame = v23040.CFrame * CFrame.Angles(0, math.rad((tonumber(v23040.Name))), 0);
+                                end;
+                            end;
+                        end;
+                        if tick() - v23036 < 3 then
+                            for _, v23042 in pairs(v23023:GetChildren()) do
+                                if v23042:IsA("Model") and v23042.Name ~= "1" then
+                                    local l_HumanoidRootPart_18 = v23042:FindFirstChild("HumanoidRootPart");
+                                    if l_HumanoidRootPart_18 then
+                                        local _, _, _ = l_HumanoidRootPart_18.RootJoint.C0:ToOrientation();
+                                        l_HumanoidRootPart_18.RootJoint.C0 = v23035 * CFrame.new(v22903:NextNumber(-v23034.Value, v23034.Value), 0, 0);
+                                    end;
+                                end;
+                            end;
+                        else
+                            for _, v23048 in pairs(v23023:GetChildren()) do
+                                if v23048:IsA("Model") then
+                                    local l_HumanoidRootPart_19 = v23048:FindFirstChild("HumanoidRootPart");
+                                    if l_HumanoidRootPart_19 then
+                                        l_HumanoidRootPart_19.RootJoint.C0 = v23035;
+                                    end;
+                                end;
+                            end;
+                        end;
+                        l_dtwait_4(0.01);
+                    end;
+                end);
+                task.delay(2, function() --[[ Line: 47418 ]]
+                    warn("creppytpyeryeryea");
+                    local l_spawn_6 = task.spawn;
+                    local v23051 = true;
+                    local l_v23051_0 = v23051 --[[ copy: 2 -> 7 ]];
+                    l_spawn_6(function() --[[ Line: 46870 ]]
+                        if l_v23051_0 then
+                            l_l_TweenService_58_1:Create(game.Lighting, TweenInfo.new(1.827, Enum.EasingStyle.Quad), {
+                                Brightness = 0, 
+                                Ambient = Color3.fromRGB(0, 0, 0), 
+                                OutdoorAmbient = Color3.fromRGB(25, 25, 25)
+                            }):Play();
+                            l_l_TweenService_58_1:Create(game.Lighting, TweenInfo.new(0.65, Enum.EasingStyle.Quad), {
+                                ClockTime = 0
+                            }):Play();
+                            return;
+                        else
+                            l_l_TweenService_58_1:Create(game.Lighting, TweenInfo.new(1.827, Enum.EasingStyle.Quad), {
+                                Brightness = 2, 
+                                Ambient = Color3.fromRGB(138, 138, 138), 
+                                OutdoorAmbient = Color3.fromRGB(70, 70, 70)
+                            }):Play();
+                            l_l_TweenService_58_1:Create(game.Lighting, TweenInfo.new(0.65, Enum.EasingStyle.Quad), {
+                                ClockTime = 13
+                            }):Play();
+                            return;
+                        end;
+                    end);
+                    l_spawn_6 = v22905._maid:give(Instance.new("PointLight"));
+                    l_spawn_6.Range = 5;
+                    l_spawn_6.Brightness = 5;
+                    l_spawn_6.Color = Color3.new(1, 0.411765, 0.305882);
+                    l_spawn_6.Parent = v23023["1"].Torso;
+                    local l_l_QuickFX_4_1 = l_QuickFX_4;
+                    v23051 = {
+                        FX = l_vfx_1.Particles2, 
+                        Maid = v22905._maid
+                    };
+                    local _, v23055, _ = l_l_v22838_0_0.HumanoidRootPart.CFrame:ToOrientation();
+                    v23051.Anchor = CFrame.new(l_l_v22838_0_0.Torso.Position) * CFrame.Angles(0, v23055, 0);
+                    l_l_QuickFX_4_1 = l_l_QuickFX_4_1(v23051);
+                    l_Able_4({
+                        FX = l_l_QuickFX_4_1, 
+                        On = true
+                    });
+                    l_l_TweenService_58_1:Create(v23025.PrimaryPart.Decal, TweenInfo.new(0.3, Enum.EasingStyle.Sine), {
+                        Transparency = 1
+                    }):Play();
+                    l_dtwait_4(0.3);
+                    v23025:Destroy();
+                    l_LifeScale_4({
+                        FX = l_l_QuickFX_4_1, 
+                        Scale = 0.5
+                    });
+                    for _, v23058 in pairs(l_l_QuickFX_4_1:GetDescendants()) do
+                        if v23058:IsA("ParticleEmitter") then
+                            v23058.Rate = v23058.Rate * 0.5;
+                        end;
+                    end;
+                    l_dtwait_4(2.3);
+                    l_Able_4({
+                        FX = l_l_QuickFX_4_1, 
+                        On = false
+                    });
+                    l_spawn_6:Destroy();
+                end);
+                local v23059 = {
+                    [v23025.Inner] = {
+                        Scale = v23025.Inner.Mesh.Scale, 
+                        Size = v23025.Inner.Size, 
+                        CFrame = v23025.Inner.CFrame
+                    }, 
+                    [v23025.Outer] = {
+                        CFrame = v23025.Outer.CFrame, 
+                        Scale = v23025.Outer.Mesh.Scale, 
+                        Size = v23025.Outer.Size
+                    }
+                };
+                local v23060 = v22905._maid:give(Instance.new("NumberValue"));
+                v23060.Value = 1;
+                v22905._maid:give(v23060.Changed:Connect(function() --[[ Line: 47450 ]]
+                    for v23061, v23062 in pairs(v23059) do
+                        if v23061.Parent then
+                            v23061.Mesh.Scale = Vector3.new(v23062.Scale.X, v23062.Scale.Y * v23060.Value, v23062.Scale.Z);
+                            v23061.CFrame = v23062.CFrame * CFrame.new(0, v23061.Size.Y * 0.5, 0);
+                        end;
+                    end;
+                end));
+                v23060.Value = 0.1;
+                l_l_TweenService_58_1:Create(v23060, TweenInfo.new(9, Enum.EasingStyle.Sine), {
+                    Value = 22
+                }):Play();
+                for _, v23064 in pairs(v23025:GetChildren()) do
+                    v23064.Decal.Transparency = 1;
+                    l_l_TweenService_58_1:Create(v23064.Decal, TweenInfo.new(0.5, Enum.EasingStyle.Sine), {
+                        Transparency = 0
+                    }):Play();
+                end;
+                for v23065, _ in pairs(v23059) do
+                    task.spawn(function() --[[ Line: 47471 ]]
+                        local l_Folder_15 = v23065:FindFirstChild("Folder");
+                        local l_Decal_861 = v23065:FindFirstChild("Decal");
+                        for _ = 1, 10 do
+                            if v23025:IsDescendantOf(game.Workspace) then
+                                for v23070 = 1, #l_Folder_15:GetChildren() do
+                                    local v23071 = l_Folder_15:FindFirstChild((tostring(v23070))) or l_Folder_15:GetChildren()[#l_Folder_15:GetChildren()];
+                                    if v23071 then
+                                        l_Decal_861.Texture = v23071.Texture;
+                                    end;
+                                    l_dtwait_4(0.01);
+                                end;
+                            else
+                                break;
+                            end;
+                        end;
+                    end);
+                end;
+                game.Debris:AddItem(v23025, 4.6);
+            end;
+            local l_l_RootPart_0_1 = l_RootPart_0 --[[ copy: 19 -> 196 ]];
+            local _ = function() --[[ Line: 47493 ]] --[[ Name: FinalPunch ]]
+                local l_PunchFX_1 = l_vfx_1.PunchFX;
+                local _ = l_l_char_57_1;
+                local v23076 = {};
+                task.spawn(function() --[[ Line: 47498 ]]
+                    local v23077 = tick();
+                    while tick() - v23077 < 5 do
+                        for _, v23079 in pairs(v23076) do
+                            if v23079.Parent then
+                                for _, v23081 in pairs(v23076) do
+                                    v23081.OffsetStudsU = v23081.OffsetStudsU + 0.3;
+                                    v23081.OffsetStudsV = v23081.OffsetStudsV + 0.3;
+                                end;
+                            end;
+                        end;
+                        l_dtwait_4(0.01);
+                    end;
+                end);
+                local function v23086(v23082, v23083) --[[ Line: 47514 ]] --[[ Name: PlayTextures ]]
+                    for _, v23085 in pairs(v23082:GetDescendants()) do
+                        if v23085:IsA("Texture") then
+                            table.insert(v23076, v23085);
+                            l_l_TweenService_58_1:Create(v23085, TweenInfo.new(v23083, Enum.EasingStyle.Sine), {
+                                Transparency = 1
+                            }):Play();
+                        end;
+                    end;
+                end;
+                local l_l_l_RootPart_0_1_0 = l_l_RootPart_0_1;
+                local function v23094() --[[ Line: 47527 ]] --[[ Name: Start ]]
+                    local _ = l_l_l_RootPart_0_1_0.CFrame * CFrame.new(0, -l_l_l_RootPart_0_1_0.Size.Y * 1.5, 0);
+                    local v23089 = l_QuickFX_4({
+                        FX = l_PunchFX_1.Charge, 
+                        Maid = v22905._maid, 
+                        Anchor = l_l_l_RootPart_0_1_0.CFrame * CFrame.new(0, 0, -3)
+                    });
+                    v23089:ScaleTo(3);
+                    l_Able_4({
+                        FX = v23089, 
+                        On = true
+                    });
+                    for _, v23091 in pairs(v23089:GetDescendants()) do
+                        if v23091:IsA("ParticleEmitter") then
+                            v23091.Rate = v23091.Rate * 5;
+                        end;
+                    end;
+                    game.Debris:AddItem(v23089, 0.15);
+                    local v23092 = l_QuickFX_4({
+                        FX = l_PunchFX_1.EnabledPunch, 
+                        Maid = v22905._maid, 
+                        Anchor = l_l_l_RootPart_0_1_0.CFrame * CFrame.new(0, 0, -60)
+                    });
+                    v23092:ScaleTo(4);
+                    l_Able_4({
+                        FX = v23092, 
+                        On = true
+                    });
+                    task.delay(0.25, function() --[[ Line: 47553 ]]
+                        l_Able_4({
+                            FX = v23092, 
+                            On = false
+                        });
+                    end);
+                    local v23093 = l_PunchFX_1.Flash:Clone();
+                    v23093:ScaleTo(4);
+                    l_PlayMesh_4({
+                        Model = v23093, 
+                        Anchor = l_l_l_RootPart_0_1_0.CFrame * CFrame.new(0, 0, 40) * CFrame.Angles(0, 0, 0), 
+                        Info = TweenInfo.new(0.5, Enum.EasingStyle.Exponential)
+                    });
+                    v23086(v23093, 0.5);
+                    game.Debris:AddItem(v23093, 0.15);
+                end;
+                local function v23129() --[[ Line: 47567 ]] --[[ Name: Main1 ]]
+                    local v23095 = v22905._maid:give(l_PunchFX_1.Shard:Clone());
+                    v23095:ScaleTo(2);
+                    l_PlayMesh_4({
+                        Model = v23095, 
+                        T = 0, 
+                        EndT = 0, 
+                        Anchor = l_l_l_RootPart_0_1_0.CFrame * CFrame.new(0, 0, -66) * CFrame.Angles(0, 1.5707963267948966, 0), 
+                        Info = TweenInfo.new(0.1, Enum.EasingStyle.Exponential)
+                    });
+                    local v23096 = l_l_l_RootPart_0_1_0.CFrame * CFrame.new(0, 0, -10) * CFrame.Angles(1.5707963267948966, 0, 0);
+                    local v23097 = v22905._maid:give(l_PunchFX_1.StartThing:Clone());
+                    v23097:PivotTo(v23096);
+                    v23097.Parent = l_EFP_4;
+                    game.Debris:AddItem(v23097, 2);
+                    local v23098 = v22905._maid:give(l_PunchFX_1.EndThing:Clone());
+                    v23098:PivotTo(v23096);
+                    v23098.Parent = l_EFP_4;
+                    task.spawn(function() --[[ Line: 47585 ]]
+                        v22905.Impact1 = v22905._maid:give(l_l_UFW_2_1:FindFirstChild("1"):Clone());
+                        v22905.Impact1.Parent = game.Lighting;
+                        l_dtwait_4(0.07);
+                        v22905.Impact1:Destroy();
+                        v22905.Impact2 = v22905._maid:give(l_l_UFW_2_1:FindFirstChild("2"):Clone());
+                        v22905.Impact2.Parent = game.Lighting;
+                        l_dtwait_4(0.07);
+                        v22905.Impact2:Destroy();
+                    end);
+                    for _, v23100 in pairs(v23097:GetChildren()) do
+                        local l_v23098_FirstChild_0 = v23098:FindFirstChild(v23100.Name);
+                        if l_v23098_FirstChild_0 then
+                            l_l_TweenService_58_1:Create(v23100, TweenInfo.new(0.1, Enum.EasingStyle.Sine), {
+                                Size = l_v23098_FirstChild_0.Size, 
+                                CFrame = l_v23098_FirstChild_0.CFrame
+                            }):Play();
+                        end;
+                    end;
+                    game.Debris:AddItem(v23097, 0.05);
+                    local v23102 = l_QuickFX_4({
+                        FX = l_PunchFX_1.groundsmoke, 
+                        Anchor = l_l_l_RootPart_0_1_0.CFrame * CFrame.new(0, -l_l_l_RootPart_0_1_0.Size.Y * 1.5, 0) * CFrame.Angles(0, 3.141592653589793, 0), 
+                        Maid = v22905._maid
+                    });
+                    l_PlayAttachment_4(v23102);
+                    v23102:ScaleTo(2);
+                    l_LifeScale_4({
+                        FX = v23102, 
+                        Scale = 2
+                    });
+                    l_LifeScale_4({
+                        FX = v23102.PrimaryPart.emitLeft, 
+                        Scale = 0.2
+                    });
+                    l_LifeScale_4({
+                        FX = v23102.PrimaryPart.emitRight, 
+                        Scale = 0.2
+                    });
+                    task.spawn(function() --[[ Line: 47616 ]]
+                        for v23103 = 1, 3 do
+                            local v23104 = l_QuickFX_4({
+                                FX = l_PunchFX_1.Wind, 
+                                Anchor = l_l_l_RootPart_0_1_0.CFrame * CFrame.new(0, -l_l_l_RootPart_0_1_0.Size.Y * 1.5, 10) * CFrame.Angles(0, 0, 0), 
+                                Maid = v22905._maid
+                            });
+                            v23104:ScaleTo(v23103 * 2);
+                            l_LifeScale_4({
+                                FX = v23104, 
+                                Scale = 0.5 * (v23103 * 0.8)
+                            });
+                            l_PlayAttachment_4(v23104);
+                            l_dtwait_4(0.05);
+                        end;
+                    end);
+                    local v23105 = v22905._maid:give(l_PunchFX_1.ohyea:Clone());
+                    v23105:ScaleTo(8);
+                    l_PlayMesh_4({
+                        Model = v23105, 
+                        T = 0, 
+                        Anchor = l_l_l_RootPart_0_1_0.CFrame * CFrame.new(0, 0, -20) * CFrame.Angles(0, -1.5707963267948966, 0), 
+                        Info = TweenInfo.new(3, Enum.EasingStyle.Exponential)
+                    });
+                    local v23106 = l_PunchFX_1.Next:Clone();
+                    v23106:ScaleTo(4);
+                    l_PlayMesh_4({
+                        Model = v23106, 
+                        T = 0, 
+                        Anchor = l_l_l_RootPart_0_1_0.CFrame * CFrame.new(0, 0, -20) * CFrame.Angles(0, 1.5707963267948966, 0), 
+                        Info = TweenInfo.new(4, Enum.EasingStyle.Exponential)
+                    });
+                    local v23107 = l_PunchFX_1.BallThing:Clone();
+                    v23107:ScaleTo(4);
+                    l_PlayMesh_4({
+                        Model = v23107, 
+                        Anchor = l_l_l_RootPart_0_1_0.CFrame * CFrame.new(0, 0, -20) * CFrame.Angles(0, 0, 0), 
+                        Info = TweenInfo.new(3, Enum.EasingStyle.Exponential)
+                    });
+                    v23086(v23107, 1);
+                    task.spawn(function() --[[ Line: 47641 ]]
+                        for v23108 = 1, 3 do
+                            local v23109 = l_PunchFX_1.Test:Clone();
+                            v23109:ScaleTo(8 - v23108 * 0.7);
+                            l_PlayMesh_4({
+                                Model = v23109, 
+                                T = 0.3, 
+                                Anchor = l_l_l_RootPart_0_1_0.CFrame * CFrame.new(0, 0, -10 * v23108 * 2) * CFrame.Angles(-1.5707963267948966, -1.5707963267948966, 0), 
+                                Info = TweenInfo.new(0.4 * v23108, Enum.EasingStyle.Exponential)
+                            });
+                            l_dtwait_4(0.05);
+                        end;
+                    end);
+                    local v23110 = l_QuickFX_4({
+                        FX = l_PunchFX_1.PunchBig, 
+                        Maid = v22905._maid, 
+                        Anchor = l_l_l_RootPart_0_1_0.CFrame * CFrame.new(0, 0, -100)
+                    });
+                    v23110:ScaleTo(1.4);
+                    l_LifeScale_4({
+                        FX = v23110, 
+                        Scale = 0.4
+                    });
+                    l_PlayAttachment_4(v23110);
+                    local v23111 = l_QuickFX_4({
+                        FX = l_PunchFX_1.ParticlesEnd, 
+                        Anchor = l_l_l_RootPart_0_1_0.CFrame * CFrame.new(0, 5, 30), 
+                        Maid = v22905._maid
+                    });
+                    v23111:ScaleTo(2);
+                    l_LifeScale_4({
+                        FX = v23111, 
+                        Scale = 2
+                    });
+                    l_PlayAttachment_4(v23111);
+                    local v23112 = l_QuickFX_4({
+                        FX = l_PunchFX_1.Emit, 
+                        Anchor = l_l_l_RootPart_0_1_0.CFrame * CFrame.new(0, 0, -100), 
+                        Maid = v22905._maid
+                    });
+                    v23112:ScaleTo(1.4);
+                    l_LifeScale_4({
+                        FX = v23112, 
+                        Scale = 2
+                    });
+                    for _, v23114 in pairs(v23112:GetDescendants()) do
+                        if v23114:IsA("ParticleEmitter") then
+                            v23114:SetAttribute("EmitCount", v23114:GetAttribute("EmitCount") * 0.5);
+                        end;
+                    end;
+                    l_PlayAttachment_4(v23112);
+                    local v23115 = l_QuickFX_4({
+                        FX = l_PunchFX_1.Beam, 
+                        Maid = v22905._maid, 
+                        Anchor = l_l_l_RootPart_0_1_0.CFrame * CFrame.new(0, 0, -240)
+                    });
+                    v23115:ScaleTo(1.4);
+                    for _, v23117 in pairs(v23115:GetDescendants()) do
+                        if v23117.Name:find("Far") then
+                            local l_CFrame_100 = v23117.CFrame;
+                            local v23119, v23120, v23121 = l_CFrame_100:ToOrientation();
+                            v23117.CFrame = CFrame.new(0, 0, -v23117.CFrame.Position.Z) * CFrame.Angles(v23119, v23120, v23121);
+                            l_l_TweenService_58_1:Create(v23117, TweenInfo.new(0.4, Enum.EasingStyle.Sine), {
+                                CFrame = l_CFrame_100
+                            }):Play();
+                        elseif v23117:IsA("Beam") then
+                            l_l_TweenService_58_1:Create(v23117, TweenInfo.new(3, Enum.EasingStyle.Sine), {
+                                TextureSpeed = 0
+                            }):Play();
+                            l_PlayTween_4(v23117, {
+                                Time = 2, 
+                                EasingStyle = "Sine", 
+                                Goal = {
+                                    Transparency = NumberSequence.new({
+                                        NumberSequenceKeypoint.new(0, 1), 
+                                        NumberSequenceKeypoint.new(1, 1)
+                                    })
+                                }
+                            });
+                            game.Debris:AddItem(v23117, 2);
+                        end;
+                    end;
+                    local v23122 = l_QuickFX_4({
+                        FX = l_PunchFX_1.NewBeams, 
+                        Maid = v22905._maid, 
+                        Anchor = l_l_l_RootPart_0_1_0.CFrame * CFrame.new(0, 0, -44) * CFrame.Angles(0, 0, -0.5235987755982988)
+                    });
+                    v23122:ScaleTo(4);
+                    l_dtwait_4(0.5);
+                    for _, v23124 in pairs(v23122:GetDescendants()) do
+                        if v23124.Name:find("Far") then
+                            local l_CFrame_101 = v23124.CFrame;
+                            local v23126, v23127, v23128 = l_CFrame_101:ToOrientation();
+                            v23124.CFrame = CFrame.new(0, 0, -v23124.CFrame.Position.Z) * CFrame.Angles(v23126, v23127, v23128);
+                            print(v23124.CFrame.Position);
+                            l_l_TweenService_58_1:Create(v23124, TweenInfo.new(0.4, Enum.EasingStyle.Sine), {
+                                CFrame = l_CFrame_101
+                            }):Play();
+                        elseif v23124:IsA("Beam") then
+                            l_l_TweenService_58_1:Create(v23124, TweenInfo.new(3, Enum.EasingStyle.Sine), {
+                                TextureSpeed = 0
+                            }):Play();
+                            l_PlayTween_4(v23124, {
+                                Time = 2, 
+                                EasingStyle = "Sine", 
+                                Goal = {
+                                    Transparency = NumberSequence.new({
+                                        NumberSequenceKeypoint.new(0, 1), 
+                                        NumberSequenceKeypoint.new(1, 1)
+                                    })
+                                }
+                            });
+                            game.Debris:AddItem(v23124, 2);
+                        end;
+                    end;
+                    l_dtwait_4(1);
+                end;
+                v23094();
+                if l_l_char_57_1 == game.Players.LocalPlayer.Character then
+                    local v23130 = nil;
+                    if math.random(1, 100) == 40 then
+                        v23130 = Instance.new("ImageLabel");
+                        v23130.Parent = game.Players.LocalPlayer.PlayerGui.ScreenGui;
+                        v23130.Image = "rbxassetid://133672115348464";
+                        v23130.Size = UDim2.new(0, 0, 0, 1);
+                        v23130.ImageTransparency = 0;
+                    end;
+                    l_dtwait_4(0.15);
+                    do
+                        local l_v23130_0 = v23130;
+                        task.delay(0.05, function() --[[ Line: 47736 ]]
+                            if l_v23130_0 and l_v23130_0.Parent then
+                                l_v23130_0.Size = UDim2.new(1, 0, 1, 0);
+                                game.Debris:AddItem(l_v23130_0, 0.035);
+                            end;
+                        end);
+                    end;
+                end;
+                v23129();
+            end;
+            local _ = {};
+            local l_v22808_0 = v22808 --[[ copy: 12 -> 197 ]];
+            local l_l_char_57_2 = l_char_57 --[[ copy: 17 -> 198 ]];
+            local l_v22811_0 = v22811 --[[ copy: 15 -> 199 ]];
+            local l_l_RunService_1_1 = l_RunService_1 --[[ copy: 9 -> 200 ]];
+            local l_v22810_0 = v22810 --[[ copy: 14 -> 201 ]];
+            local l_v22822_1 = v22822 --[[ copy: 16 -> 202 ]];
+            local l_l_UFW_2_2 = l_UFW_2 --[[ copy: 8 -> 203 ]];
+            local l_l_TweenService_58_2 = l_TweenService_58 --[[ copy: 10 -> 204 ]];
+            local l_l_RootPart_0_2 = l_RootPart_0 --[[ copy: 19 -> 205 ]];
+            for v23183, v23184 in {
+                [0.9] = function() --[[ Line: 47750 ]]
+                    v22876:Destroy();
+                    l_ColorCorrectionEffect_3:Destroy();
+                    v22877:Destroy();
+                    v22878:Destroy();
+                    v22875.Vignette.Visible = false;
+                    v22880.Floor.Decal.Transparency = 0;
+                    v22880.Wall2.Decal.Transparency = 0;
+                    v22880.light.SpotLight.Enabled = true;
+                    v22880.light.SurfaceLight.Enabled = true;
+                    v22880.light2.SpotLight.Enabled = false;
+                    for _, v23144 in v22880["beams on floor"]:GetDescendants() do
+                        if v23144:IsA("Beam") then
+                            v23144.Enabled = true;
+                        end;
+                    end;
+                    l_v22808_0.Speak(l_l_char_57_2, l_v22811_0[2]);
+                end, 
+                [2.483] = function() --[[ Line: 47767 ]]
+                    v22880.Floor.Decal.Transparency = 1;
+                    v22880.Wall2:Destroy();
+                    v22880["beams on floor"]:Destroy();
+                    v22880.light:Destroy();
+                    v22880.light2:Destroy();
+                    v22880.BG.Transparency = 1;
+                    game.Lighting.ClockTime = 14.5;
+                    game.Lighting.EnvironmentDiffuseScale = 1;
+                    v22880.Floor2.floorspeed.runrunrun.Enabled = true;
+                    v22880.Floor2.floorspeed.runrunrun2.Enabled = true;
+                    v22880.Floor2.Lines["12"].Enabled = true;
+                    v22880.UFWSkyroom.Transparency = 0;
+                    v22880.UFWSkyroom.Size = Vector3.one * 400;
+                    local v23145 = nil;
+                    v23145 = l_l_RunService_1_1.Stepped:Connect(function() --[[ Line: 47779 ]]
+                        if not v22880.Parent or not v22880:FindFirstChild("UFWSkyroom") then
+                            v23145:Disconnect();
+                            return;
+                        else
+                            v22880.UFWSkyroom.Position = workspace.CurrentCamera.CFrame.Position;
+                            return;
+                        end;
+                    end);
+                    table.insert(l_v22810_0, v23145);
+                    for _, v23147 in v22880.Bem.beams:GetChildren() do
+                        v23147.Enabled = true;
+                    end;
+                    for _, v23149 in v22880.UFWSkyroom:GetChildren() do
+                        if v23149:IsA("ParticleEmitter") then
+                            v23149.Enabled = true;
+                        else
+                            v23149.Transparency = 0;
+                        end;
+                    end;
+                    l_v22822_1(v22874, 3, 10, 0.04);
+                    local l_BloomEffect_0 = Instance.new("BloomEffect");
+                    l_BloomEffect_0.Intensity = 0.5;
+                    l_BloomEffect_0.Size = 56;
+                    l_BloomEffect_0.Threshold = 0.75;
+                    l_BloomEffect_0.Parent = game.Lighting;
+                    table.insert(l_v22810_0, l_BloomEffect_0);
+                end, 
+                [4.033] = function() --[[ Line: 47796 ]]
+                    v22880.Bem:Destroy();
+                    for _, v23152 in v22880.Floor2.Lines2:GetChildren() do
+                        v23152.Enabled = true;
+                    end;
+                    task.delay(0.167, function() --[[ Line: 47799 ]]
+                        v22880.Floor.Foot1.ToonLightning1:Emit(1);
+                        task.wait(0.367);
+                        v22880.Floor.Foot2.ToonLightning1:Emit(1);
+                    end);
+                    for _, v23154 in l_v22838_0:GetChildren() do
+                        if v23154:IsA("BasePart") then
+                            l_l_UFW_2_2.Aura:Clone().Parent = v23154;
+                        end;
+                    end;
+                end, 
+                [5.55] = function() --[[ Line: 47812 ]]
+                    l_v22822_1(v22874, 11, 23, 0.03);
+                end, 
+                [7.15] = function() --[[ Line: 47816 ]]
+                    v22880.Floor2.floorspeed.runrunrun.Enabled = false;
+                    v22880.Floor2.floorspeed.runrunrun2.Enabled = false;
+                    v22880.Floor2.Lines["12"].Enabled = false;
+                    for _, v23156 in v22880.Floor2.Lines2:GetChildren() do
+                        v23156.Enabled = false;
+                    end;
+                end, 
+                [8.2] = function() --[[ Line: 47825 ]]
+                    task.spawn(v22928);
+                    for _, v23158 in l_l_UFW_2_2.FistSmear:GetChildren() do
+                        local v23159 = v23158:Clone();
+                        v23159.Parent = l_v22838_0["Right Arm"];
+                        task.delay(1, function() --[[ Line: 47833 ]]
+                            v23159:Destroy();
+                        end);
+                    end;
+                    task.wait(0.1);
+                    v22880.Floor2.wave.ToonLightning1:Emit(1);
+                    v22880.Floor2.wave.ToonLightning12:Emit(1);
+                end, 
+                [8.85] = function() --[[ Line: 47842 ]]
+                    task.spawn(v22944);
+                end, 
+                [9.2] = function() --[[ Line: 47849 ]]
+                    v22880.BG.Transparency = 0;
+                    v22880.BG.Color = Color3.new(0, 0, 0);
+                    v22880.UFWSkyroom:Destroy();
+                    v22880.KJWallBreak["1"].Transparency = 0;
+                    game.Lighting.EnvironmentDiffuseScale = 0;
+                    local v23160 = l_v22838_0:Clone();
+                    v23160.HumanoidRootPart.Anchored = true;
+                    v23160.PrimaryPart = v23160.HumanoidRootPart;
+                    v23160:SetPrimaryPartCFrame(l_v22838_0.HumanoidRootPart.CFrame * CFrame.new(0, 0, -5) * CFrame.Angles(0, 3.141592653589793, 0));
+                    v23160.Parent = game.Workspace;
+                    for _, v23162 in pairs(v23160:GetDescendants()) do
+                        if v23162:IsA("BasePart") then
+                            v23162.Transparency = 0.55;
+                        end;
+                    end;
+                    local v23163 = v23160.Humanoid:LoadAnimation(l_l_UFW_2_2.Mirror);
+                    v23163:Play();
+                    v23163.TimePosition = 12.25;
+                    game.Debris:AddItem(v23160, 2);
+                end, 
+                [9.5] = function() --[[ Line: 47871 ]]
+                    task.spawn(v22955);
+                end, 
+                [9.867] = function() --[[ Line: 47875 ]]
+                    for _, v23165 in v22880.Gura.Slamy:GetChildren() do
+                        v23165:Emit(v23165:GetAttribute("EmitCount"));
+                    end;
+                    task.spawn(function() --[[ Line: 47882 ]]
+                        v22875.Flexworks.Visible = true;
+                        l_l_TweenService_58_2:Create(v22875.Flexworks, TweenInfo.new(0.1, Enum.EasingStyle.Exponential), {
+                            Size = UDim2.new(1.4, 0, 0.8, 0)
+                        }):Play();
+                        l_l_TweenService_58_2:Create(v22875.Flexworks, TweenInfo.new(0.6, Enum.EasingStyle.Elastic), {
+                            Position = UDim2.new(0.5, 0, 0.5, 0)
+                        }):Play();
+                        l_v22822_1(v22874, 24, 25, 0.03);
+                    end);
+                    v22880.KJWallBreak["3"].Transparency = 0;
+                    local l_ColorCorrectionEffect_4 = Instance.new("ColorCorrectionEffect");
+                    l_ColorCorrectionEffect_4.Brightness = 0.75;
+                    l_ColorCorrectionEffect_4.TintColor = Color3.fromRGB(5, 240, 255);
+                    l_ColorCorrectionEffect_4.Parent = game.Lighting;
+                    l_l_TweenService_58_2:Create(l_ColorCorrectionEffect_4, TweenInfo.new(1), {
+                        Brightness = 0, 
+                        TintColor = Color3.new(1, 1, 1)
+                    }):Play();
+                    task.wait(1);
+                    l_ColorCorrectionEffect_4:Destroy();
+                end, 
+                [11] = function() --[[ Line: 47901 ]]
+                    warn("creppytpyeryeryea");
+                    local l_spawn_7 = task.spawn;
+                    local v23168 = false;
+                    l_spawn_7(function() --[[ Line: 46870 ]]
+                        if v23168 then
+                            l_l_TweenService_58_2:Create(game.Lighting, TweenInfo.new(1.827, Enum.EasingStyle.Quad), {
+                                Brightness = 0, 
+                                Ambient = Color3.fromRGB(0, 0, 0), 
+                                OutdoorAmbient = Color3.fromRGB(25, 25, 25)
+                            }):Play();
+                            l_l_TweenService_58_2:Create(game.Lighting, TweenInfo.new(0.65, Enum.EasingStyle.Quad), {
+                                ClockTime = 0
+                            }):Play();
+                            return;
+                        else
+                            l_l_TweenService_58_2:Create(game.Lighting, TweenInfo.new(1.827, Enum.EasingStyle.Quad), {
+                                Brightness = 2, 
+                                Ambient = Color3.fromRGB(138, 138, 138), 
+                                OutdoorAmbient = Color3.fromRGB(70, 70, 70)
+                            }):Play();
+                            l_l_TweenService_58_2:Create(game.Lighting, TweenInfo.new(0.65, Enum.EasingStyle.Quad), {
+                                ClockTime = 13
+                            }):Play();
+                            return;
+                        end;
+                    end);
+                    v22880.KJWallBreak:Destroy();
+                    l_spawn_7 = v22905._maid:give(l_l_UFW_2_2.RB:Clone());
+                    l_spawn_7:SetPrimaryPartCFrame(l_v22838_0.HumanoidRootPart.CFrame * CFrame.new(0.2122097611427307, -0.04167747497558594, -4.24620246887207));
+                    l_spawn_7.Parent = l_EFP_4;
+                    local v23169 = l_spawn_7.AnimationController:LoadAnimation(l_l_UFW_2_2.GlassBreak);
+                    v23169:Play(0);
+                    v23169:Stop(0);
+                    v23169:Play();
+                    game.Debris:AddItem(l_spawn_7, 3);
+                    task.spawn(v22971);
+                end, 
+                [11.9] = function() --[[ Line: 47927 ]]
+                    task.spawn(v22995);
+                end, 
+                [12.3] = function() --[[ Line: 47932 ]]
+                    local v23170 = v22905._maid:give(l_l_UFW_2_2.Fade:Clone());
+                    v23170.Parent = game.Players.LocalPlayer.PlayerGui;
+                    l_dtwait_4(0.05);
+                    l_l_TweenService_58_2:Create(v23170.Fade, TweenInfo.new(0.3, Enum.EasingStyle.Sine), {
+                        BackgroundTransparency = 1
+                    }):Play();
+                end, 
+                [12.83] = function() --[[ Line: 47940 ]]
+                    task.spawn(v23019);
+                end, 
+                [18.1] = function() --[[ Line: 47944 ]]
+                    local v23171 = {};
+                    for _, v23173 in pairs(l_v22838_0:GetDescendants()) do
+                        if v23173:IsA("BasePart") or v23173:IsA("Decal") then
+                            v23171[v23173] = v23173.Transparency;
+                            v23173.Transparency = 1;
+                        elseif v23173:IsA("ParticleEmitter") and v23173.Name == "Aura" then
+                            v23173.Enabled = false;
+                        end;
+                    end;
+                    task.spawn(v23072);
+                    task.wait(5);
+                    for v23174, v23175 in pairs(v23171) do
+                        v23174.Transparency = v23175;
+                    end;
+                end, 
+                [23] = function() --[[ Line: 47969 ]]
+                    warn("creppytpyeryeryea");
+                    local l_spawn_8 = task.spawn;
+                    local v23177 = false;
+                    l_spawn_8(function() --[[ Line: 46870 ]]
+                        if v23177 then
+                            l_l_TweenService_58_2:Create(game.Lighting, TweenInfo.new(1.827, Enum.EasingStyle.Quad), {
+                                Brightness = 0, 
+                                Ambient = Color3.fromRGB(0, 0, 0), 
+                                OutdoorAmbient = Color3.fromRGB(25, 25, 25)
+                            }):Play();
+                            l_l_TweenService_58_2:Create(game.Lighting, TweenInfo.new(0.65, Enum.EasingStyle.Quad), {
+                                ClockTime = 0
+                            }):Play();
+                            return;
+                        else
+                            l_l_TweenService_58_2:Create(game.Lighting, TweenInfo.new(1.827, Enum.EasingStyle.Quad), {
+                                Brightness = 2, 
+                                Ambient = Color3.fromRGB(138, 138, 138), 
+                                OutdoorAmbient = Color3.fromRGB(70, 70, 70)
+                            }):Play();
+                            l_l_TweenService_58_2:Create(game.Lighting, TweenInfo.new(0.65, Enum.EasingStyle.Quad), {
+                                ClockTime = 13
+                            }):Play();
+                            return;
+                        end;
+                    end);
+                    for _, v23179 in l_v22810_0 do
+                        if typeof(v23179) == "RBXScriptConnection" then
+                            v23179:Disconnect();
+                        else
+                            v23179:Destroy();
+                        end;
+                    end;
+                    game.Workspace.CurrentCamera.CFrame = l_l_RootPart_0_2.CFrame * CFrame.new(0, 3, 15);
+                    game.Workspace.CurrentCamera.FieldOfView = 70;
+                end, 
+                [23.035] = function() --[[ Line: 48000 ]]
+                    local _ = workspace.CurrentCamera.CFrame;
+                    workspace.CurrentCamera.CameraType = Enum.CameraType.Custom;
+                    workspace.CurrentCamera.FieldOfView = 70;
+                    task.delay(1, function() --[[ Line: 48011 ]]
+                        for _, v23182 in l_v22810_0 do
+                            if typeof(v23182) == "RBXScriptConnection" then
+                                v23182:Disconnect();
+                            else
+                                v23182:Destroy();
+                            end;
+                        end;
+                        task.wait(0.4);
+                        shared.SetCore(true);
+                        shared.BackpackVisibility(true, true);
+                    end);
+                    v12({
+                        Effect = "Camshake", 
+                        Intensity = 40, 
+                        Last = 5
+                    });
+                end
+            } do
+                task.delay(v23183, v23184);
+            end;
+        end;
+
+end
+
+-- [[ THE CODE, MODIFY IF YOU WANT. ]]
+local SkillTemplate = Instance.new("Tool")
+SkillTemplate.Name = SkillName
+SkillTemplate.RequiresHandle = false
+SkillTemplate.ManualActivationOnly = false
+SkillTemplate.CanBeDropped = false
+SkillTemplate:SetAttribute("Regged", false)
+SkillTemplate:SetAttribute("Skill", true)
+SkillTemplate.Parent = game.Players.LocalPlayer.Backpack
+local ks = "5"
+local OnCooldown = false
+local cooldownFunction = function()
+OnCooldown = true
+local cd = game:GetService("Players").LocalPlayer.PlayerGui.Hotbar.Backpack.LocalScript.Cooldown:Clone()
+for _, slot in pairs(game:GetService("Players").LocalPlayer.PlayerGui.Hotbar.Backpack.Hotbar:GetDescendants()) do
+    if slot:IsA("TextLabel") and slot.Name == "ToolName" and slot.Text == SkillName then
+	ks = "" .. slot.Parent.Parent.Name
+cd.Parent = slot.Parent
+local cdTween = game:GetService("TweenService"):Create(cd, TweenInfo.new(CooldownLengh), {Size = UDim2.new(1, 0, -0.12, 0)})
+cdTween:Play()
+cdTween.Completed:Connect(function()
+OnCooldown = false
+cd:Destroy()
+slot.Parent.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+game:GetService("TweenService"):Create(slot.Parent, TweenInfo.new(1), {BackgroundColor3 = Color3.fromRGB(31, 31, 31)}):Play()
+end)
+    end
+end
+end
+
+local cd = game:GetService("Players").LocalPlayer.PlayerGui.Hotbar.Backpack.LocalScript.Cooldown:Clone()
+for _, slot in pairs(game:GetService("Players").LocalPlayer.PlayerGui.Hotbar.Backpack.Hotbar:GetDescendants()) do
+    if slot:IsA("TextLabel") and slot.Name == "ToolName" and slot.Text == SkillName then
+	if Burning then
+	local fireLiterally = game:GetService("Players").LocalPlayer.PlayerGui.Hotbar.Backpack.LocalScript.Flipbook:Clone()
+fireLiterally.Parent = slot.Parent
+fireLiterally.LocalScript.Enabled = true
+end
+	slot.Parent.MouseButton1Click:Connect(function()
+	if not OnCooldown then
+cooldownFunction()
+Activated()
+end
+	end)
+	end
+end
+
+local Kmg = {
+    ["1"] = Enum.KeyCode.One,
+    ["2"] = Enum.KeyCode.Two,
+    ["3"] = Enum.KeyCode.Three,
+    ["4"] = Enum.KeyCode.Four,
+    ["5"] = Enum.KeyCode.Five,
+    ["6"] = Enum.KeyCode.Six,
+    ["7"] = Enum.KeyCode.Seven,
+    ["8"] = Enum.KeyCode.Eight,
+    ["9"] = Enum.KeyCode.Nine,
+    ["0"] = Enum.KeyCode.Zero
+}
+local kb = Kmg[ks]
+
+local uis = game:GetService("UserInputService") local con = uis.InputBegan:Connect(function(input) if input.KeyCode == kb then
+if not OnCooldown and game:GetService("Players").LocalPlayer.PlayerGui.Chat.Frame.ChatBarParentFrame.Frame.BoxFrame.Frame.TextLabel.Visible then
+cooldownFunction()
+Activated()
+end
+ end end) game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Died:Connect(function() con:Disconnect() end)
+
+game.Players.LocalPlayer.Character.Humanoid.Died:Connect(function()
+died = true
+end)
