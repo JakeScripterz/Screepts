@@ -7,8 +7,8 @@ local StarterGui = game:GetService("StarterGui")
 local camera = workspace.CurrentCamera
 
 StarterGui:SetCore("SendNotification", {
-    Title = "Code by GioBolqvi", -- dont skid ðŸ™ðŸ’”
-    Text = "on Roblox",
+    Title = "Code by SpookzWasHere", -- dont skid ðŸ™ðŸ’”
+    Text = "on Discord",
     Duration = 3
 })
 
