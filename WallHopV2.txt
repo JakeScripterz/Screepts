@@ -1,0 +1,289 @@
+-- WallHop V2 by JakeScripterz
+-- Executor-Compatible Version
+
+-- Services with pcall protection
+local Services = {
+    Players = game:GetService("Players"),
+    UserInputService = game:GetService("UserInputService"),
+    RunService = game:GetService("RunService"),
+    Workspace = game:GetService("Workspace")
+}
+
+-- Safety check for services
+for name, service in pairs(Services) do
+    if not service then
+        warn("[WallHop V2] Failed to get service: " .. name)
+        return
+    end
+end
+
+-- Constants
+local CONFIG = {
+    JUMP_COOLDOWN = 0.15,
+    WALL_DETECTION_DISTANCE = 2,
+    VELOCITY_BOOST = 20,
+    MAX_INFLUENCE_ANGLE = 40,
+    GUI_COLORS = {
+        ON = Color3.fromRGB(0, 255, 0),
+        OFF = Color3.fromRGB(255, 0, 0),
+        WHITE = Color3.fromRGB(255, 255, 255),
+        FRAME = Color3.fromRGB(30, 30, 30),
+        BUTTON = Color3.fromRGB(45, 45, 45)
+    }
+}
+
+-- Variables
+local Player = Services.Players.LocalPlayer
+local Mouse = Player:GetMouse()
+local Camera = Services.Workspace.CurrentCamera
+local WallHopEnabled = false
+local CanJump = true
+local ScreenGui, Frame, StatusLabel
+
+-- Initialize raycast parameters
+local RayParams = RaycastParams.new()
+RayParams.FilterType = Enum.RaycastFilterType.Blacklist
+
+-- GUI Creation with protection
+local function CreateGui()
+    -- Remove existing GUI if present
+    if game.CoreGui:FindFirstChild("WallHopV2") then
+        game.CoreGui.WallHopV2:Destroy()
+    end
+
+    -- Create new GUI
+    ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "WallHopV2"
+    
+    -- Protection for different exploit environments
+    pcall(function()
+        if syn then
+            syn.protect_gui(ScreenGui)
+        end
+    end)
+    
+    -- Try different GUI parent methods
+    local success = pcall(function()
+        ScreenGui.Parent = game.CoreGui
+    end)
+    
+    if not success then
+        ScreenGui.Parent = Player:WaitForChild("PlayerGui")
+    end
+
+    -- Main Frame
+    Frame = Instance.new("Frame")
+    Frame.Name = "MainFrame"
+    Frame.Size = UDim2.new(0, 200, 0, 120)
+    Frame.Position = UDim2.new(0.5, -100, 0.5, -60)
+    Frame.BackgroundColor3 = CONFIG.GUI_COLORS.FRAME
+    Frame.BorderSizePixel = 0
+    Frame.Active = true
+    Frame.Draggable = true
+    Frame.Parent = ScreenGui
+
+    -- Title
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 30)
+    title.Position = UDim2.new(0, 0, 0, 0)
+    title.BackgroundTransparency = 1
+    title.Text = "WallHop V2"
+    title.TextColor3 = CONFIG.GUI_COLORS.WHITE
+    title.TextSize = 16
+    title.Font = Enum.Font.GothamBold
+    title.Parent = Frame
+
+    -- Status Label
+    StatusLabel = Instance.new("TextLabel")
+    StatusLabel.Size = UDim2.new(1, 0, 0, 20)
+    StatusLabel.Position = UDim2.new(0, 0, 0, 30)
+    StatusLabel.BackgroundTransparency = 1
+    StatusLabel.Text = "Status: OFF"
+    StatusLabel.TextColor3 = CONFIG.GUI_COLORS.OFF
+    StatusLabel.TextSize = 14
+    StatusLabel.Font = Enum.Font.Gotham
+    StatusLabel.Parent = Frame
+
+    -- Toggle Button
+    local toggleButton = Instance.new("TextButton")
+    toggleButton.Size = UDim2.new(0.8, 0, 0, 25)
+    toggleButton.Position = UDim2.new(0.1, 0, 0, 55)
+    toggleButton.BackgroundColor3 = CONFIG.GUI_COLORS.BUTTON
+    toggleButton.Text = "Toggle"
+    toggleButton.TextColor3 = CONFIG.GUI_COLORS.WHITE
+    toggleButton.TextSize = 14
+    toggleButton.Font = Enum.Font.GothamSemibold
+    toggleButton.BorderSizePixel = 0
+    toggleButton.Parent = Frame
+    
+    -- Create corner radius
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 6)
+    corner.Parent = toggleButton
+
+    -- Destroy Button
+    local destroyButton = Instance.new("TextButton")
+    destroyButton.Size = UDim2.new(0.8, 0, 0, 25)
+    destroyButton.Position = UDim2.new(0.1, 0, 0, 85)
+    destroyButton.BackgroundColor3 = CONFIG.GUI_COLORS.OFF
+    destroyButton.Text = "Destroy"
+    destroyButton.TextColor3 = CONFIG.GUI_COLORS.WHITE
+    destroyButton.TextSize = 14
+    destroyButton.Font = Enum.Font.GothamSemibold
+    destroyButton.BorderSizePixel = 0
+    destroyButton.Parent = Frame
+    
+    -- Add corner radius to destroy button
+    local cornerDestroy = Instance.new("UICorner")
+    cornerDestroy.CornerRadius = UDim.new(0, 6)
+    cornerDestroy.Parent = destroyButton
+
+    -- Add corner radius to main frame
+    local cornerFrame = Instance.new("UICorner")
+    cornerFrame.CornerRadius = UDim.new(0, 8)
+    cornerFrame.Parent = Frame
+
+    -- Button Functionality
+    toggleButton.MouseButton1Click:Connect(function()
+        WallHopEnabled = not WallHopEnabled
+        StatusLabel.Text = "Status: " .. (WallHopEnabled and "ON" or "OFF")
+        StatusLabel.TextColor3 = WallHopEnabled and CONFIG.GUI_COLORS.ON or CONFIG.GUI_COLORS.OFF
+        toggleButton.BackgroundColor3 = WallHopEnabled and CONFIG.GUI_COLORS.ON or CONFIG.GUI_COLORS.BUTTON
+    end)
+
+    destroyButton.MouseButton1Click:Connect(function()
+        WallHopEnabled = false
+        ScreenGui:Destroy()
+    end)
+end
+
+-- Wall Detection Function
+local function DetectWall()
+    local character = Player.Character
+    if not character then return nil end
+    
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart then return nil end
+
+    RayParams.FilterDescendantsInstances = {character}
+
+    local directions = {
+        humanoidRootPart.CFrame.LookVector,
+        -humanoidRootPart.CFrame.LookVector,
+        humanoidRootPart.CFrame.RightVector,
+        -humanoidRootPart.CFrame.RightVector
+    }
+
+    local closestHit = nil
+    local minDistance = CONFIG.WALL_DETECTION_DISTANCE + 1
+
+    for _, direction in pairs(directions) do
+        local ray = Services.Workspace:Raycast(
+            humanoidRootPart.Position,
+            direction * CONFIG.WALL_DETECTION_DISTANCE,
+            RayParams
+        )
+        
+        if ray and ray.Instance then
+            if ray.Distance < minDistance then
+                minDistance = ray.Distance
+                closestHit = ray
+            end
+        end
+    end
+    
+    return closestHit
+end
+
+-- Wall Hop Function
+local function PerformWallHop()
+    if not WallHopEnabled or not CanJump then return end
+
+    local character = Player.Character
+    local humanoid = character and character:FindFirstChild("Humanoid")
+    local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+
+    if not (humanoid and rootPart) then return end
+
+    local wallRayResult = DetectWall()
+    if not wallRayResult then return end
+
+    CanJump = false
+
+    -- Calculate jump direction
+    local wallNormal = wallRayResult.Normal
+    local horizontalWallNormal = Vector3.new(wallNormal.X, 0, wallNormal.Z).Unit
+    
+    if horizontalWallNormal.Magnitude < 0.1 then
+        horizontalWallNormal = (rootPart.CFrame.LookVector * Vector3.new(1,0,1)).Unit
+        if horizontalWallNormal.Magnitude < 0.1 then 
+            horizontalWallNormal = Vector3.new(0,0,-1) 
+        end
+    end
+
+    -- Camera influence
+    local cameraLook = Camera.CFrame.LookVector
+    local horizontalCameraLook = Vector3.new(cameraLook.X, 0, cameraLook.Z).Unit
+    
+    if horizontalCameraLook.Magnitude < 0.1 then 
+        horizontalCameraLook = horizontalWallNormal 
+    end
+
+    -- Calculate and apply jump
+    local dot = math.clamp(horizontalWallNormal:Dot(horizontalCameraLook), -1, 1)
+    local angle = math.acos(dot)
+    local cross = horizontalWallNormal:Cross(horizontalCameraLook)
+    local rotationSign = math.sign(cross.Y)
+    
+    if rotationSign == 0 then angle = 0 end
+
+    local influenceAngle = math.min(angle, math.rad(CONFIG.MAX_INFLUENCE_ANGLE))
+    local rotation = CFrame.Angles(0, influenceAngle * rotationSign, 0)
+    local jumpDirection = rotation * horizontalWallNormal
+
+    -- Execute jump with protection
+    pcall(function()
+        rootPart.CFrame = CFrame.lookAt(rootPart.Position, rootPart.Position + jumpDirection)
+        task.wait()
+        
+        if humanoid and humanoid:GetState() ~= Enum.HumanoidStateType.Dead then
+            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+            rootPart.CFrame = CFrame.lookAt(rootPart.Position, rootPart.Position - horizontalWallNormal)
+            rootPart.Velocity = rootPart.Velocity + jumpDirection * CONFIG.VELOCITY_BOOST
+        end
+    end)
+
+    -- Reset jump cooldown
+    task.wait(CONFIG.JUMP_COOLDOWN)
+    CanJump = true
+end
+
+-- Main Setup
+local function Initialize()
+    CreateGui()
+    
+    -- Setup jump connection with protection
+    local connection = Services.UserInputService.JumpRequest:Connect(function()
+        if WallHopEnabled then
+            PerformWallHop()
+        end
+    end)
+
+    -- Cleanup on script end
+    ScreenGui.Destroying:Connect(function()
+        if connection then
+            connection:Disconnect()
+        end
+    end)
+end
+
+-- Error handled initialization
+pcall(Initialize)
+
+-- Return cleanup function
+return function()
+    if ScreenGui then
+        ScreenGui:Destroy()
+    end
+    WallHopEnabled = false
+end
