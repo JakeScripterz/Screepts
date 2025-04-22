@@ -1,5 +1,19 @@
--- WallHop V2 by JakeScripterz
--- Executor-Compatible Version
+-- sgui
+local sG = Instance.new("ScreenGui")
+sG.Name = "UIContainer"
+sG.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- txlabel
+local tL = Instance.new("TextLabel")
+tL.Size = UDim2.new(1, 0, 0, 16) -- smaller size
+tL.Position = UDim2.new(0, 0, 0, 0) -- Top
+tL.BackgroundTransparency = 1 -- by
+tL.Text = "Made By Chickn_Jocky" -- Updated text
+tL.TextColor3 = Color3.new(1, 1, 1) -- clr
+tL.Font = Enum.Font.Arcade 
+tL.TextScaled = true -- scale
+tL.TextTransparency = 0.7 -- opaque
+tL.Parent = sG
 
 -- Services with pcall protection
 local Services = {
@@ -53,7 +67,7 @@ local function CreateGui()
 
     -- Create new GUI
     ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "WallHopV2"
+    ScreenGui.Name = "WallHop"
     
     -- Protection for different exploit environments
     pcall(function()
@@ -87,7 +101,7 @@ local function CreateGui()
     title.Size = UDim2.new(1, 0, 0, 30)
     title.Position = UDim2.new(0, 0, 0, 0)
     title.BackgroundTransparency = 1
-    title.Text = "WallHop V2"
+    title.Text = "WallHop "
     title.TextColor3 = CONFIG.GUI_COLORS.WHITE
     title.TextSize = 16
     title.Font = Enum.Font.GothamBold
