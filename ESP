@@ -1,0 +1,50 @@
+--// Written by SpookzWasHere
+local Players = game:GetService("Players")
+
+local function ApplyHighlight(Player)
+    local Connections = {}
+
+    --// Parts
+    local Character = Player.Character or Player.CharacterAdded:Wait()
+    local Humanoid = Character:WaitForChild("Humanoid") 
+    local Highlighter = Instance.new("Highlight", Character)
+
+    -- Outline colors wowie :3
+    Highlighter.OutlineColor = Color3.fromRGB(255, 0, 0)
+
+    local function UpdateFillColor()
+        local DefaultColor = Color3.fromRGB(255, 48, 51)
+        Highlighter.FillColor = (Player.TeamColor and Player.TeamColor.Color) or DefaultColor
+    end
+
+    local function Disconnect()
+        Highlighter:Remove()
+        
+        for _, Connection in next, Connections do
+            Connection:Disconnect()
+        end
+    end
+
+    --// Connect functions to events
+    table.insert(Connections, Player:GetPropertyChangedSignal("TeamColor"):Connect(UpdateFillColor))
+    table.insert(Connections, Humanoid:GetPropertyChangedSignal("Health"):Connect(function()
+        if Humanoid.Health <= 0 then
+            Disconnect()
+        end
+    end))
+end
+
+local function HighlightPlayer(Player)
+    if Player.Character then
+        ApplyHighlight(Player)
+    end
+    Player.CharacterAdded:Connect(function()
+        ApplyHighlight(Player)
+    end)
+end
+
+--// Apply Outline thingy idk
+for _, Player in next, Players:GetPlayers() do
+    HighlightPlayer(Player)
+end
+Players.PlayerAdded:Connect(HighlightPlayer)
