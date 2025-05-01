@@ -1,0 +1,273 @@
+-- UI Library Creation
+local HeadshotHax = {}
+
+-- Services
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
+-- Constants
+local BACKGROUND_COLOR = Color3.fromRGB(0, 10, 0)
+local TEXT_COLOR = Color3.fromRGB(0, 255, 0)
+local FONT = Enum.Font.Code
+local TYPING_SPEED = 0.05
+
+-- Create Base GUI
+function HeadshotHax:CreateUI()
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "H4X0R_Interface"
+    ScreenGui.ResetOnSpawn = false
+    
+    -- Main Frame
+    local MainFrame = Instance.new("Frame")
+    MainFrame.Name = "MainFrame"
+    MainFrame.Size = UDim2.new(0, 300, 0, 200)
+    MainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
+    MainFrame.BackgroundColor3 = BACKGROUND_COLOR
+    MainFrame.BorderColor3 = TEXT_COLOR
+    MainFrame.BorderSizePixel = 2
+    MainFrame.Parent = ScreenGui
+    
+    -- Title Bar
+    local TitleBar = Instance.new("Frame")
+    TitleBar.Name = "TitleBar"
+    TitleBar.Size = UDim2.new(1, 0, 0, 25)
+    TitleBar.BackgroundColor3 = Color3.fromRGB(0, 20, 0)
+    TitleBar.BorderColor3 = TEXT_COLOR
+    TitleBar.Parent = MainFrame
+    
+    -- Title Text
+    local TitleText = Instance.new("TextLabel")
+    TitleText.Name = "TitleText"
+    TitleText.Size = UDim2.new(0.7, 0, 1, 0)
+    TitleText.Position = UDim2.new(0, 5, 0, 0)
+    TitleText.BackgroundTransparency = 1
+    TitleText.Text = "H34DSH0T_H4X v1.337"
+    TitleText.TextColor3 = TEXT_COLOR
+    TitleText.Font = FONT
+    TitleText.TextSize = 14
+    TitleText.TextXAlignment = Enum.TextXAlignment.Left
+    TitleText.Parent = TitleBar
+    
+    -- Minimize Button
+    local MinButton = Instance.new("TextButton")
+    MinButton.Name = "MinimizeBtn"
+    MinButton.Size = UDim2.new(0, 25, 0, 25)
+    MinButton.Position = UDim2.new(1, -50, 0, 0)
+    MinButton.BackgroundColor3 = BACKGROUND_COLOR
+    MinButton.Text = "-"
+    MinButton.TextColor3 = TEXT_COLOR
+    MinButton.Font = FONT
+    MinButton.TextSize = 14
+    MinButton.Parent = TitleBar
+    
+    -- Close Button
+    local CloseButton = Instance.new("TextButton")
+    CloseButton.Name = "CloseBtn"
+    CloseButton.Size = UDim2.new(0, 25, 0, 25)
+    CloseButton.Position = UDim2.new(1, -25, 0, 0)
+    CloseButton.BackgroundColor3 = BACKGROUND_COLOR
+    CloseButton.Text = "X"
+    CloseButton.TextColor3 = TEXT_COLOR
+    CloseButton.Font = FONT
+    CloseButton.TextSize = 14
+    CloseButton.Parent = TitleBar
+    
+    -- Content Frame
+    local ContentFrame = Instance.new("Frame")
+    ContentFrame.Name = "ContentFrame"
+    ContentFrame.Size = UDim2.new(1, 0, 1, -25)
+    ContentFrame.Position = UDim2.new(0, 0, 0, 25)
+    ContentFrame.BackgroundColor3 = BACKGROUND_COLOR
+    ContentFrame.BorderSizePixel = 0
+    ContentFrame.Parent = MainFrame
+    
+    -- Status Text
+    local StatusText = Instance.new("TextLabel")
+    StatusText.Name = "StatusText"
+    StatusText.Size = UDim2.new(1, -10, 0, 20)
+    StatusText.Position = UDim2.new(0, 5, 0, 5)
+    StatusText.BackgroundTransparency = 1
+    StatusText.Text = ""
+    StatusText.TextColor3 = TEXT_COLOR
+    StatusText.Font = FONT
+    StatusText.TextSize = 14
+    StatusText.TextXAlignment = Enum.TextXAlignment.Left
+    StatusText.Parent = ContentFrame
+    
+    -- Toggle Button
+    local ToggleButton = Instance.new("TextButton")
+    ToggleButton.Name = "ToggleBtn"
+    ToggleButton.Size = UDim2.new(0.8, 0, 0, 30)
+    ToggleButton.Position = UDim2.new(0.1, 0, 0.5, -15)
+    ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 40, 0)
+    ToggleButton.BorderColor3 = TEXT_COLOR
+    ToggleButton.Text = "[ DISABLED ]"
+    ToggleButton.TextColor3 = TEXT_COLOR
+    ToggleButton.Font = FONT
+    ToggleButton.TextSize = 16
+    ToggleButton.Parent = ContentFrame
+    
+    -- Info Text
+    local InfoText = Instance.new("TextLabel")
+    InfoText.Name = "InfoText"
+    InfoText.Size = UDim2.new(1, -10, 0, 20)
+    InfoText.Position = UDim2.new(0, 5, 1, -25)
+    InfoText.BackgroundTransparency = 1
+    InfoText.Text = "User: " .. Players.LocalPlayer.Name
+    InfoText.TextColor3 = TEXT_COLOR
+    InfoText.Font = FONT
+    InfoText.TextSize = 12
+    InfoText.TextXAlignment = Enum.TextXAlignment.Left
+    InfoText.Parent = ContentFrame
+    
+    return {
+        ScreenGui = ScreenGui,
+        MainFrame = MainFrame,
+        StatusText = StatusText,
+        ToggleButton = ToggleButton,
+        MinButton = MinButton,
+        CloseButton = CloseButton,
+        ContentFrame = ContentFrame
+    }
+end
+
+-- Typewriter Effect Function
+function HeadshotHax:TypewriterEffect(textLabel, text)
+    textLabel.Text = ""
+    for i = 1, #text do
+        textLabel.Text = string.sub(text, 1, i)
+        wait(TYPING_SPEED)
+    end
+end
+
+-- Initialize UI with Effects
+function HeadshotHax:Init()
+    local ui = self:CreateUI()
+    local dragging
+    local dragStart
+    local startPos
+    
+    -- Make UI Draggable
+    ui.MainFrame.TitleBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = ui.MainFrame.Position
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local delta = input.Position - dragStart
+            ui.MainFrame.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+    
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+    
+    -- Startup Sequence
+    local startupTexts = {
+        "Initializing h4x module...",
+        "Bypassing anti-cheat...",
+        "Injecting headshot algorithm...",
+        "Establishing neural network...",
+        "H4X ready for deployment..."
+    }
+    
+    -- Handle Toggle Button
+    local isEnabled = false
+    ui.ToggleButton.MouseButton1Click:Connect(function()
+        isEnabled = not isEnabled
+        getgenv().SilentAimHead = isEnabled
+        ui.ToggleButton.Text = isEnabled and "[ ENABLED ]" or "[ DISABLED ]"
+        ui.ToggleButton.BackgroundColor3 = isEnabled and Color3.fromRGB(0, 80, 0) or Color3.fromRGB(0, 40, 0)
+    end)
+    
+    -- Handle Minimize Button
+    local isMinimized = false
+    ui.MinButton.MouseButton1Click:Connect(function()
+        isMinimized = not isMinimized
+        ui.ContentFrame.Visible = not isMinimized
+        ui.MainFrame.Size = isMinimized and UDim2.new(0, 300, 0, 25) or UDim2.new(0, 300, 0, 200)
+    end)
+    
+    -- Handle Close Button
+    ui.CloseButton.MouseButton1Click:Connect(function()
+        ui.ScreenGui:Destroy()
+        getgenv().SilentAimHead = false
+    end)
+    
+    -- Display startup sequence
+    task.spawn(function()
+        for _, text in ipairs(startupTexts) do
+            self:TypewriterEffect(ui.StatusText, text)
+            wait(1)
+        end
+        wait(0.5)
+        ui.StatusText.Text = "Status: Ready"
+    end)
+    
+    -- Parent the ScreenGui
+    if syn and syn.protect_gui then
+        syn.protect_gui(ui.ScreenGui)
+        ui.ScreenGui.Parent = game:GetService("CoreGui")
+    elseif gethui then
+        ui.ScreenGui.Parent = gethui()
+    else
+        ui.ScreenGui.Parent = game:GetService("CoreGui")
+    end
+    
+    return ui
+end
+
+-- Create Matrix Effect
+function HeadshotHax:CreateMatrixEffect()
+    local matrixFrame = Instance.new("Frame")
+    matrixFrame.Size = UDim2.new(1, 0, 1, 0)
+    matrixFrame.BackgroundTransparency = 1
+    matrixFrame.Parent = self.ui.MainFrame
+    
+    -- Matrix characters
+    local characters = "0123456789ABCDEF"
+    
+    -- Create falling characters
+    for i = 1, 20 do
+        local label = Instance.new("TextLabel")
+        label.BackgroundTransparency = 1
+        label.Size = UDim2.new(0, 10, 0, 10)
+        label.Font = FONT
+        label.TextColor3 = TEXT_COLOR
+        label.TextSize = 12
+        label.Text = string.sub(characters, math.random(1, #characters), math.random(1, #characters))
+        label.Position = UDim2.new(math.random(), 0, -0.1, 0)
+        label.Parent = matrixFrame
+        
+        -- Animate the character
+        spawn(function()
+            while true do
+                label.Position = label.Position + UDim2.new(0, 0, 0.01, 0)
+                if label.Position.Y.Scale > 1 then
+                    label.Position = UDim2.new(math.random(), 0, -0.1, 0)
+                end
+                label.Text = string.sub(characters, math.random(1, #characters), math.random(1, #characters))
+                wait(0.1)
+            end
+        end)
+    end
+end
+
+-- Initialize the UI
+local UI = HeadshotHax:Init()
+
+return HeadshotHax
