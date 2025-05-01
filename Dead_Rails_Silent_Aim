@@ -1,273 +1,213 @@
--- UI Library Creation
-local HeadshotHax = {}
-
 -- Services
-local TweenService = game:GetService("TweenService")
-local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 
--- Constants
-local BACKGROUND_COLOR = Color3.fromRGB(0, 10, 0)
-local TEXT_COLOR = Color3.fromRGB(0, 255, 0)
-local FONT = Enum.Font.Code
-local TYPING_SPEED = 0.05
+-- Create main GUI elements
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local ExecuteButton = Instance.new("TextButton")
+local StatusLabel = Instance.new("TextLabel")
+local MinimizeButton = Instance.new("TextButton")
+local UserInfoLabel = Instance.new("TextLabel")
 
--- Create Base GUI
-function HeadshotHax:CreateUI()
-    local ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "H4X0R_Interface"
-    ScreenGui.ResetOnSpawn = false
-    
-    -- Main Frame
-    local MainFrame = Instance.new("Frame")
-    MainFrame.Name = "MainFrame"
-    MainFrame.Size = UDim2.new(0, 300, 0, 200)
-    MainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
-    MainFrame.BackgroundColor3 = BACKGROUND_COLOR
-    MainFrame.BorderColor3 = TEXT_COLOR
-    MainFrame.BorderSizePixel = 2
-    MainFrame.Parent = ScreenGui
-    
-    -- Title Bar
-    local TitleBar = Instance.new("Frame")
-    TitleBar.Name = "TitleBar"
-    TitleBar.Size = UDim2.new(1, 0, 0, 25)
-    TitleBar.BackgroundColor3 = Color3.fromRGB(0, 20, 0)
-    TitleBar.BorderColor3 = TEXT_COLOR
-    TitleBar.Parent = MainFrame
-    
-    -- Title Text
-    local TitleText = Instance.new("TextLabel")
-    TitleText.Name = "TitleText"
-    TitleText.Size = UDim2.new(0.7, 0, 1, 0)
-    TitleText.Position = UDim2.new(0, 5, 0, 0)
-    TitleText.BackgroundTransparency = 1
-    TitleText.Text = "H34DSH0T_H4X v1.337"
-    TitleText.TextColor3 = TEXT_COLOR
-    TitleText.Font = FONT
-    TitleText.TextSize = 14
-    TitleText.TextXAlignment = Enum.TextXAlignment.Left
-    TitleText.Parent = TitleBar
-    
-    -- Minimize Button
-    local MinButton = Instance.new("TextButton")
-    MinButton.Name = "MinimizeBtn"
-    MinButton.Size = UDim2.new(0, 25, 0, 25)
-    MinButton.Position = UDim2.new(1, -50, 0, 0)
-    MinButton.BackgroundColor3 = BACKGROUND_COLOR
-    MinButton.Text = "-"
-    MinButton.TextColor3 = TEXT_COLOR
-    MinButton.Font = FONT
-    MinButton.TextSize = 14
-    MinButton.Parent = TitleBar
-    
-    -- Close Button
-    local CloseButton = Instance.new("TextButton")
-    CloseButton.Name = "CloseBtn"
-    CloseButton.Size = UDim2.new(0, 25, 0, 25)
-    CloseButton.Position = UDim2.new(1, -25, 0, 0)
-    CloseButton.BackgroundColor3 = BACKGROUND_COLOR
-    CloseButton.Text = "X"
-    CloseButton.TextColor3 = TEXT_COLOR
-    CloseButton.Font = FONT
-    CloseButton.TextSize = 14
-    CloseButton.Parent = TitleBar
-    
-    -- Content Frame
-    local ContentFrame = Instance.new("Frame")
-    ContentFrame.Name = "ContentFrame"
-    ContentFrame.Size = UDim2.new(1, 0, 1, -25)
-    ContentFrame.Position = UDim2.new(0, 0, 0, 25)
-    ContentFrame.BackgroundColor3 = BACKGROUND_COLOR
-    ContentFrame.BorderSizePixel = 0
-    ContentFrame.Parent = MainFrame
-    
-    -- Status Text
-    local StatusText = Instance.new("TextLabel")
-    StatusText.Name = "StatusText"
-    StatusText.Size = UDim2.new(1, -10, 0, 20)
-    StatusText.Position = UDim2.new(0, 5, 0, 5)
-    StatusText.BackgroundTransparency = 1
-    StatusText.Text = ""
-    StatusText.TextColor3 = TEXT_COLOR
-    StatusText.Font = FONT
-    StatusText.TextSize = 14
-    StatusText.TextXAlignment = Enum.TextXAlignment.Left
-    StatusText.Parent = ContentFrame
-    
-    -- Toggle Button
-    local ToggleButton = Instance.new("TextButton")
-    ToggleButton.Name = "ToggleBtn"
-    ToggleButton.Size = UDim2.new(0.8, 0, 0, 30)
-    ToggleButton.Position = UDim2.new(0.1, 0, 0.5, -15)
-    ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 40, 0)
-    ToggleButton.BorderColor3 = TEXT_COLOR
-    ToggleButton.Text = "[ DISABLED ]"
-    ToggleButton.TextColor3 = TEXT_COLOR
-    ToggleButton.Font = FONT
-    ToggleButton.TextSize = 16
-    ToggleButton.Parent = ContentFrame
-    
-    -- Info Text
-    local InfoText = Instance.new("TextLabel")
-    InfoText.Name = "InfoText"
-    InfoText.Size = UDim2.new(1, -10, 0, 20)
-    InfoText.Position = UDim2.new(0, 5, 1, -25)
-    InfoText.BackgroundTransparency = 1
-    InfoText.Text = "User: " .. Players.LocalPlayer.Name
-    InfoText.TextColor3 = TEXT_COLOR
-    InfoText.Font = FONT
-    InfoText.TextSize = 12
-    InfoText.TextXAlignment = Enum.TextXAlignment.Left
-    InfoText.Parent = ContentFrame
-    
-    return {
-        ScreenGui = ScreenGui,
-        MainFrame = MainFrame,
-        StatusText = StatusText,
-        ToggleButton = ToggleButton,
-        MinButton = MinButton,
-        CloseButton = CloseButton,
-        ContentFrame = ContentFrame
-    }
+-- Variables
+local isRunning = false
+local isMinimized = false
+local originalSize = UDim2.new(0, 250, 0, 170)
+local minimizedSize = UDim2.new(0, 250, 0, 30)
+
+-- GUI Properties
+ScreenGui.Name = "HeadshotHaxGui"
+if syn and syn.protect_gui then
+    syn.protect_gui(ScreenGui)
+    ScreenGui.Parent = game:GetService("CoreGui")
+elseif gethui then
+    ScreenGui.Parent = gethui()
+else
+    ScreenGui.Parent = game:GetService("CoreGui")
 end
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- Typewriter Effect Function
-function HeadshotHax:TypewriterEffect(textLabel, text)
-    textLabel.Text = ""
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+MainFrame.BorderColor3 = Color3.fromRGB(0, 255, 0)
+MainFrame.Position = UDim2.new(0.5, -125, 0.5, -85)
+MainFrame.Size = originalSize
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+Title.Name = "Title"
+Title.Parent = MainFrame
+Title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Title.BorderColor3 = Color3.fromRGB(0, 255, 0)
+Title.Size = UDim2.new(1, -25, 0, 30)
+Title.Font = Enum.Font.Code
+Title.Text = "Silent Aim H4x"
+Title.TextColor3 = Color3.fromRGB(0, 255, 0)
+Title.TextSize = 16.000
+
+UserInfoLabel.Name = "UserInfoLabel"
+UserInfoLabel.Parent = MainFrame
+UserInfoLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+UserInfoLabel.BorderColor3 = Color3.fromRGB(0, 255, 0)
+UserInfoLabel.Position = UDim2.new(0, 10, 1, -60)
+UserInfoLabel.Size = UDim2.new(1, -20, 0, 20)
+UserInfoLabel.Font = Enum.Font.Code
+UserInfoLabel.Text = "User: " .. Players.LocalPlayer.Name
+UserInfoLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+UserInfoLabel.TextSize = 10.000
+
+MinimizeButton.Name = "MinimizeButton"
+MinimizeButton.Parent = MainFrame
+MinimizeButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+MinimizeButton.BorderColor3 = Color3.fromRGB(0, 255, 0)
+MinimizeButton.Position = UDim2.new(1, -25, 0, 0)
+MinimizeButton.Size = UDim2.new(0, 25, 0, 30)
+MinimizeButton.Font = Enum.Font.Code
+MinimizeButton.Text = "-"
+MinimizeButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+MinimizeButton.TextSize = 16.000
+
+ExecuteButton.Name = "ExecuteButton"
+ExecuteButton.Parent = MainFrame
+ExecuteButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ExecuteButton.BorderColor3 = Color3.fromRGB(0, 255, 0)
+ExecuteButton.Position = UDim2.new(0.5, -60, 0.5, -20)
+ExecuteButton.Size = UDim2.new(0, 120, 0, 40)
+ExecuteButton.Font = Enum.Font.Code
+ExecuteButton.Text = "EXECUTE"
+ExecuteButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+ExecuteButton.TextSize = 14.000
+ExecuteButton.Visible = false
+
+StatusLabel.Name = "StatusLabel"
+StatusLabel.Parent = MainFrame
+StatusLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+StatusLabel.BorderColor3 = Color3.fromRGB(0, 255, 0)
+StatusLabel.Position = UDim2.new(0, 10, 1, -35)
+StatusLabel.Size = UDim2.new(1, -20, 0, 25)
+StatusLabel.Font = Enum.Font.Code
+StatusLabel.Text = "Status: Initializing..."
+StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+StatusLabel.TextSize = 12.000
+
+-- Create enhanced terminal-style effect
+local function typeWrite(text, speed)
+    speed = speed or 0.02  -- Made faster
+    StatusLabel.Text = ""
     for i = 1, #text do
-        textLabel.Text = string.sub(text, 1, i)
-        wait(TYPING_SPEED)
+        if not ScreenGui.Parent then break end
+        StatusLabel.Text = StatusLabel.Text .. string.sub(text, i, i)
+        wait(speed)
     end
 end
 
--- Initialize UI with Effects
-function HeadshotHax:Init()
-    local ui = self:CreateUI()
-    local dragging
-    local dragStart
-    local startPos
-    
-    -- Make UI Draggable
-    ui.MainFrame.TitleBar.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            dragStart = input.Position
-            startPos = ui.MainFrame.Position
-        end
-    end)
-    
-    UserInputService.InputChanged:Connect(function(input)
-        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-            local delta = input.Position - dragStart
-            ui.MainFrame.Position = UDim2.new(
-                startPos.X.Scale,
-                startPos.X.Offset + delta.X,
-                startPos.Y.Scale,
-                startPos.Y.Offset + delta.Y
-            )
-        end
-    end)
-    
-    UserInputService.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = false
-        end
-    end)
-    
-    -- Startup Sequence
-    local startupTexts = {
-        "Initializing h4x module...",
-        "Bypassing anti-cheat...",
-        "Injecting h4x...",
-        "System Compromised...",
-        "h4x ready to execute..."
+-- Create loading animation
+local function loadingDots(text, times)
+    for i = 1, times do
+        if not ScreenGui.Parent then break end
+        StatusLabel.Text = text .. string.rep(".", i % 4)
+        wait(0.2)  -- Made faster
+    end
+end
+
+-- Minimize/Maximize function
+MinimizeButton.MouseButton1Click:Connect(function()
+    isMinimized = not isMinimized
+    if isMinimized then
+        MainFrame.Size = minimizedSize
+        ExecuteButton.Visible = false
+        StatusLabel.Visible = false
+        UserInfoLabel.Visible = false
+        MinimizeButton.Text = "+"
+    else
+        MainFrame.Size = originalSize
+        ExecuteButton.Visible = true
+        StatusLabel.Visible = true
+        UserInfoLabel.Visible = true
+        MinimizeButton.Text = "-"
+    end
+end)
+
+-- Button click handler
+ExecuteButton.MouseButton1Click:Connect(function()
+    isRunning = not isRunning
+    if isRunning then
+        ExecuteButton.Text = "STOP"
+        ExecuteButton.BackgroundColor3 = Color3.fromRGB(40, 0, 0)
+        getgenv().SilentAimHead = true
+    else
+        ExecuteButton.Text = "EXECUTE"
+        ExecuteButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        getgenv().SilentAimHead = false
+    end
+end)
+
+-- Faster startup sequence
+spawn(function()
+    local sequence = {
+        {text = "Initializing h4x module...", speed = 0.02, wait = 0.5},
+        {text = "Injecting h4x components...", speed = 0.02, wait = 0.5},
+        {text = "Bypassing security...", speed = 0.02, wait = 0.5},
+        {text = "Loading Aimbot framework...", speed = 0.02, wait = 0.5},
+        {text = "[!] System compromised...", speed = 0.02, wait = 0.5},
+        {text = "Ready to execute", speed = 0.02, wait = 0}
     }
     
-    -- Handle Toggle Button
-    local isEnabled = false
-    ui.ToggleButton.MouseButton1Click:Connect(function()
-        isEnabled = not isEnabled
-        getgenv().SilentAimHead = isEnabled
-        ui.ToggleButton.Text = isEnabled and "[ ENABLED ]" or "[ DISABLED ]"
-        ui.ToggleButton.BackgroundColor3 = isEnabled and Color3.fromRGB(0, 80, 0) or Color3.fromRGB(0, 40, 0)
-    end)
-    
-    -- Handle Minimize Button
-    local isMinimized = false
-    ui.MinButton.MouseButton1Click:Connect(function()
-        isMinimized = not isMinimized
-        ui.ContentFrame.Visible = not isMinimized
-        ui.MainFrame.Size = isMinimized and UDim2.new(0, 300, 0, 25) or UDim2.new(0, 300, 0, 200)
-    end)
-    
-    -- Handle Close Button
-    ui.CloseButton.MouseButton1Click:Connect(function()
-        ui.ScreenGui:Destroy()
-        getgenv().SilentAimHead = false
-    end)
-    
-    -- Display startup sequence
-    task.spawn(function()
-        for _, text in ipairs(startupTexts) do
-            self:TypewriterEffect(ui.StatusText, text)
-            wait(1)
+    for _, step in ipairs(sequence) do
+        typeWrite(step.text, step.speed)
+        if step.wait > 0 then
+            loadingDots(step.text, math.floor(step.wait / 0.2))
         end
-        wait(0.5)
-        ui.StatusText.Text = "Status: Ready"
-    end)
-    
-    -- Parent the ScreenGui
-    if syn and syn.protect_gui then
-        syn.protect_gui(ui.ScreenGui)
-        ui.ScreenGui.Parent = game:GetService("CoreGui")
-    elseif gethui then
-        ui.ScreenGui.Parent = gethui()
-    else
-        ui.ScreenGui.Parent = game:GetService("CoreGui")
     end
     
-    return ui
-end
+    wait(0.3)
+    ExecuteButton.Visible = true
+    StatusLabel.Text = "Status: Ready to hack..."
+    
+    -- Quick button flash
+    ExecuteButton.BackgroundColor3 = Color3.fromRGB(0, 40, 0)
+    wait(0.1)
+    ExecuteButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+end)
 
--- Create Matrix Effect
-function HeadshotHax:CreateMatrixEffect()
-    local matrixFrame = Instance.new("Frame")
-    matrixFrame.Size = UDim2.new(1, 0, 1, 0)
-    matrixFrame.BackgroundTransparency = 1
-    matrixFrame.Parent = self.ui.MainFrame
-    
-    -- Matrix characters
-    local characters = "0123456789ABCDEF"
-    
-    -- Create falling characters
-    for i = 1, 20 do
-        local label = Instance.new("TextLabel")
-        label.BackgroundTransparency = 1
-        label.Size = UDim2.new(0, 10, 0, 10)
-        label.Font = FONT
-        label.TextColor3 = TEXT_COLOR
-        label.TextSize = 12
-        label.Text = string.sub(characters, math.random(1, #characters), math.random(1, #characters))
-        label.Position = UDim2.new(math.random(), 0, -0.1, 0)
-        label.Parent = matrixFrame
-        
-        -- Animate the character
-        spawn(function()
-            while true do
-                label.Position = label.Position + UDim2.new(0, 0, 0.01, 0)
-                if label.Position.Y.Scale > 1 then
-                    label.Position = UDim2.new(math.random(), 0, -0.1, 0)
+-- Key press toggle
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if input.KeyCode == Enum.KeyCode.P then  -- Press 'P' to toggle the script
+        isRunning = not isRunning
+        if isRunning then
+            ExecuteButton.Text = "STOP"
+            ExecuteButton.BackgroundColor3 = Color3.fromRGB(40, 0, 0)
+            getgenv().SilentAimHead = true
+        else
+            ExecuteButton.Text = "EXECUTE"
+            ExecuteButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+            getgenv().SilentAimHead = false
+        end
+    end
+end)
+
+-- Original silent aim code
+local oldRaycast = workspace.Raycast
+workspace.Raycast = function(self, origin, direction, ignoreDescendants, ...)
+    if getgenv().SilentAimHead then
+        local closest = nil
+        local shortest = math.huge
+        for _, mob in pairs(workspace:GetDescendants()) do
+            if mob:FindFirstChild("Head") and mob:FindFirstChild("Humanoid") then
+                local dist = (mob.Head.Position - origin).Magnitude
+                if dist < shortest then
+                    closest = mob.Head
+                    shortest = dist
                 end
-                label.Text = string.sub(characters, math.random(1, #characters), math.random(1, #characters))
-                wait(0.1)
             end
-        end)
+        end
+
+        if closest then
+            direction = (closest.Position - origin).Unit * direction.Magnitude
+        end
     end
+    return oldRaycast(self, origin, direction, ignoreDescendants, ...)
 end
-
--- Initialize the UI
-local UI = HeadshotHax:Init()
-
-return HeadshotHax
