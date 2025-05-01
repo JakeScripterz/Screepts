@@ -180,9 +180,9 @@ function HeadshotHax:Init()
     local startupTexts = {
         "Initializing h4x module...",
         "Bypassing anti-cheat...",
-        "Injecting headshot algorithm...",
-        "Establishing neural network...",
-        "H4X ready for deployment..."
+        "Injecting h4x...",
+        "System Compromised...",
+        "h4x ready to execute..."
     }
     
     -- Handle Toggle Button
