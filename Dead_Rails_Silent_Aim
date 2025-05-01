@@ -55,7 +55,7 @@ UserInfoLabel.BorderColor3 = Color3.fromRGB(0, 255, 0)
 UserInfoLabel.Position = UDim2.new(0, 10, 1, -60)
 UserInfoLabel.Size = UDim2.new(1, -20, 0, 20)
 UserInfoLabel.Font = Enum.Font.Code
-UserInfoLabel.Text = "User: " .. Players.LocalPlayer.Name
+UserInfoLabel.Text = "M4de by Sp00kzW4sHere"
 UserInfoLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
 UserInfoLabel.TextSize = 10.000
 
@@ -148,11 +148,11 @@ end)
 -- Faster startup sequence
 spawn(function()
     local sequence = {
-        {text = "Initializing h4x module...", speed = 0.02, wait = 0.5},
-        {text = "Injecting h4x components...", speed = 0.02, wait = 0.5},
-        {text = "Bypassing security...", speed = 0.02, wait = 0.5},
-        {text = "Loading Aimbot framework...", speed = 0.02, wait = 0.5},
-        {text = "[!] System compromised...", speed = 0.02, wait = 0.5},
+        {text = "Initializing h4x module", speed = 0.02, wait = 0.5},
+        {text = "Injecting h4x components", speed = 0.02, wait = 0.5},
+        {text = "Bypassing security", speed = 0.02, wait = 0.5},
+        {text = "Loading Aimbot framework", speed = 0.02, wait = 0.5},
+        {text = "[!] System compromised", speed = 0.02, wait = 0.5},
         {text = "Ready to execute", speed = 0.02, wait = 0}
     }
     
