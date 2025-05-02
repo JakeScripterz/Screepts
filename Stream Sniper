@@ -1,5 +1,4 @@
--- Enhanced Stream Sniper GUI
--- Redesigned by JakeScripterz
+--//UI Written By Sp00kzW4sHere
 
 local Players = game:GetService("Players")
 local TeleportService = game:GetService("TeleportService")
