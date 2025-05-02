@@ -1,376 +1,265 @@
--- Old Version: https://raw.githubusercontent.com/Acrillis/SynapseX/master/Synapse%20Scripts/StreamSniper.lua
-local Screenguini = Instance.new("ScreenGui")
-local Frame = Instance.new("Frame")
-local TextLabel = Instance.new("TextLabel")
-local TextLabel_2 = Instance.new("TextLabel")
-local UsernameBox = Instance.new("TextBox")
-local TextLabel_3 = Instance.new("TextLabel")
-local PlaceIdBox = Instance.new("TextBox")
-local StartButton = Instance.new("TextButton")
-local TextLabel_4 = Instance.new("TextLabel")
-local UsernameLabel = Instance.new("TextLabel")
-local TextLabel_5 = Instance.new("TextLabel")
-local UserIdLabel = Instance.new("TextLabel")
-local GamerPicture = Instance.new("ImageLabel")
+-- Enhanced Stream Sniper GUI
+-- Redesigned by JakeScripterz
 
-local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
+local CoreGui = game:GetService("CoreGui")
 
-Screenguini.Name = HttpService:GenerateGUID(false)
-Screenguini.Parent = game:GetService("CoreGui")
+-- GUI Elements
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local UsernameBox = Instance.new("TextBox")
+local PlaceIdBox = Instance.new("TextBox")
+local ExecuteButton = Instance.new("TextButton")
+local StatusLabel = Instance.new("TextLabel")
+local MinimizeButton = Instance.new("TextButton")
+local UserInfoLabel = Instance.new("TextLabel")
+local TargetInfoLabel = Instance.new("TextLabel")
 
-Frame.Parent = Screenguini
-Frame.Active = true
-Frame.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
-Frame.BorderColor3 = Color3.fromRGB(31, 31, 31)
-Frame.Draggable = true
-Frame.Size = UDim2.new(0, 400, 0, 260)
+-- Variables
+local isSearching = false
+local isMinimized = false
+local originalSize = UDim2.new(0, 300, 0, 220)
+local minimizedSize = UDim2.new(0, 300, 0, 30)
 
-TextLabel.Parent = Frame
-TextLabel.Active = true
-TextLabel.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
-TextLabel.BorderColor3 = Color3.fromRGB(31, 31, 40)
-TextLabel.Size = UDim2.new(0, 400, 0, 40)
-TextLabel.Font = Enum.Font.SourceSansLight
-TextLabel.Text = "Synapse X Stream Sniper"
-TextLabel.TextSize = 24.000
+-- GUI Properties
+ScreenGui.Name = "StreamSniperX"
+ScreenGui.Parent = CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-TextLabel_2.Parent = Frame
-TextLabel_2.Active = true
-TextLabel_2.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
-TextLabel_2.BorderColor3 = Color3.fromRGB(31, 31, 31)
-TextLabel_2.Position = UDim2.new(0, 10, 0, 49)
-TextLabel_2.Size = UDim2.new(0, 150, 0, 20)
-TextLabel_2.Font = Enum.Font.SourceSansLight
-TextLabel_2.Text = "Username/UserId:"
-TextLabel_2.TextColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel_2.TextSize = 16.000
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+MainFrame.BorderColor3 = Color3.fromRGB(0, 255, 0)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -110)
+MainFrame.Size = originalSize
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+Title.Name = "Title"
+Title.Parent = MainFrame
+Title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Title.BorderColor3 = Color3.fromRGB(0, 255, 0)
+Title.Size = UDim2.new(1, -25, 0, 30)
+Title.Font = Enum.Font.Code
+Title.Text = "Stream Sniper X v2.0"
+Title.TextColor3 = Color3.fromRGB(0, 255, 0)
+Title.TextSize = 16.000
 
 UsernameBox.Name = "UsernameBox"
-UsernameBox.Parent = Frame
-UsernameBox.BackgroundColor3 = Color3.fromRGB(61, 61, 61)
-UsernameBox.BorderColor3 = Color3.fromRGB(31, 31, 31)
-UsernameBox.Position = UDim2.new(0, 10, 0, 80)
-UsernameBox.Size = UDim2.new(0, 150, 0, 35)
-UsernameBox.Font = Enum.Font.SourceSansLight
-UsernameBox.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
-UsernameBox.PlaceholderText = "Enter Username Here"
+UsernameBox.Parent = MainFrame
+UsernameBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+UsernameBox.BorderColor3 = Color3.fromRGB(0, 255, 0)
+UsernameBox.Position = UDim2.new(0, 10, 0, 40)
+UsernameBox.Size = UDim2.new(1, -20, 0, 30)
+UsernameBox.Font = Enum.Font.Code
+UsernameBox.PlaceholderText = "Enter Username/UserId"
 UsernameBox.Text = ""
-UsernameBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-UsernameBox.TextSize = 18.000
-
-TextLabel_3.Parent = Frame
-TextLabel_3.Active = true
-TextLabel_3.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
-TextLabel_3.BorderColor3 = Color3.fromRGB(31, 31, 31)
-TextLabel_3.Position = UDim2.new(0, 10, 0, 130)
-TextLabel_3.Size = UDim2.new(0, 150, 0, 20)
-TextLabel_3.Font = Enum.Font.SourceSansLight
-TextLabel_3.Text = "Place Id:"
-TextLabel_3.TextColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel_3.TextSize = 16.000
+UsernameBox.TextColor3 = Color3.fromRGB(0, 255, 0)
+UsernameBox.TextSize = 14.000
+UsernameBox.PlaceholderColor3 = Color3.fromRGB(0, 100, 0)
 
 PlaceIdBox.Name = "PlaceIdBox"
-PlaceIdBox.Parent = Frame
-PlaceIdBox.BackgroundColor3 = Color3.fromRGB(61, 61, 61)
-PlaceIdBox.BorderColor3 = Color3.fromRGB(31, 31, 31)
-PlaceIdBox.Position = UDim2.new(0, 10, 0, 157)
-PlaceIdBox.Size = UDim2.new(0, 150, 0, 35)
-PlaceIdBox.Font = Enum.Font.SourceSansLight
-PlaceIdBox.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
-PlaceIdBox.PlaceholderText = "Enter PlaceId Here"
+PlaceIdBox.Parent = MainFrame
+PlaceIdBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+PlaceIdBox.BorderColor3 = Color3.fromRGB(0, 255, 0)
+PlaceIdBox.Position = UDim2.new(0, 10, 0, 80)
+PlaceIdBox.Size = UDim2.new(1, -20, 0, 30)
+PlaceIdBox.Font = Enum.Font.Code
+PlaceIdBox.PlaceholderText = "Place ID (Leave empty for current game)"
 PlaceIdBox.Text = ""
-PlaceIdBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-PlaceIdBox.TextSize = 18.000
+PlaceIdBox.TextColor3 = Color3.fromRGB(0, 255, 0)
+PlaceIdBox.TextSize = 14.000
+PlaceIdBox.PlaceholderColor3 = Color3.fromRGB(0, 100, 0)
 
-StartButton.Name = "StartButton"
-StartButton.Parent = Frame
-StartButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-StartButton.BorderColor3 = Color3.fromRGB(31, 31, 31)
-StartButton.Position = UDim2.new(0, 10, 0, 210)
-StartButton.Size = UDim2.new(0, 380, 0, 40)
-StartButton.Font = Enum.Font.SourceSansLight
-StartButton.Text = "Start"
-StartButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-StartButton.TextSize = 24.000
+ExecuteButton.Name = "ExecuteButton"
+ExecuteButton.Parent = MainFrame
+ExecuteButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ExecuteButton.BorderColor3 = Color3.fromRGB(0, 255, 0)
+ExecuteButton.Position = UDim2.new(0.5, -60, 0, 120)
+ExecuteButton.Size = UDim2.new(0, 120, 0, 35)
+ExecuteButton.Font = Enum.Font.Code
+ExecuteButton.Text = "EXECUTE"
+ExecuteButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+ExecuteButton.TextSize = 14.000
 
-TextLabel_4.Parent = Frame
-TextLabel_4.Active = true
-TextLabel_4.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
-TextLabel_4.BackgroundTransparency = 1.000
-TextLabel_4.BorderColor3 = Color3.fromRGB(31, 31, 31)
-TextLabel_4.Position = UDim2.new(0, 200, 0, 49)
-TextLabel_4.Size = UDim2.new(0, 0, 0, 20)
-TextLabel_4.AutomaticSize = Enum.AutomaticSize.X
-TextLabel_4.Font = Enum.Font.SourceSansBold
-TextLabel_4.Text = "Username:"
-TextLabel_4.TextColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel_4.TextSize = 16.000
-TextLabel_4.TextWrapped = true
-TextLabel_4.TextXAlignment = Enum.TextXAlignment.Left
+StatusLabel.Name = "StatusLabel"
+StatusLabel.Parent = MainFrame
+StatusLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+StatusLabel.BorderColor3 = Color3.fromRGB(0, 255, 0)
+StatusLabel.Position = UDim2.new(0, 10, 1, -70)
+StatusLabel.Size = UDim2.new(1, -20, 0, 25)
+StatusLabel.Font = Enum.Font.Code
+StatusLabel.Text = "Status: Initializing..."
+StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+StatusLabel.TextSize = 12.000
 
-UsernameLabel.Name = "UsernameLabel"
-UsernameLabel.Parent = TextLabel_4
-UsernameLabel.Active = true
-UsernameLabel.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
-UsernameLabel.BackgroundTransparency = 1.000
-UsernameLabel.BorderColor3 = Color3.fromRGB(31, 31, 31)
-UsernameLabel.Position = UDim2.new(0.5, 0, 0, 0)
-UsernameLabel.Size = UDim2.new(0, 150, 0, 20)
-UsernameLabel.Font = Enum.Font.SourceSansLight
-UsernameLabel.Text = ""
-UsernameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-UsernameLabel.TextSize = 16.000
-UsernameLabel.TextXAlignment = Enum.TextXAlignment.Left
+TargetInfoLabel.Name = "TargetInfoLabel"
+TargetInfoLabel.Parent = MainFrame
+TargetInfoLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+TargetInfoLabel.BorderColor3 = Color3.fromRGB(0, 255, 0)
+TargetInfoLabel.Position = UDim2.new(0, 10, 1, -40)
+TargetInfoLabel.Size = UDim2.new(1, -20, 0, 20)
+TargetInfoLabel.Font = Enum.Font.Code
+TargetInfoLabel.Text = "Target: None"
+TargetInfoLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+TargetInfoLabel.TextSize = 12.000
 
-TextLabel_5.Parent = Frame
-TextLabel_5.Active = true
-TextLabel_5.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
-TextLabel_5.BackgroundTransparency = 1.000
-TextLabel_5.BorderColor3 = Color3.fromRGB(31, 31, 31)
-TextLabel_5.Position = UDim2.new(0, 200, 0, 69)
-TextLabel_5.Size = UDim2.new(0, 0, 0, 20)
-TextLabel_5.AutomaticSize = Enum.AutomaticSize.X
-TextLabel_5.Font = Enum.Font.SourceSansBold
-TextLabel_5.Text = "UserId:"
-TextLabel_5.TextColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel_5.TextSize = 16.000
-TextLabel_5.TextWrapped = true
-TextLabel_5.TextXAlignment = Enum.TextXAlignment.Left
+MinimizeButton.Name = "MinimizeButton"
+MinimizeButton.Parent = MainFrame
+MinimizeButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+MinimizeButton.BorderColor3 = Color3.fromRGB(0, 255, 0)
+MinimizeButton.Position = UDim2.new(1, -25, 0, 0)
+MinimizeButton.Size = UDim2.new(0, 25, 0, 30)
+MinimizeButton.Font = Enum.Font.Code
+MinimizeButton.Text = "-"
+MinimizeButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+MinimizeButton.TextSize = 16.000
 
-UserIdLabel.Name = "UserIdLabel"
-UserIdLabel.Parent = TextLabel_5
-UserIdLabel.Active = true
-UserIdLabel.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
-UserIdLabel.BackgroundTransparency = 1.000
-UserIdLabel.BorderColor3 = Color3.fromRGB(31, 31, 31)
-UserIdLabel.Position = UDim2.new(0.5, 0, 0, 0)
-UserIdLabel.Size = UDim2.new(0, 150, 0, 20)
-UserIdLabel.Font = Enum.Font.SourceSansLight
-UserIdLabel.Text = ""
-UserIdLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-UserIdLabel.TextSize = 16.000
-UserIdLabel.TextXAlignment = Enum.TextXAlignment.Left
+UserInfoLabel.Name = "UserInfoLabel"
+UserInfoLabel.Parent = MainFrame
+UserInfoLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+UserInfoLabel.BorderColor3 = Color3.fromRGB(0, 255, 0)
+UserInfoLabel.Position = UDim2.new(0, 10, 1, -20)
+UserInfoLabel.Size = UDim2.new(1, -20, 0, 15)
+UserInfoLabel.Font = Enum.Font.Code
+UserInfoLabel.Text = "Made By Sp00kzW4sHere"
+UserInfoLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+UserInfoLabel.TextSize = 10.000
 
-GamerPicture.Name = "GamerPicture"
-GamerPicture.Parent = Frame
-GamerPicture.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-GamerPicture.Position = UDim2.new(0, 200, 0, 95)
-GamerPicture.Size = UDim2.new(0, 97, 0, 97)
-GamerPicture.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
-
-if shared.STREAM_SNIPER then
-   shared.STREAM_SNIPER:Destroy()
-end
-shared.STREAM_SNIPER = Screenguini
-
-local searching = false
-local confirm = false
-
-local function HttpGet(url)
-return pcall(HttpService.JSONDecode, HttpService, game:HttpGet(url))
+-- Type writer effect
+local function typeWrite(text, speed)
+    speed = speed or 0.02
+    StatusLabel.Text = ""
+    for i = 1, #text do
+        if not ScreenGui.Parent then break end
+        StatusLabel.Text = StatusLabel.Text .. string.sub(text, i, i)
+        wait(speed)
+    end
 end
 
-local function Status(text, tout)
-StartButton.Text = text
-
-   if tout then
-       task.delay(tout, function()
-           if StartButton.Text == text then
-               searching = false
-               StartButton.Text = "Start"    
-           end
-       end)
-   end
+-- Loading animation
+local function loadingDots(text, times)
+    for i = 1, times do
+        if not ScreenGui.Parent then break end
+        StatusLabel.Text = text .. string.rep(".", i % 4)
+        wait(0.2)
+    end
 end
 
-local function getServers(id, cursor)
-   local fullurl = "https://games.roblox.com/v1/games/".. id .."/servers/Public?limit=100"
-   if cursor then
-       fullurl = "&cursor=".. cursor
-   end
-
-   return HttpGet(fullurl)
+-- Stream sniper function
+local function searchForPlayer(username, placeId)
+    local userId
+    local success, result = pcall(function()
+        userId = tonumber(username) or Players:GetUserIdFromNameAsync(username)
+        return Players:GetNameFromUserIdAsync(userId)
+    end)
+    
+    if not success then
+        typeWrite("Error: Invalid username/userId!")
+        return
+    end
+    
+    TargetInfoLabel.Text = string.format("Target: %s (%s)", result, userId)
+    
+    while isSearching do
+        local success, servers = pcall(function()
+            return HttpService:JSONDecode(game:HttpGet(
+                string.format("https://games.roblox.com/v1/games/%s/servers/Public?limit=100", placeId)
+            ))
+        end)
+        
+        if success and servers.data then
+            for _, server in ipairs(servers.data) do
+                if not isSearching then break end
+                
+                typeWrite(string.format("Scanning server %s...", server.id))
+                
+                if table.find(server.playerTokens, userId) then
+                    typeWrite("Target found! Joining server...")
+                    TeleportService:TeleportToPlaceInstance(placeId, server.id)
+                    return
+                end
+                
+                wait(0.1)
+            end
+        end
+        
+        typeWrite("Searching for target...")
+        wait(1)
+    end
 end
 
-local function fetchThumbs(tokens)
-   local payload = {
-       Url = "https://thumbnails.roblox.com/v1/batch",
-       Headers = {
-           ["Content-Type"] = "application/json"
-       },
-       Method = "POST",
-
-       Body = {}
-   }
-
-   for _, token in ipairs(tokens) do
-       table.insert(payload.Body, {
-           requestId = "0:".. token ..":AvatarHeadshot:150x150:png:regular",
-           type = "AvatarHeadShot",
-           targetId = 0,
-           token = token,
-           format = "png",
-           size = "150x150"
-       })
-   end
-
-   payload.Body = HttpService:JSONEncode(payload.Body)
-   local result = syn.request(payload)
-   local s, data = pcall(HttpService.JSONDecode, HttpService, result.Body)
-   return s, data and data.data or data
-end
-
-local function teleport(placeId, guid)
-   TeleportService:TeleportToPlaceInstance(placeId, guid)
-end
-
-
-local threads = 30
-
-StartButton.MouseButton1Click:Connect(function()
-   if confirm then
-       confirm = false
-       searching = false
-       Status("Cancelled")
-       return
-   end
-
-   if searching then
-       confirm = true
-       local old = StartButton.Text
-       Status("Click again to confirm.")
-       task.delay(5, function()
-           if "Click again to confirm." == StartButton.Text then
-               confirm = false
-               StartButton.Text = old
-           end
-       end)
-       return
-   end
-
-   searching = true
-
-   -- User ID
-   Status("Getting user id...")
-
-   local s, Username, UserId = pcall(function() -- TODO FIX: fix for only numbers players
-       local userId = tonumber(UsernameBox.Text) or Players:GetUserIdFromNameAsync(UsernameBox.Text)
-       local username = Players:GetNameFromUserIdAsync(userId)
-
-return username, userId
+-- Button handlers
+MinimizeButton.MouseButton1Click:Connect(function()
+    isMinimized = not isMinimized
+    if isMinimized then
+        MainFrame.Size = minimizedSize
+        UsernameBox.Visible = false
+        PlaceIdBox.Visible = false
+        ExecuteButton.Visible = false
+        StatusLabel.Visible = false
+        TargetInfoLabel.Visible = false
+        UserInfoLabel.Visible = false
+        MinimizeButton.Text = "+"
+    else
+        MainFrame.Size = originalSize
+        UsernameBox.Visible = true
+        PlaceIdBox.Visible = true
+        ExecuteButton.Visible = true
+        StatusLabel.Visible = true
+        TargetInfoLabel.Visible = true
+        UserInfoLabel.Visible = true
+        MinimizeButton.Text = "-"
+    end
 end)
 
-if not s then
-return Status("Username or UserId does not exist!", 3)
-end
-
-   local s, thumbUrl = pcall(Players.GetUserThumbnailAsync, Players, UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150)
-
-   UsernameLabel.Text = Username
-   UserIdLabel.Text = UserId
-   GamerPicture.Image = s and thumbUrl or ""
-
-   Status("Getting user's thumbnail...")
-   local s, response = HttpGet("https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=" .. UserId .. "&format=Png&size=150x150&isCircular=false")
-   --local s, response = HttpGet("https://www.roblox.com/headshot-thumbnail/json?userId=" .. UserId .. "&width=150&height=150")
-   local thumbnail = s and response['data'][1].imageUrl
-
-   Status("Searching for (".. UserId ..")")
-   
-   -- Place ID
-   Status("Getting place id...")
-   
-   local placeId = tonumber(PlaceIdBox.Text)
-
-   if PlaceIdBox.Text:gsub("%s", "") == "" then
-       placeId = game.PlaceId
-
-   elseif not placeId then
-       Status("Invalid place id", 3)
-       return
-   end
-   
-   Status("Searching...")
-   local cursor = nil
-   local searched = 0
-   local maxSearchs = 0
-   local players = 0
-   -- Server search
-   while searching do
-       if not Screenguini or not Screenguini.Parent then
-           break
-       end
-       local s, result = getServers(placeId, cursor)
-
-       if s then
-           local servers = result.data
-           cursor = result.nextPageCursor
-           
-           if StartButton.Text:match("Searching") then
-               maxSearchs = maxSearchs + #servers
-               Status(searched .."/".. maxSearchs .." servers scanned, players found: ".. players)
-           end
-
-           -- Search all servers
-           for index, server in ipairs(servers) do
-               local function fetchServer()
-                   local s, thumbs = fetchThumbs(server.playerTokens)
-                   if s then
-                       players = players + #thumbs
-                       for _, playerThumb in ipairs(thumbs) do
-                           if playerThumb.imageUrl then
-                               if playerThumb.imageUrl == thumbnail then
-                                   searching = false
-                                   Status("Found player, teleporting...")
-
-                                   teleport(placeId, server.id)
-                                   local try = 0
-                                   Player.OnTeleport:Connect(function(teleportState)
-                                       if teleportState == Enum.TeleportState.Failed then
-                                           try = try + 1
-                                           Status("Teleport failed, try #".. try)
-                                           teleport(placeId, server.id)
-                                       end
-                                   end)
-                               end
-                           else
-                               Status("token failed, id:", playerThumb.requestId, playerThumb.state, playerThumb.errorMessage)
-                               --print("token failed, id:", playerThumb.requestId, playerThumb.state, playerThumb.errorMessage)
-                           end
-                       end
-                   else
-                       Status("token failed", s, thumb)
-                       --print("token failed", s, thumbs)
-                   end
-               end
-               searched = searched + 1
-               if index % threads ~= 0 then
-                   task.spawn(fetchServer)
-                   task.wait()
-
-               else
-                   fetchServer()
-               end
-
-               if searching then
-                   Status(searched .."/".. maxSearchs .." servers scanned, players found: ".. players)
-               end
-           end
-           
-           -- Player not found
-           if not cursor then
-               break
-           end
-       else
-           return Status("Failed to find servers", 3)
-       end
-
-       task.wait()
-   end
-   
-   if searching then
-       Status("Failed to find ".. Username ..", maybe in a vip server", 3)
-   end
+ExecuteButton.MouseButton1Click:Connect(function()
+    isSearching = not isSearching
+    if isSearching then
+        local targetPlaceId = tonumber(PlaceIdBox.Text) or game.PlaceId
+        ExecuteButton.Text = "STOP"
+        ExecuteButton.BackgroundColor3 = Color3.fromRGB(40, 0, 0)
+        spawn(function()
+            searchForPlayer(UsernameBox.Text, targetPlaceId)
+        end)
+    else
+        ExecuteButton.Text = "EXECUTE"
+        ExecuteButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        typeWrite("Operation cancelled.")
+    end
 end)
+
+-- Startup sequence
+spawn(function()
+    local sequence = {
+        {text = "Initializing stream sniper module", wait = 0.5},
+        {text = "Loading player database", wait = 0.5},
+        {text = "Bypassing security", wait = 0.5},
+        {text = "Establishing connection", wait = 0.5},
+        {text = "[!] System ready", wait = 0.5},
+        {text = "Awaiting target input", wait = 0}
+    }
+    
+    for _, step in ipairs(sequence) do
+        typeWrite(step.text)
+        if step.wait > 0 then
+            loadingDots(step.text, math.floor(step.wait / 0.2))
+        end
+    end
+end)
+
+-- Hotkey support
+game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+    if input.KeyCode == Enum.KeyCode.RightControl then
+        MainFrame.Visible = not MainFrame.Visible
+    end
+end)
+
+-- Cleanup
+if shared.StreamSniperGui then
+    shared.StreamSniperGui:Destroy()
+end
+shared.StreamSniperGui = ScreenGui
