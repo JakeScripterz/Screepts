@@ -1,6 +1,3 @@
---[[
-    WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
 -- Old Version: https://raw.githubusercontent.com/Acrillis/SynapseX/master/Synapse%20Scripts/StreamSniper.lua
 local Screenguini = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
