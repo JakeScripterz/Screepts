@@ -1,13 +1,17 @@
---//UI Written By Sp00kzW4sHere
+--//Enhanced By Sp00kzW4sHere
 
 local Players = game:GetService("Players")
 local TeleportService = game:GetService("TeleportService")
 local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 
 -- GUI Elements
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
+local ScanLine = Instance.new("Frame")
+local GlitchEffect = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
 local UsernameBox = Instance.new("TextBox")
 local PlaceIdBox = Instance.new("TextBox")
@@ -17,127 +21,240 @@ local MinimizeButton = Instance.new("TextButton")
 local UserInfoLabel = Instance.new("TextLabel")
 local TargetInfoLabel = Instance.new("TextLabel")
 
--- Variables
+-- Enhanced Variables
 local isSearching = false
 local isMinimized = false
-local originalSize = UDim2.new(0, 300, 0, 220)
-local minimizedSize = UDim2.new(0, 300, 0, 30)
+local originalSize = UDim2.new(0, 320, 0, 240)
+local minimizedSize = UDim2.new(0, 320, 0, 30)
+local terminalColors = {
+    neonGreen = Color3.fromRGB(0, 255, 0),
+    darkGreen = Color3.fromRGB(0, 100, 0),
+    matrixGreen = Color3.fromRGB(0, 180, 0),
+    black = Color3.fromRGB(10, 10, 10),
+    darkGray = Color3.fromRGB(20, 20, 20)
+}
 
--- GUI Properties
-ScreenGui.Name = "StreamSniperX"
+-- Enhanced GUI Properties
+ScreenGui.Name = "StreamSniperX_v3"
 ScreenGui.Parent = CoreGui
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-MainFrame.BorderColor3 = Color3.fromRGB(0, 255, 0)
-MainFrame.Position = UDim2.new(0.5, -150, 0.5, -110)
+MainFrame.BackgroundColor3 = terminalColors.black
+MainFrame.BorderColor3 = terminalColors.neonGreen
+MainFrame.Position = UDim2.new(0.5, -160, 0.5, -120)
 MainFrame.Size = originalSize
 MainFrame.Active = true
 MainFrame.Draggable = true
+MainFrame.ClipsDescendants = true
 
+-- Scan Line Effect
+ScanLine.Name = "ScanLine"
+ScanLine.Parent = MainFrame
+ScanLine.BackgroundColor3 = terminalColors.neonGreen
+ScanLine.BackgroundTransparency = 0.8
+ScanLine.BorderSizePixel = 0
+ScanLine.Size = UDim2.new(1, 0, 0, 2)
+
+-- Glitch Effect Frame
+GlitchEffect.Name = "GlitchEffect"
+GlitchEffect.Parent = MainFrame
+GlitchEffect.BackgroundColor3 = terminalColors.neonGreen
+GlitchEffect.BackgroundTransparency = 0.9
+GlitchEffect.BorderSizePixel = 0
+GlitchEffect.Size = UDim2.new(1, 0, 1, 0)
+GlitchEffect.Visible = false
+
+-- Enhanced Title with Terminal Style
 Title.Name = "Title"
 Title.Parent = MainFrame
-Title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-Title.BorderColor3 = Color3.fromRGB(0, 255, 0)
+Title.BackgroundColor3 = terminalColors.black
+Title.BorderColor3 = terminalColors.neonGreen
 Title.Size = UDim2.new(1, -25, 0, 30)
 Title.Font = Enum.Font.Code
-Title.Text = "Stream Sniper X v2.0"
-Title.TextColor3 = Color3.fromRGB(0, 255, 0)
+Title.Text = "[ STR34M_SN1P3R_X v3.0 ]"
+Title.TextColor3 = terminalColors.neonGreen
 Title.TextSize = 16.000
 
-UsernameBox.Name = "UsernameBox"
-UsernameBox.Parent = MainFrame
-UsernameBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-UsernameBox.BorderColor3 = Color3.fromRGB(0, 255, 0)
-UsernameBox.Position = UDim2.new(0, 10, 0, 40)
-UsernameBox.Size = UDim2.new(1, -20, 0, 30)
-UsernameBox.Font = Enum.Font.Code
-UsernameBox.PlaceholderText = "Enter Username/UserId"
-UsernameBox.Text = ""
-UsernameBox.TextColor3 = Color3.fromRGB(0, 255, 0)
-UsernameBox.TextSize = 14.000
-UsernameBox.PlaceholderColor3 = Color3.fromRGB(0, 100, 0)
+-- Enhanced Input Boxes
+local function createTerminalTextBox(name, position, placeholder)
+    local box = Instance.new("TextBox")
+    box.Name = name
+    box.Parent = MainFrame
+    box.BackgroundColor3 = terminalColors.black
+    box.BorderColor3 = terminalColors.neonGreen
+    box.Position = position
+    box.Size = UDim2.new(1, -20, 0, 30)
+    box.Font = Enum.Font.Code
+    box.PlaceholderText = placeholder
+    box.Text = ""
+    box.TextColor3 = terminalColors.neonGreen
+    box.TextSize = 14.000
+    box.PlaceholderColor3 = terminalColors.darkGreen
+    
+    -- Add hover effect
+    box.MouseEnter:Connect(function()
+        TweenService:Create(box, TweenInfo.new(0.3), {BorderColor3 = terminalColors.matrixGreen}):Play()
+    end)
+    box.MouseLeave:Connect(function()
+        TweenService:Create(box, TweenInfo.new(0.3), {BorderColor3 = terminalColors.neonGreen}):Play()
+    end)
+    
+    return box
+end
 
-PlaceIdBox.Name = "PlaceIdBox"
-PlaceIdBox.Parent = MainFrame
-PlaceIdBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-PlaceIdBox.BorderColor3 = Color3.fromRGB(0, 255, 0)
-PlaceIdBox.Position = UDim2.new(0, 10, 0, 80)
-PlaceIdBox.Size = UDim2.new(1, -20, 0, 30)
-PlaceIdBox.Font = Enum.Font.Code
-PlaceIdBox.PlaceholderText = "Place ID (Leave empty for current game)"
-PlaceIdBox.Text = ""
-PlaceIdBox.TextColor3 = Color3.fromRGB(0, 255, 0)
-PlaceIdBox.TextSize = 14.000
-PlaceIdBox.PlaceholderColor3 = Color3.fromRGB(0, 100, 0)
+UsernameBox = createTerminalTextBox("UsernameBox", UDim2.new(0, 10, 0, 40), ">>_ ENTER_USERNAME/USERID")
+PlaceIdBox = createTerminalTextBox("PlaceIdBox", UDim2.new(0, 10, 0, 80), ">>_ PLACE_ID (CURRENT_GAME)")
 
+-- Enhanced Execute Button
 ExecuteButton.Name = "ExecuteButton"
 ExecuteButton.Parent = MainFrame
-ExecuteButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-ExecuteButton.BorderColor3 = Color3.fromRGB(0, 255, 0)
+ExecuteButton.BackgroundColor3 = terminalColors.black
+ExecuteButton.BorderColor3 = terminalColors.neonGreen
 ExecuteButton.Position = UDim2.new(0.5, -60, 0, 120)
 ExecuteButton.Size = UDim2.new(0, 120, 0, 35)
 ExecuteButton.Font = Enum.Font.Code
-ExecuteButton.Text = "EXECUTE"
-ExecuteButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+ExecuteButton.Text = "[ EXECUTE ]"
+ExecuteButton.TextColor3 = terminalColors.neonGreen
 ExecuteButton.TextSize = 14.000
 
+-- Add pulse effect to Execute Button
+local function pulseButton()
+    local pulseLoop = TweenService:Create(ExecuteButton, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1), {
+        BorderColor3 = terminalColors.matrixGreen
+    })
+    pulseLoop:Play()
+end
+
+-- Enhanced Status Display
 StatusLabel.Name = "StatusLabel"
 StatusLabel.Parent = MainFrame
-StatusLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-StatusLabel.BorderColor3 = Color3.fromRGB(0, 255, 0)
+StatusLabel.BackgroundColor3 = terminalColors.black
+StatusLabel.BorderColor3 = terminalColors.neonGreen
 StatusLabel.Position = UDim2.new(0, 10, 1, -70)
 StatusLabel.Size = UDim2.new(1, -20, 0, 25)
 StatusLabel.Font = Enum.Font.Code
-StatusLabel.Text = "Status: Initializing..."
-StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+StatusLabel.Text = ">>_ INITIALIZING_SYSTEM..."
+StatusLabel.TextColor3 = terminalColors.neonGreen
 StatusLabel.TextSize = 12.000
 
+-- Enhanced Info Labels
 TargetInfoLabel.Name = "TargetInfoLabel"
 TargetInfoLabel.Parent = MainFrame
-TargetInfoLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-TargetInfoLabel.BorderColor3 = Color3.fromRGB(0, 255, 0)
+TargetInfoLabel.BackgroundColor3 = terminalColors.black
+TargetInfoLabel.BorderColor3 = terminalColors.neonGreen
 TargetInfoLabel.Position = UDim2.new(0, 10, 1, -40)
 TargetInfoLabel.Size = UDim2.new(1, -20, 0, 20)
 TargetInfoLabel.Font = Enum.Font.Code
-TargetInfoLabel.Text = "Target: None"
-TargetInfoLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+TargetInfoLabel.Text = ">>_ TARGET: NULL"
+TargetInfoLabel.TextColor3 = terminalColors.neonGreen
 TargetInfoLabel.TextSize = 12.000
 
+-- Enhanced Minimize Button
 MinimizeButton.Name = "MinimizeButton"
 MinimizeButton.Parent = MainFrame
-MinimizeButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-MinimizeButton.BorderColor3 = Color3.fromRGB(0, 255, 0)
+MinimizeButton.BackgroundColor3 = terminalColors.black
+MinimizeButton.BorderColor3 = terminalColors.neonGreen
 MinimizeButton.Position = UDim2.new(1, -25, 0, 0)
 MinimizeButton.Size = UDim2.new(0, 25, 0, 30)
 MinimizeButton.Font = Enum.Font.Code
-MinimizeButton.Text = "-"
-MinimizeButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+MinimizeButton.Text = "□"
+MinimizeButton.TextColor3 = terminalColors.neonGreen
 MinimizeButton.TextSize = 16.000
 
+-- Enhanced Credits
 UserInfoLabel.Name = "UserInfoLabel"
 UserInfoLabel.Parent = MainFrame
-UserInfoLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-UserInfoLabel.BorderColor3 = Color3.fromRGB(0, 255, 0)
+UserInfoLabel.BackgroundColor3 = terminalColors.black
+UserInfoLabel.BorderColor3 = terminalColors.neonGreen
 UserInfoLabel.Position = UDim2.new(0, 10, 1, -20)
 UserInfoLabel.Size = UDim2.new(1, -20, 0, 15)
 UserInfoLabel.Font = Enum.Font.Code
-UserInfoLabel.Text = "Made By Sp00kzW4sHere"
-UserInfoLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+UserInfoLabel.Text = ">>_ Made By Sp00kzW4sHere"
+UserInfoLabel.TextColor3 = terminalColors.neonGreen
 UserInfoLabel.TextSize = 10.000
 
--- Type writer effect
+-- Enhanced Matrix Rain Effect
+local function createMatrixRain()
+    local chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()"
+    local rainDrops = {}
+    
+    for i = 1, 20 do
+        local drop = Instance.new("TextLabel")
+        drop.BackgroundTransparency = 1
+        drop.Size = UDim2.new(0, 20, 0, 20)
+        drop.Font = Enum.Font.Code
+        drop.TextColor3 = terminalColors.matrixGreen
+        drop.TextTransparency = 0.7
+        drop.Parent = MainFrame
+        table.insert(rainDrops, drop)
+    end
+    
+    spawn(function()
+        while wait(0.1) do
+            for _, drop in ipairs(rainDrops) do
+                if math.random() < 0.1 then
+                    drop.Text = string.sub(chars, math.random(1, #chars), math.random(1, #chars))
+                    drop.Position = UDim2.new(math.random(), 0, -0.1, 0)
+                    local tween = TweenService:Create(drop, TweenInfo.new(2), {
+                        Position = UDim2.new(drop.Position.X.Scale, 0, 1.1, 0),
+                        TextTransparency = 1
+                    })
+                    tween:Play()
+                end
+            end
+        end
+    end)
+end
+
+-- Enhanced Scan Line Animation
+local function animateScanLine()
+    spawn(function()
+        while wait() do
+            local tween = TweenService:Create(ScanLine, TweenInfo.new(2), {
+                Position = UDim2.new(0, 0, 1, 0)
+            })
+            tween:Play()
+            wait(2)
+            ScanLine.Position = UDim2.new(0, 0, 0, -2)
+        end
+    end)
+end
+
+-- Enhanced Glitch Effect
+local function triggerGlitch()
+    spawn(function()
+        while wait(math.random(5, 10)) do
+            GlitchEffect.Visible = true
+            wait(0.1)
+            GlitchEffect.Visible = false
+            wait(0.05)
+            GlitchEffect.Visible = true
+            wait(0.07)
+            GlitchEffect.Visible = false
+        end
+    end)
+end
+
+-- Enhanced Type Writer Effect
 local function typeWrite(text, speed)
     speed = speed or 0.02
     StatusLabel.Text = ""
     for i = 1, #text do
         if not ScreenGui.Parent then break end
         StatusLabel.Text = StatusLabel.Text .. string.sub(text, i, i)
-        wait(speed)
+        if math.random() < 0.1 then -- Random glitch effect
+            wait(speed * 3)
+            StatusLabel.TextColor3 = terminalColors.matrixGreen
+            wait(speed)
+            StatusLabel.TextColor3 = terminalColors.neonGreen
+        else
+            wait(speed)
+        end
     end
 end
+-- [Previous enhanced UI code from earlier response remains the same up until the createMatrixRain() function]
 
 -- Loading animation
 local function loadingDots(text, times)
@@ -157,11 +274,11 @@ local function searchForPlayer(username, placeId)
     end)
     
     if not success then
-        typeWrite("Error: Invalid username/userId!")
+        typeWrite(">>_ ERR0R: 1NVAL1D_US3R!")
         return
     end
     
-    TargetInfoLabel.Text = string.format("Target: %s (%s)", result, userId)
+    TargetInfoLabel.Text = string.format(">>_ TARGET: %s (%s)", result, userId)
     
     while isSearching do
         local success, servers = pcall(function()
@@ -174,10 +291,10 @@ local function searchForPlayer(username, placeId)
             for _, server in ipairs(servers.data) do
                 if not isSearching then break end
                 
-                typeWrite(string.format("Scanning server %s...", server.id))
+                typeWrite(string.format(">>_ SCANN1NG_SERV3R: %s", server.id))
                 
                 if table.find(server.playerTokens, userId) then
-                    typeWrite("Target found! Joining server...")
+                    typeWrite(">>_ TARG3T_F0UND! 1NIT1AT1NG_JO1N...")
                     TeleportService:TeleportToPlaceInstance(placeId, server.id)
                     return
                 end
@@ -186,7 +303,7 @@ local function searchForPlayer(username, placeId)
             end
         end
         
-        typeWrite("Searching for target...")
+        typeWrite(">>_ SEARCHING_FOR_TARGET...")
         wait(1)
     end
 end
@@ -195,7 +312,7 @@ end
 MinimizeButton.MouseButton1Click:Connect(function()
     isMinimized = not isMinimized
     if isMinimized then
-        MainFrame.Size = minimizedSize
+        TweenService:Create(MainFrame, TweenInfo.new(0.3), {Size = minimizedSize}):Play()
         UsernameBox.Visible = false
         PlaceIdBox.Visible = false
         ExecuteButton.Visible = false
@@ -204,14 +321,14 @@ MinimizeButton.MouseButton1Click:Connect(function()
         UserInfoLabel.Visible = false
         MinimizeButton.Text = "+"
     else
-        MainFrame.Size = originalSize
+        TweenService:Create(MainFrame, TweenInfo.new(0.3), {Size = originalSize}):Play()
         UsernameBox.Visible = true
         PlaceIdBox.Visible = true
         ExecuteButton.Visible = true
         StatusLabel.Visible = true
         TargetInfoLabel.Visible = true
         UserInfoLabel.Visible = true
-        MinimizeButton.Text = "-"
+        MinimizeButton.Text = "□"
     end
 end)
 
@@ -219,46 +336,72 @@ ExecuteButton.MouseButton1Click:Connect(function()
     isSearching = not isSearching
     if isSearching then
         local targetPlaceId = tonumber(PlaceIdBox.Text) or game.PlaceId
-        ExecuteButton.Text = "STOP"
-        ExecuteButton.BackgroundColor3 = Color3.fromRGB(40, 0, 0)
+        ExecuteButton.Text = "[ ABORT ]"
+        TweenService:Create(ExecuteButton, TweenInfo.new(0.3), {
+            BackgroundColor3 = Color3.fromRGB(40, 0, 0),
+            TextColor3 = Color3.fromRGB(255, 0, 0)
+        }):Play()
         spawn(function()
             searchForPlayer(UsernameBox.Text, targetPlaceId)
         end)
     else
-        ExecuteButton.Text = "EXECUTE"
-        ExecuteButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-        typeWrite("Operation cancelled.")
+        ExecuteButton.Text = "[ EXECUTE ]"
+        TweenService:Create(ExecuteButton, TweenInfo.new(0.3), {
+            BackgroundColor3 = terminalColors.black,
+            TextColor3 = terminalColors.neonGreen
+        }):Play()
+        typeWrite(">>_ OPERATION_TERMINATED")
     end
 end)
 
--- Startup sequence
+-- Enhanced startup sequence
 spawn(function()
     local sequence = {
-        {text = "Initializing stream sniper module", wait = 0.5},
-        {text = "Loading player database", wait = 0.5},
-        {text = "Bypassing security", wait = 0.5},
-        {text = "Establishing connection", wait = 0.5},
-        {text = "[!] System ready", wait = 0.5},
-        {text = "Awaiting target input", wait = 0}
+        {text = ">>_ INITIALIZING_SNIPER_MODULE", wait = 0.5},
+        {text = ">>_ LOADING_PLAYER_DATABASE", wait = 0.5},
+        {text = ">>_ BYPASSING_SECURITY_PROTOCOLS", wait = 0.5},
+        {text = ">>_ ESTABLISHING_SECURE_CONNECTION", wait = 0.5},
+        {text = ">>_ [!] SYSTEM_READY", wait = 0.5},
+        {text = ">>_ AWAITING_TARGET_INPUT...", wait = 0}
     }
     
     for _, step in ipairs(sequence) do
         typeWrite(step.text)
         if step.wait > 0 then
+            GlitchEffect.Visible = true
+            wait(0.05)
+            GlitchEffect.Visible = false
             loadingDots(step.text, math.floor(step.wait / 0.2))
         end
     end
 end)
 
--- Hotkey support
+-- Enhanced hotkey support
 game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
     if input.KeyCode == Enum.KeyCode.RightControl then
         MainFrame.Visible = not MainFrame.Visible
+        if MainFrame.Visible then
+            GlitchEffect.Visible = true
+            wait(0.05)
+            GlitchEffect.Visible = false
+        end
     end
 end)
 
--- Cleanup
+-- Cleanup with enhanced effect
 if shared.StreamSniperGui then
-    shared.StreamSniperGui:Destroy()
+    local oldGui = shared.StreamSniperGui
+    TweenService:Create(oldGui.MainFrame, TweenInfo.new(0.3), {
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0.5, 0, 2, 0)
+    }):Play()
+    wait(0.3)
+    oldGui:Destroy()
 end
 shared.StreamSniperGui = ScreenGui
+
+-- Initialize all effects
+createMatrixRain()
+animateScanLine()
+triggerGlitch()
+pulseButton()
