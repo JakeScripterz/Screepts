@@ -1,0 +1,207 @@
+--//Credits: spookzwashere, official_mafioso, and moondeity discord server
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+
+local function SafeGet(service)
+    return pcall(game.GetService, game, service)
+end
+
+
+local MovementSettings = {
+    BaseSpeed = 35,
+    Dash = {Distance = 25, Cooldown = 0.5},
+    SpeedBoost = {Value = 150, Duration = 2, Cooldown = 5}
+}
+
+local ToolSettings = {
+    EquipList = {"Cavalry sword", "Tomahawk", "Shovel", "Pickaxe"}
+}
+
+local CharacterState = {
+    isDashing = false,
+    isSpeedBoosting = false,
+    areToolsEquipped = false,
+    isSpeedBoostReady = true
+}
+
+
+local function createMovementUI()
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "EarthboundUI"
+    
+    -- Make UI compatible with executors
+    local success, playerGui = pcall(function()
+        return Players.LocalPlayer:WaitForChild("PlayerGui")
+    end)
+    
+    if success then
+        screenGui.Parent = playerGui
+    else
+        screenGui.Parent = game:GetService("CoreGui")
+    end
+    
+    
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Name = "MainWindow"
+    mainFrame.Size = UDim2.new(0.15, 0, 0.2, 0)
+    mainFrame.Position = UDim2.new(0.84, 0, 0.02, 0)  -- Top-right position
+    mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    mainFrame.BorderSizePixel = 2
+    mainFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    mainFrame.Parent = screenGui
+
+    local function createEarthboundButton(name, posY, text)
+        local button = Instance.new("TextButton")
+        button.Name = name
+        button.Size = UDim2.new(0.9, 0, 0.25, 0)
+        button.Position = UDim2.new(0.05, 0, posY, 0)
+        button.Text = text
+        button.Font = Enum.Font.Arcade
+        button.TextSize = 14
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        button.BorderSizePixel = 1
+        button.BorderColor3 = Color3.fromRGB(255, 255, 255)
+        button.Parent = mainFrame
+        
+        button.MouseEnter:Connect(function()
+            button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        end)
+        
+        button.MouseLeave:Connect(function()
+            button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        end)
+        
+        return button
+    end
+
+    local toolButton = createEarthboundButton("ToolButton", 0.05, "⚔ Tools")
+    local dashButton = createEarthboundButton("DashButton", 0.35, "↠ Dash")
+    local speedButton = createEarthboundButton("SpeedButton", 0.65, "⚡Speed")
+
+    local function addCooldownIndicator(button)
+        local cooldownFrame = Instance.new("Frame")
+        cooldownFrame.Name = "CooldownEffect"
+        cooldownFrame.Size = UDim2.new(1, 0, 1, 0)
+        cooldownFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        cooldownFrame.BackgroundTransparency = 0.8
+        cooldownFrame.Visible = false
+        cooldownFrame.Parent = button
+        return cooldownFrame
+    end
+
+    local dashCooldown = addCooldownIndicator(dashButton)
+    local speedCooldown = addCooldownIndicator(speedButton)
+
+    return {
+        ToolButton = toolButton,
+        DashButton = dashButton,
+        SpeedButton = speedButton,
+        DashCooldown = dashCooldown,
+        SpeedCooldown = speedCooldown
+    }
+end
+
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local UI = createMovementUI()
+
+
+local MovementFunctions = {
+    Dash = function()
+        if CharacterState.isDashing then return end
+        
+        CharacterState.isDashing = true
+        UI.DashCooldown.Visible = true
+        
+        local direction = humanoid.MoveDirection
+        if direction.Magnitude == 0 then
+            direction = character:GetPivot().LookVector
+        end
+        
+        local startPos = character:GetPivot().Position
+        local endPos = startPos + (direction * MovementSettings.Dash.Distance)
+        
+        character:PivotTo(CFrame.new(endPos))
+        
+        task.delay(MovementSettings.Dash.Cooldown, function()
+            CharacterState.isDashing = false
+            UI.DashCooldown.Visible = false
+        end)
+    end,
+
+    SpeedBoost = function()
+        if not CharacterState.isSpeedBoostReady or CharacterState.isSpeedBoosting then return end
+        
+        CharacterState.isSpeedBoosting = true
+        CharacterState.isSpeedBoostReady = false
+        UI.SpeedCooldown.Visible = true
+        
+        humanoid.WalkSpeed = MovementSettings.SpeedBoost.Value
+        
+        local cooldownEnd = os.clock() + MovementSettings.SpeedBoost.Cooldown
+        
+        task.spawn(function()
+            while os.clock() < cooldownEnd do
+                UI.SpeedCooldown.Size = UDim2.new((cooldownEnd - os.clock()) / MovementSettings.SpeedBoost.Cooldown, 0, 1, 0)
+                RunService.Heartbeat:Wait()
+            end
+            UI.SpeedCooldown.Visible = false
+            CharacterState.isSpeedBoostReady = true
+        end)
+        
+        task.delay(MovementSettings.SpeedBoost.Duration, function()
+            humanoid.WalkSpeed = MovementSettings.BaseSpeed
+            CharacterState.isSpeedBoosting = false
+        end)
+    end,
+
+    ToggleTools = function()
+        if CharacterState.areToolsEquipped then
+            for _, toolName in pairs(ToolSettings.EquipList) do
+                local tool = character:FindFirstChild(toolName)
+                if tool then tool.Parent = player.Backpack end
+            end
+            UI.ToolButton.Text = "⚔ Tools"
+        else
+            for _, toolName in pairs(ToolSettings.EquipList) do
+                local tool = player.Backpack:FindFirstChild(toolName)
+                if tool then tool.Parent = character end
+            end
+            UI.ToolButton.Text = "✗ Clear"
+        end
+        CharacterState.areToolsEquipped = not CharacterState.areToolsEquipped
+    end
+}
+
+
+humanoid.WalkSpeed = MovementSettings.BaseSpeed
+
+
+UI.ToolButton.MouseButton1Click:Connect(MovementFunctions.ToggleTools)
+UI.DashButton.MouseButton1Click:Connect(MovementFunctions.Dash)
+UI.SpeedButton.MouseButton1Click:Connect(MovementFunctions.SpeedBoost)
+
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    
+    if input.KeyCode == Enum.KeyCode.Q then
+        MovementFunctions.Dash()
+    elseif input.KeyCode == Enum.KeyCode.E then
+        MovementFunctions.SpeedBoost()
+    end
+end)
+
+
+player.CharacterAdded:Connect(function(newCharacter)
+    character = newCharacter
+    humanoid = character:WaitForChild("Humanoid")
+    humanoid.WalkSpeed = MovementSettings.BaseSpeed
+    CharacterState.areToolsEquipped = false
+    UI.ToolButton.Text = "⚔ Tools"
+end)
