@@ -1,988 +1,1109 @@
--- Create ScreenGui
-local screenGui = Instance.new("ScreenGui")
-screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-screenGui.ResetOnSpawn = false
-
--- Create Frame
-local frame = Instance.new("Frame")
-frame.Parent = screenGui
-frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-frame.Size = UDim2.new(0, 220, 0, 200)
-frame.Position = UDim2.new(0.5, -110, 0.5, -100)
-frame.Active = true
-frame.Draggable = true
-
--- Create Buttons
+-- Enhanced Macro-JSON-Player UI with Hacker Aesthetic
+-- Create main GUI elements
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
 local recordButton = Instance.new("TextButton")
-recordButton.Parent = frame
-recordButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-recordButton.Size = UDim2.new(0, 60, 0, 30)
-recordButton.Position = UDim2.new(0, 10, 0, 20)
-recordButton.Text = "Record"
-recordButton.TextScaled = true
-
 local stopRecordButton = Instance.new("TextButton")
-stopRecordButton.Parent = frame
-stopRecordButton.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
-stopRecordButton.Size = UDim2.new(0, 60, 0, 30)
-stopRecordButton.Position = UDim2.new(0, 80, 0, 20)
-stopRecordButton.Text = "Stop Record"
-stopRecordButton.TextScaled = true
-
 local stopReplayButton = Instance.new("TextButton")
-stopReplayButton.Parent = frame
-stopReplayButton.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
-stopReplayButton.Size = UDim2.new(0, 60, 0, 30)
-stopReplayButton.Position = UDim2.new(0, 150, 0, 20)
-stopReplayButton.Text = "Stop Replay"
-stopReplayButton.TextScaled = true
-
 local destroyButton = Instance.new("TextButton")
-destroyButton.Parent = frame
-destroyButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-destroyButton.Size = UDim2.new(0, 90, 0, 30)
-destroyButton.Position = UDim2.new(0, 10, 0, 60)
-destroyButton.Text = "Destroy"
-destroyButton.TextScaled = true
-
 local deleteButton = Instance.new("TextButton")
-deleteButton.Parent = frame
-deleteButton.BackgroundColor3 = Color3.fromRGB(200, 100, 100)
-deleteButton.Size = UDim2.new(0, 90, 0, 30)
-deleteButton.Position = UDim2.new(0, 120, 0, 60)
-deleteButton.Text = "Delete"
-deleteButton.TextScaled = true
+local saveButton = Instance.new("TextButton")
+local nextChunkButton = Instance.new("TextButton")
+local StatusLabel = Instance.new("TextLabel")
+local MinimizeButton = Instance.new("TextButton")
+local UserInfoLabel = Instance.new("TextLabel")
 
--- Status Indicator
-local statusLabel = Instance.new("TextLabel")
-statusLabel.Parent = frame
-statusLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-statusLabel.Size = UDim2.new(0, 220, 0, 30)
-statusLabel.Position = UDim2.new(0, 0, 0, -30)
-statusLabel.Text = "Status: Idle"
-statusLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
-statusLabel.TextScaled = true
+-- Variables
+local isMinimized = false
+local originalSize = UDim2.new(0, 300, 0, 400)
+local minimizedSize = UDim2.new(0, 300, 0, 30)
 
--- Create Scrollable List
+-- GUI Properties with Hacker Theme
+ScreenGui.Name = "MacroPlayerHaxGui"
+ScreenGui.Parent = game:GetService("CoreGui")
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+MainFrame.BorderColor3 = Color3.fromRGB(0, 255, 0)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
+MainFrame.Size = originalSize
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+Title.Name = "Title"
+Title.Parent = MainFrame
+Title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Title.BorderColor3 = Color3.fromRGB(0, 255, 0)
+Title.Size = UDim2.new(1, -25, 0, 30)
+Title.Font = Enum.Font.Code
+Title.Text = "M4CR0_PL4Y3R v1.3.37"
+Title.TextColor3 = Color3.fromRGB(0, 255, 0)
+Title.TextSize = 16.000
+
+-- Create scroll frame with hacker aesthetic
 local scrollFrame = Instance.new("ScrollingFrame")
-scrollFrame.Parent = frame
-scrollFrame.Size = UDim2.new(0, 200, 0, 70)
-scrollFrame.Position = UDim2.new(0, 10, 0, 100)
-scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0) -- Dynamically adjusted
-scrollFrame.ScrollBarThickness = 8
+scrollFrame.Parent = MainFrame
+scrollFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+scrollFrame.BorderColor3 = Color3.fromRGB(0, 255, 0)
+scrollFrame.Position = UDim2.new(0, 10, 0, 200)
+scrollFrame.Size = UDim2.new(1, -20, 0, 120)
+scrollFrame.ScrollBarThickness = 4
+scrollFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 255, 0)
 
-local uiListLayout = Instance.new("UIListLayout")
-uiListLayout.Parent = scrollFrame
-uiListLayout.Padding = UDim.new(0, 5)
-
--- Variables for recording and platforms
-local recording = false
-local replaying = false
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid") -- Get the Humanoid
-local platforms = {}
-local yellowPlatforms = {}
-local platformData = {}
-local platformCounter = 0
-local lastPosition = nil
-local replayThread
-local yellowToRedMapping = {} -- Mapping of yellow platforms to red platforms
-
--- Add these variables at the top with other declarations
-local currentReplayThread = nil
-local shouldStopReplay = false
-local currentPlatformIndex = 0
-local totalPlatformsToPlay = 0
-
--- Pathfinding service
-local PathfindingService = game:GetService("PathfindingService")
-local HttpService = game:GetService("HttpService")
-local RunService = game:GetService("RunService")
-
--- Helper Functions
-local function isCharacterMoving()
-    local currentPosition = character.PrimaryPart.Position
-    if lastPosition then
-        local distance = (currentPosition - lastPosition).magnitude
-        lastPosition = currentPosition
-        return distance > 0.05
-    end
-    lastPosition = currentPosition
-    return false
-end
-
-local function cleanupPlatform(platform)
-    for i, p in ipairs(platforms) do
-        if p == platform then
-            table.remove(platforms, i)
-            platformData[platform] = nil
-            break
-        end
-    end
-end
-
-local function addPlatformToScrollFrame(platformName)
-    local button = Instance.new("TextButton")
-    button.Parent = scrollFrame
-    button.Size = UDim2.new(1, -10, 0, 25)
-    button.Text = platformName
-    button.TextScaled = true
-    button.BackgroundColor3 = Color3.fromRGB(150, 150, 255)
-
-    local playButton = Instance.new("TextButton")
-    playButton.Parent = button
-    playButton.Size = UDim2.new(0, 50, 1, 0)
-    playButton.Position = UDim2.new(1, -40, 0, 0)
-    playButton.Text = "Play"
-    playButton.TextScaled = true
-    playButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-
-    playButton.MouseButton1Click:Connect(function()
-        if replaying then return end
-
-        -- Stop any existing replay first
-        if currentReplayThread then
-            shouldStopReplay = true
-            task.wait() -- Allow cancellation to propagate
-        end
-
-        -- Reset control flags
-        replaying = true
-        shouldStopReplay = false
-
-        -- Extract platform number safely
-        local platformNumber = tonumber(button.Text:match("%d+"))
-        if not platformNumber or platformNumber < 1 or platformNumber > #platforms then
-            statusLabel.Text = "Status: Invalid platform index"
-            statusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-            return
-        end
-
-        local platform = platforms[platformNumber]
-
-        -- Update initial status
-        statusLabel.Text = string.format("Starting playback from Platform %d", platformNumber)
-        statusLabel.TextColor3 = Color3.fromRGB(0, 0, 255)
-
-        -- Walk to the platform before replaying (Pathfinding Integrated)
-        local function walkToPlatform(destination)
-            local humanoid = character:WaitForChild("Humanoid")
-            local rootPart = character:WaitForChild("HumanoidRootPart")
-
-            -- Ensure the Humanoid is alive and can move
-            if not humanoid or humanoid.Health <= 0 then
-                return
-            end
-
-            local path = PathfindingService:CreatePath()
-            path:ComputeAsync(rootPart.Position, destination)
-
-            if path.Status == Enum.PathStatus.Success then
-                local waypoints = path:GetWaypoints()
-                for _, waypoint in ipairs(waypoints) do
-                    if shouldStopReplay then break end
-                    humanoid:MoveTo(waypoint.Position)
-                    if waypoint.Action == Enum.PathWaypointAction.Jump then
-                        humanoid.Jump = true
-                    end
-                    humanoid.MoveToFinished:Wait()
-                end
-            else
-                -- Fallback: Directly move to the destination if pathfinding fails
-                humanoid:MoveTo(destination)
-                humanoid.MoveToFinished:Wait()
-            end
-        end
-
-        -- Replay logic for sequential platforms (Improved)
-        local function replayPlatforms(startIndex)
-            totalPlatformsToPlay = #platforms -- Total platforms
-            currentPlatformIndex = startIndex -- Starting point
-
-            for i = startIndex, #platforms do
-                if shouldStopReplay then break end
-                
-                -- Update status with absolute position
-                statusLabel.Text = string.format("Playing from Platform %d/%d", currentPlatformIndex, totalPlatformsToPlay)
-                statusLabel.TextColor3 = Color3.fromRGB(0, 0, 255)
-                
-                local platform = platforms[i]
-                -- Walk to platform using pathfinding
-                walkToPlatform(platform.Position + Vector3.new(0, 3, 0))
-                local movements = platformData[platform]
-                if movements then
-                    --print("Movement data type check:", typeof(movements[1].position), typeof(movements[1].orientation)) -- Debug print
-                    for j = 1, #movements - 1 do
-                        if shouldStopReplay then break end
-
-                        local startMovement = movements[j]
-                        local endMovement = movements[j + 1]
-                        endMovement.isJumping = startMovement.isJumping
-
-                        local startTime = tick()
-
-                        -- Calculate duration based on distance and a speed factor
-                        local distance = (endMovement.position - startMovement.position).magnitude
-                        local speedFactor = 0.01  -- Adjust this for desired replay speed (higher = faster)
-                        local duration = distance * speedFactor
-
-                        -- Minimum duration to prevent division by zero or extremely fast replays
-                        duration = math.max(duration, 0.01)
-
-                        local endTime = startTime + duration
-
-                        while tick() < endTime do
-                            if shouldStopReplay then break end
-                            local alpha = (tick() - startTime) / duration
-                            alpha = math.min(alpha, 1)
-
-                            local interpolatedPosition = startMovement.position:Lerp(endMovement.position, alpha)
-                            
-                            -- Fixed orientation interpolation
-                            local interpolatedOrientation = CFrame.fromEulerAnglesXYZ(
-                                math.rad(startMovement.orientation.X), 
-                                math.rad(startMovement.orientation.Y), 
-                                math.rad(startMovement.orientation.Z)
-                            ):Lerp(
-                                CFrame.fromEulerAnglesXYZ(
-                                    math.rad(endMovement.orientation.X),
-                                    math.rad(endMovement.orientation.Y),
-                                    math.rad(endMovement.orientation.Z)
-                                ), 
-                                alpha
-                            )
-
-                            character:SetPrimaryPartCFrame(
-                                CFrame.new(interpolatedPosition) * interpolatedOrientation
-                            )
-
-                            if endMovement.isJumping then
-                                humanoid.Jump = true
-                            end
-
-                            RunService.Heartbeat:Wait()
-                        end
-                    end
-                end
-                
-                currentPlatformIndex += 1 -- Move to next platform index
-            end
-            -- Final status update
-            if not shouldStopReplay then
-                statusLabel.Text = "Status: Completed all platforms"
-                statusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-                task.wait(1)
-            end
-            
-            statusLabel.Text = "Status: Idle"
-            statusLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
-            replaying = false
-        end
-
-        -- Start new replay in a tracked thread
-        currentReplayThread = task.spawn(function()
-            replayPlatforms(platformNumber)
-            currentReplayThread = nil
-        end)
+-- Button styling function
+local function styleButton(button, pos, text)
+    button.Parent = MainFrame
+    button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    button.BorderColor3 = Color3.fromRGB(0, 255, 0)
+    button.Position = pos
+    button.Size = UDim2.new(0, 90, 0, 30)
+    button.Font = Enum.Font.Code
+    button.Text = text
+    button.TextColor3 = Color3.fromRGB(0, 255, 0)
+    button.TextSize = 14.000
+    
+    -- Add hover effect
+    button.MouseEnter:Connect(function()
+        button.BackgroundColor3 = Color3.fromRGB(0, 40, 0)
+    end)
+    
+    button.MouseLeave:Connect(function()
+        button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     end)
 end
 
--- Modify the stopReplayButton click handler
-stopReplayButton.MouseButton1Click:Connect(function()
-    if replaying then
-        shouldStopReplay = true
-        replaying = false
-        statusLabel.Text = string.format("Stopped at Platform %d/%d", currentPlatformIndex-1, totalPlatformsToPlay)
-        statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
-        task.wait(2)
-        statusLabel.Text = "Status: Idle"
-        -- Cancel any ongoing movement
-        if character:FindFirstChild("Humanoid") then
-            character.Humanoid:MoveTo(character.HumanoidRootPart.Position)
+-- Style all buttons
+styleButton(recordButton, UDim2.new(0, 10, 0, 40), "REC0RD")
+styleButton(stopRecordButton, UDim2.new(0, 110, 0, 40), "ST0P_REC")
+styleButton(stopReplayButton, UDim2.new(0, 210, 0, 40), "ST0P_PLAY")
+styleButton(destroyButton, UDim2.new(0, 10, 0, 80), "DESTROY")
+styleButton(deleteButton, UDim2.new(0, 110, 0, 80), "DELETE")
+styleButton(saveButton, UDim2.new(0, 10, 0, 120), "SAVE")
+styleButton(nextChunkButton, UDim2.new(0, 110, 0, 120), "NEXT_CHUNK")
+
+-- Status label with hacker aesthetic
+StatusLabel.Name = "StatusLabel"
+StatusLabel.Parent = MainFrame
+StatusLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+StatusLabel.BorderColor3 = Color3.fromRGB(0, 255, 0)
+StatusLabel.Position = UDim2.new(0, 10, 1, -35)
+StatusLabel.Size = UDim2.new(1, -20, 0, 25)
+StatusLabel.Font = Enum.Font.Code
+StatusLabel.Text = "STATUS: INITIALIZING_SEQUENCE..."
+StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+StatusLabel.TextSize = 12.000
+
+-- Add minimize button
+MinimizeButton.Name = "MinimizeButton"
+MinimizeButton.Parent = MainFrame
+MinimizeButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+MinimizeButton.BorderColor3 = Color3.fromRGB(0, 255, 0)
+MinimizeButton.Position = UDim2.new(1, -25, 0, 0)
+MinimizeButton.Size = UDim2.new(0, 25, 0, 30)
+MinimizeButton.Font = Enum.Font.Code
+MinimizeButton.Text = "-"
+MinimizeButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+MinimizeButton.TextSize = 16.000
+
+-- Add creator info
+UserInfoLabel.Name = "UserInfoLabel"
+UserInfoLabel.Parent = MainFrame
+UserInfoLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+UserInfoLabel.BorderColor3 = Color3.fromRGB(0, 255, 0)
+UserInfoLabel.Position = UDim2.new(0, 10, 1, -60)
+UserInfoLabel.Size = UDim2.new(1, -20, 0, 20)
+UserInfoLabel.Font = Enum.Font.Code
+UserInfoLabel.Text = "CR34T3D_BY: 1x1x1x1"
+UserInfoLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+UserInfoLabel.TextSize = 10.000
+
+-- Add cool typing effect
+local function typeWrite(text, speed)
+    speed = speed or 0.02
+    StatusLabel.Text = ""
+    for i = 1, #text do
+        if not ScreenGui.Parent then break end
+        StatusLabel.Text = StatusLabel.Text .. string.sub(text, i, i)
+        wait(speed)
+    end
+end
+
+-- Add loading animation
+local function loadingDots(text, times)
+    for i = 1, times do
+        if not ScreenGui.Parent then break end
+        StatusLabel.Text = text .. string.rep(".", i % 4)
+        wait(0.2)
+    end
+end
+
+-- Minimize/Maximize function
+MinimizeButton.MouseButton1Click:Connect(function()
+    isMinimized = not isMinimized
+    if isMinimized then
+        MainFrame.Size = minimizedSize
+        scrollFrame.Visible = false
+        recordButton.Visible = false
+        stopRecordButton.Visible = false
+        stopReplayButton.Visible = false
+        destroyButton.Visible = false
+        deleteButton.Visible = false
+        saveButton.Visible = false
+        nextChunkButton.Visible = false
+        StatusLabel.Visible = false
+        UserInfoLabel.Visible = false
+        MinimizeButton.Text = "+"
+    else
+        MainFrame.Size = originalSize
+        scrollFrame.Visible = true
+        recordButton.Visible = true
+        stopRecordButton.Visible = true
+        stopReplayButton.Visible = true
+        destroyButton.Visible = true
+        deleteButton.Visible = true
+        saveButton.Visible = true
+        nextChunkButton.Visible = true
+        StatusLabel.Visible = true
+        UserInfoLabel.Visible = true
+        MinimizeButton.Text = "-"
+    end
+end)
+
+-- Add startup sequence
+spawn(function()
+    local sequence = {
+        {text = "INITIALIZING_MACRO_MODULE", speed = 0.02, wait = 0.5},
+        {text = "BYPASSING_SECURITY_PROTOCOLS", speed = 0.02, wait = 0.5},
+        {text = "INJECTING_RECORDING_COMPONENTS", speed = 0.02, wait = 0.5},
+        {text = "ESTABLISHING_SECURE_CONNECTION", speed = 0.02, wait = 0.5},
+        {text = "LOADING_PLAYBACK_FRAMEWORK", speed = 0.02, wait = 0.5},
+        {text = "[!] SYSTEM_COMPROMISED", speed = 0.02, wait = 0.5},
+        {text = "MACRO_PLAYER_READY", speed = 0.02, wait = 0}
+    }
+    
+    for _, step in ipairs(sequence) do
+        typeWrite(step.text, step.speed)
+        if step.wait > 0 then
+            loadingDots(step.text, math.floor(step.wait / 0.2))
+        end
+    end
+    
+    wait(0.3)
+    StatusLabel.Text = "STATUS: AWAITING_USER_INPUT..."
+end)
+
+-- Add your existing button functionality here
+-- [Previous button click handlers and functionality remain the same]
+-- Part 2: Visual and Audio Effects
+
+-- Create SoundEffect objects
+local function createSound(id)
+    local sound = Instance.new("Sound")
+    sound.SoundId = "rbxassetid://" .. id
+    sound.Volume = 0.5
+    sound.Parent = ScreenGui
+    return sound
+end
+
+local buttonClickSound = createSound("6042053626")  -- Cyber click sound
+local startupSound = createSound("6977407912")      -- Startup sound
+local errorSound = createSound("3359047385")        -- Error sound
+local successSound = createSound("6977407912")      -- Success sound
+
+-- Matrix background effect
+local matrixBackground = Instance.new("Frame")
+matrixBackground.Name = "MatrixBackground"
+matrixBackground.Parent = MainFrame
+matrixBackground.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+matrixBackground.BorderSizePixel = 0
+matrixBackground.Size = UDim2.new(1, 0, 1, 0)
+matrixBackground.ZIndex = 0
+
+local matrixCanvas = Instance.new("Frame")
+matrixCanvas.Name = "MatrixCanvas"
+matrixCanvas.Parent = matrixBackground
+matrixCanvas.BackgroundTransparency = 1
+matrixCanvas.Size = UDim2.new(1, 0, 1, 0)
+
+-- Matrix character set
+local matrixChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*"
+
+-- Create matrix columns
+local function createMatrixColumn()
+    local column = Instance.new("TextLabel")
+    column.BackgroundTransparency = 1
+    column.Size = UDim2.new(0, 20, 0, 20)
+    column.Font = Enum.Font.Code
+    column.TextSize = 14
+    column.TextColor3 = Color3.fromRGB(0, 255, 0)
+    column.Parent = matrixCanvas
+    return column
+end
+
+-- Animate matrix effect
+spawn(function()
+    local columns = {}
+    for i = 1, 15 do
+        local col = createMatrixColumn()
+        col.Position = UDim2.new(0, math.random(0, MainFrame.AbsoluteSize.X), 0, -20)
+        table.insert(columns, col)
+    end
+    
+    while wait(0.1) do
+        for _, col in ipairs(columns) do
+            -- Update character
+            col.Text = string.sub(matrixChars, math.random(1, #matrixChars), math.random(1, #matrixChars))
+            
+            -- Move down
+            local newY = col.Position.Y.Offset + 20
+            if newY > MainFrame.AbsoluteSize.Y then
+                newY = -20
+                col.Position = UDim2.new(0, math.random(0, MainFrame.AbsoluteSize.X), 0, newY)
+            else
+                col.Position = UDim2.new(col.Position.X.Scale, col.Position.X.Offset, 0, newY)
+            end
+            
+            -- Fade effect
+            col.TextTransparency = math.min(1, math.abs(newY - MainFrame.AbsoluteSize.Y/2) / (MainFrame.AbsoluteSize.Y/2))
         end
     end
 end)
 
--- Function to add text label to a platform
-local function addTextLabelToPlatform(platform, platformNumber)
-    local billboardGui = Instance.new("BillboardGui")
-    billboardGui.Size = UDim2.new(1, 0, 0.5, 0)
-    billboardGui.StudsOffset = Vector3.new(0, 3, 0)
-    billboardGui.AlwaysOnTop = true
-
-    local textLabel = Instance.new("TextLabel")
-    textLabel.Size = UDim2.new(1, 0, 1, 0)
-    textLabel.BackgroundTransparency = 1
-    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    textLabel.TextScaled = true
-    textLabel.Text = tostring(platformNumber)
-    textLabel.Parent = billboardGui
-
-    billboardGui.Parent = platform
+-- Title glitch effect
+local function glitchText()
+    local originalText = Title.Text
+    local glitchChars = "!@#$%^&*()_+-=[]{}|;:,.<>?"
+    
+    spawn(function()
+        while wait(math.random(5, 10)) do
+            for i = 1, math.random(3, 6) do
+                -- Corrupt text
+                local corruptText = ""
+                for j = 1, #originalText do
+                    if math.random() > 0.7 then
+                        corruptText = corruptText .. string.sub(glitchChars, math.random(1, #glitchChars), math.random(1, #glitchChars))
+                    else
+                        corruptText = corruptText .. string.sub(originalText, j, j)
+                    end
+                end
+                Title.Text = corruptText
+                wait(0.05)
+            end
+            Title.Text = originalText
+        end
+    end)
 end
 
--- Function to serialize platform data to JSON
-local function serializePlatformData()
-    local data = {
-        redPlatforms = {},
-        yellowPlatforms = {},
-        mappings = {}
-    }
-
-    -- Save red platforms
-    for i, platform in ipairs(platforms) do
-        local movementsData = {}
-        for _, movement in ipairs(platformData[platform]) do
-            table.insert(movementsData, {
-                position = {X = movement.position.X, Y = movement.position.Y, Z = movement.position.Z},
-                orientation = {X = movement.orientation.X, Y = movement.orientation.Y, Z = movement.orientation.Z},
-                isJumping = movement.isJumping
-            })
+-- Add visual feedback for recording/playing
+local function addVisualFeedback()
+    local recordingEffect = Instance.new("Frame")
+    recordingEffect.Size = UDim2.new(1, 0, 0, 2)
+    recordingEffect.BorderSizePixel = 0
+    recordingEffect.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    recordingEffect.Parent = MainFrame
+    recordingEffect.Visible = false
+    
+    spawn(function()
+        while wait(0.5) do
+            if recording then
+                recordingEffect.Visible = not recordingEffect.Visible
+            else
+                recordingEffect.Visible = false
+            end
         end
-        table.insert(data.redPlatforms, {
-            position = {X = platform.Position.X, Y = platform.Position.Y, Z = platform.Position.Z},
-            movements = movementsData
-        })
-    end
-
-    -- Save yellow platforms and their mappings
-    for i, yellowPlatform in ipairs(yellowPlatforms) do
-        table.insert(data.yellowPlatforms, {
-            position = {X = yellowPlatform.Position.X, Y = yellowPlatform.Position.Y, Z = yellowPlatform.Position.Z}
-        })
-
-        -- Store mapping index (map yellow platform to the corresponding red platform index)
-        if yellowToRedMapping[yellowPlatform] then
-            local redIndex = table.find(platforms, yellowToRedMapping[yellowPlatform])
-            table.insert(data.mappings, redIndex)
-        end
-    end
-
-    local rawData = HttpService:JSONEncode(data)
-    return rawData
+    end)
 end
 
--- Function to deserialize platform data from JSON
-local function deserializePlatformData(jsonData)
-    local success, data = pcall(function()
-        return HttpService:JSONDecode(jsonData)
+-- Enhanced button effects
+local function enhanceButtons()
+    local buttons = {recordButton, stopRecordButton, stopReplayButton, destroyButton, deleteButton, saveButton, nextChunkButton}
+    
+    for _, button in ipairs(buttons) do
+        -- Click effect
+        button.MouseButton1Click:Connect(function()
+            buttonClickSound:Play()
+            button.BackgroundColor3 = Color3.fromRGB(0, 100, 0)
+            wait(0.1)
+            button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        end)
+        
+        -- Hover effect with scan line
+        local scanLine = Instance.new("Frame")
+        scanLine.Size = UDim2.new(1, 0, 0, 2)
+        scanLine.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+        scanLine.BorderSizePixel = 0
+        scanLine.Parent = button
+        scanLine.Visible = false
+        
+        button.MouseEnter:Connect(function()
+            scanLine.Visible = true
+            spawn(function()
+                while scanLine.Visible do
+                    for i = 0, 1, 0.1 do
+                        if not scanLine.Visible then break end
+                        scanLine.Position = UDim2.new(0, 0, i, 0)
+                        wait(0.02)
+                    end
+                end
+            end)
+        end)
+        
+        button.MouseLeave:Connect(function()
+            scanLine.Visible = false
+        end)
+    end
+end
+
+-- Initialize effects
+startupSound:Play()
+glitchText()
+addVisualFeedback()
+enhanceButtons()
+
+-- Add to your existing error handling
+local function showError(message)
+    errorSound:Play()
+    StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+    typeWrite("ERR0R: " .. message, 0.02)
+    wait(2)
+    StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+end
+
+-- Add to your success handling
+local function showSuccess(message)
+    successSound:Play()
+    StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+    typeWrite("SUCCESS: " .. message, 0.02)
+    wait(2)
+end
+-- Part 3: Enhanced Platform Handling and Visualization
+
+-- Time and User Tracking
+local timeLabel = Instance.new("TextLabel")
+timeLabel.Name = "TimeLabel"
+timeLabel.Parent = MainFrame
+timeLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+timeLabel.BorderColor3 = Color3.fromRGB(0, 255, 0)
+timeLabel.Position = UDim2.new(0, 10, 0, 160)
+timeLabel.Size = UDim2.new(1, -20, 0, 20)
+timeLabel.Font = Enum.Font.Code
+timeLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+timeLabel.TextSize = 12.000
+
+-- Update time every second
+spawn(function()
+    while wait(1) do
+        local date = os.date("!*t")  -- UTC time
+        timeLabel.Text = string.format("UTC: %04d-%02d-%02d %02d:%02d:%02d | USER: %s", 
+            date.year, date.month, date.day, date.hour, date.min, date.sec,
+            game.Players.LocalPlayer.Name)
+    end
+end)
+
+-- Enhanced Platform Visualization
+local function createPlatformVisual(platform, platformType)
+    -- Create highlight effect
+    local highlight = Instance.new("Highlight")
+    highlight.Parent = platform
+    highlight.FillColor = (platformType == "red") and Color3.fromRGB(255, 0, 0) or Color3.fromRGB(255, 255, 0)
+    highlight.OutlineColor = Color3.fromRGB(0, 255, 0)
+    highlight.FillTransparency = 0.7
+    highlight.OutlineTransparency = 0
+
+    -- Add floating coordinate display
+    local coordGui = Instance.new("BillboardGui")
+    coordGui.Parent = platform
+    coordGui.Size = UDim2.new(0, 100, 0, 40)
+    coordGui.StudsOffset = Vector3.new(0, 2, 0)
+    coordGui.AlwaysOnTop = true
+
+    local coordLabel = Instance.new("TextLabel")
+    coordLabel.Parent = coordGui
+    coordLabel.Size = UDim2.new(1, 0, 1, 0)
+    coordLabel.BackgroundTransparency = 1
+    coordLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+    coordLabel.Font = Enum.Font.Code
+    coordLabel.TextSize = 10
+    coordLabel.Text = string.format("X: %.1f\nY: %.1f\nZ: %.1f",
+        platform.Position.X, platform.Position.Y, platform.Position.Z)
+
+    return highlight
+end
+
+-- Enhanced Platform List
+local function createPlatformListItem(platform, index)
+    local container = Instance.new("Frame")
+    container.Size = UDim2.new(1, -10, 0, 40)
+    container.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+    container.BorderColor3 = Color3.fromRGB(0, 255, 0)
+    container.Parent = scrollFrame
+
+    local infoLabel = Instance.new("TextLabel")
+    infoLabel.Size = UDim2.new(0.7, 0, 1, 0)
+    infoLabel.Position = UDim2.new(0, 5, 0, 0)
+    infoLabel.BackgroundTransparency = 1
+    infoLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+    infoLabel.TextXAlignment = Enum.TextXAlignment.Left
+    infoLabel.Font = Enum.Font.Code
+    infoLabel.TextSize = 12
+    infoLabel.Parent = container
+    infoLabel.Text = string.format("Platform_%02d\nPos: %.1f, %.1f, %.1f",
+        index, platform.Position.X, platform.Position.Y, platform.Position.Z)
+
+    local playButton = Instance.new("TextButton")
+    playButton.Size = UDim2.new(0.25, 0, 0.8, 0)
+    playButton.Position = UDim2.new(0.73, 0, 0.1, 0)
+    playButton.BackgroundColor3 = Color3.fromRGB(0, 40, 0)
+    playButton.BorderColor3 = Color3.fromRGB(0, 255, 0)
+    playButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+    playButton.Font = Enum.Font.Code
+    playButton.TextSize = 12
+    playButton.Text = "PLAY"
+    playButton.Parent = container
+
+    -- Add hover effect
+    playButton.MouseEnter:Connect(function()
+        playButton.BackgroundColor3 = Color3.fromRGB(0, 60, 0)
+    end)
+    playButton.MouseLeave:Connect(function()
+        playButton.BackgroundColor3 = Color3.fromRGB(0, 40, 0)
     end)
 
-    if not success then
-        warn("Failed to decode JSON data:", data)
-        statusLabel.Text = "Status: Invalid JSON data"
-        statusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-        return
+    return container, playButton
+end
+
+-- Platform Data Visualization
+local function createDataVisualizer()
+    local visualizer = Instance.new("Frame")
+    visualizer.Name = "DataVisualizer"
+    visualizer.Size = UDim2.new(0, 150, 0, 100)
+    visualizer.Position = UDim2.new(1, 10, 0, 0)
+    visualizer.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+    visualizer.BorderColor3 = Color3.fromRGB(0, 255, 0)
+    visualizer.Parent = MainFrame
+    visualizer.Visible = false
+
+    local statsLabel = Instance.new("TextLabel")
+    statsLabel.Size = UDim2.new(1, -10, 1, -10)
+    statsLabel.Position = UDim2.new(0, 5, 0, 5)
+    statsLabel.BackgroundTransparency = 1
+    statsLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+    statsLabel.Font = Enum.Font.Code
+    statsLabel.TextSize = 12
+    statsLabel.TextXAlignment = Enum.TextXAlignment.Left
+    statsLabel.Parent = visualizer
+
+    return visualizer, statsLabel
+end
+
+-- Platform Tracking System
+local platformTracker = {
+    activePlatforms = {},
+    highlights = {},
+    currentPlatform = nil
+}
+
+function platformTracker:add(platform, platformType)
+    local highlight = createPlatformVisual(platform, platformType)
+    self.highlights[platform] = highlight
+    self.activePlatforms[platform] = {
+        type = platformType,
+        created = os.time(),
+        position = platform.Position
+    }
+    self:updateVisualizer()
+end
+
+function platformTracker:remove(platform)
+    if self.highlights[platform] then
+        self.highlights[platform]:Destroy()
+        self.highlights[platform] = nil
+    end
+    self.activePlatforms[platform] = nil
+    self:updateVisualizer()
+end
+
+function platformTracker:setActive(platform)
+    if self.currentPlatform then
+        self.highlights[self.currentPlatform].OutlineColor = Color3.fromRGB(0, 255, 0)
+    end
+    self.currentPlatform = platform
+    if platform and self.highlights[platform] then
+        self.highlights[platform].OutlineColor = Color3.fromRGB(0, 255, 255)
+    end
+    self:updateVisualizer()
+end
+
+-- Create visualizer
+local dataVisualizer, statsLabel = createDataVisualizer()
+
+function platformTracker:updateVisualizer()
+    local redCount = 0
+    local yellowCount = 0
+    for _, data in pairs(self.activePlatforms) do
+        if data.type == "red" then
+            redCount = redCount + 1
+        else
+            yellowCount = yellowCount + 1
+        end
     end
 
-    if not data or type(data) ~= "table" then
-        warn("Invalid data format after decoding JSON")
-        statusLabel.Text = "Status: Invalid data format"
-        statusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-        return
-    end
+    statsLabel.Text = string.format(
+        "PLATFORM STATS:\n" ..
+        "Red: %d\n" ..
+        "Yellow: %d\n" ..
+        "Total: %d\n" ..
+        "Active: %s",
+        redCount,
+        yellowCount,
+        redCount + yellowCount,
+        self.currentPlatform and "YES" or "NO"
+    )
+end
 
-    -- Clear existing data
-    platforms = {}
-    yellowPlatforms = {}
-    yellowToRedMapping = {}
-    platformCounter = 0
-
-    -- Clear scroll frame and recreate UIListLayout
+-- Update existing platform creation code
+local function updatePlatformCreation(platform, platformType)
+    platformTracker:add(platform, platformType)
+    
+    -- Update scroll frame
     scrollFrame:ClearAllChildren()
     local uiListLayout = Instance.new("UIListLayout")
     uiListLayout.Parent = scrollFrame
     uiListLayout.Padding = UDim.new(0, 5)
 
-    -- Load red platforms (updated movement processing)
-    for _, platformInfo in ipairs(data.redPlatforms) do
-        local platform = Instance.new("Part")
-        platform.Size = Vector3.new(5, 1, 5)
-        platform.Position = Vector3.new(platformInfo.position.X, platformInfo.position.Y, platformInfo.position.Z)
-        platform.Anchored = true
-        platform.BrickColor = BrickColor.Red()
-        platform.CanCollide = false
-        platform.Parent = workspace
-
-        -- Convert serialized movement data back to proper Vector3 formats
-        local restoredMovements = {}
-        if platformInfo.movements then
-            for _, movement in ipairs(platformInfo.movements) do
-                table.insert(restoredMovements, {
-                    position = Vector3.new(movement.position.X, movement.position.Y, movement.position.Z),
-                    orientation = Vector3.new(movement.orientation.X, movement.orientation.Y, movement.orientation.Z),
-                    isJumping = movement.isJumping
-                })
-            end
-        end
-
-        platformData[platform] = restoredMovements  -- Store converted movements
-
-        addTextLabelToPlatform(platform, #platforms + 1)
-        table.insert(platforms, platform)
-
-        platformCounter += 1
-        addPlatformToScrollFrame("Platform " .. platformCounter)
-    end
-
-    -- Load yellow platforms and mappings
-    for i, yellowInfo in ipairs(data.yellowPlatforms) do
-        local yellowPlatform = Instance.new("Part")
-        yellowPlatform.Size = Vector3.new(5, 1, 5)
-        yellowPlatform.Position = Vector3.new(yellowInfo.position.X, yellowInfo.position.Y, yellowInfo.position.Z)
-        yellowPlatform.Anchored = true
-        yellowPlatform.BrickColor = BrickColor.Yellow()
-        yellowPlatform.CanCollide = false
-        yellowPlatform.Parent = workspace
-
-        addTextLabelToPlatform(yellowPlatform, data.mappings[i])
-        table.insert(yellowPlatforms, yellowPlatform)
-
-        -- Rebuild yellowToRedMapping
-        if data.mappings[i] then
-            yellowToRedMapping[yellowPlatform] = platforms[data.mappings[i]]
-        end
-    end
-
-    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, #platforms * 30)
-    statusLabel.Text = "Status: Platform data loaded"
-    statusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-end
-
--- Handle character respawn or reset
-player.CharacterAdded:Connect(function(newCharacter)
-    character = newCharacter
-    humanoid = newCharacter:WaitForChild("Humanoid") -- Get Humanoid for new character
-    lastPosition = nil
-    statusLabel.Text = "Status: Idle"
-    statusLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
-
-    if recording then
-        platformCounter = 0
-        platforms = {}
-        yellowPlatforms = {}
-        platformData = {}
-        yellowToRedMapping = {}
-        scrollFrame:ClearAllChildren()
-        local uiListLayout = Instance.new("UIListLayout")
-        uiListLayout.Parent = scrollFrame
-        uiListLayout.Padding = UDim.new(0, 5)
-        scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
-        shouldStopReplay = true
-        replaying = false
-        if currentReplayThread then
-            task.cancel(currentReplayThread) -- Cancel the replay thread
-            currentReplayThread = nil
-        end
-    end
-end)
-
--- Function to calculate path
-local function calculatePath(start, goal)
-    local path = PathfindingService:CreatePath()
-    path:ComputeAsync(start, goal)
-    return path
-end
-
--- Button Functions
-recordButton.MouseButton1Click:Connect(function()
-    if not recording then
-        recording = true
-        statusLabel.Text = "Status: Recording"
-        statusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-
-        if #yellowPlatforms > 0 then
-            local lastYellowPlatform = yellowPlatforms[#yellowPlatforms]
-            -- Walk to the last yellow platform using pathfinding
-            local humanoid = character:WaitForChild("Humanoid")
-            local rootPart = character:WaitForChild("HumanoidRootPart")
-
-            -- Ensure the Humanoid is alive and can move
-            if humanoid and humanoid.Health > 0 then
-                local path = calculatePath(rootPart.Position, lastYellowPlatform.Position + Vector3.new(0, 3, 0))
-
-                if path.Status == Enum.PathStatus.Success then
-                    local waypoints = path:GetWaypoints()
-                    for _, waypoint in ipairs(waypoints) do
-                        humanoid:MoveTo(waypoint.Position)
-                        if waypoint.Action == Enum.PathWaypointAction.Jump then
-                            humanoid.Jump = true
-                        end
-                        humanoid.MoveToFinished:Wait()
-                    end
-                else
-                    -- Fallback: Directly move to the destination if pathfinding fails
-                    humanoid:MoveTo(lastYellowPlatform.Position + Vector3.new(0, 3, 0))
-                    humanoid.MoveToFinished:Wait()
-                end
-            else
-                -- Handle cases where humanoid or HumanoidRootPart are missing or invalid
-                warn("Humanoid or HumanoidRootPart is missing or invalid.")
-            end
-        else
-           character:SetPrimaryPartCFrame(CFrame.new(character.PrimaryPart.Position)) -- Added to prevent errors when no yellow platforms available
-        end
-
-        platformCounter += 1
-        local platform = Instance.new("Part")
-        platform.Name = "Platform " .. platformCounter
-        platform.Size = Vector3.new(5, 1, 5)
-        platform.Position = character.PrimaryPart.Position - Vector3.new(0, 3, 0)
-        platform.Anchored = true
-        platform.BrickColor = BrickColor.Red()
-        platform.CanCollide = false
-        platform.Parent = workspace
-
-        -- Add text label to the platform
-        addTextLabelToPlatform(platform, platformCounter)
-
-        table.insert(platforms, platform)
-        platformData[platform] = {}
-
-        addPlatformToScrollFrame("Platform " .. platformCounter)
-        scrollFrame.CanvasSize = UDim2.new(0, 0, 0, #platforms * 30)
-
-        -- Start recording movement, orientation, and jump state
-        spawn(function()
-            while recording do
-                if isCharacterMoving() then
-                    table.insert(platformData[platform], {
-                        position = character.PrimaryPart.Position,
-                        orientation = character.PrimaryPart.Orientation,
-                        isJumping = humanoid.Jump -- Record jump state
-                    })
-                end
-                game:GetService("RunService").Heartbeat:Wait() -- Use Heartbeat for recording
-            end
+    local index = 1
+    for plat, data in pairs(platformTracker.activePlatforms) do
+        local container, playButton = createPlatformListItem(plat, index)
+        
+        -- Add play button functionality
+        playButton.MouseButton1Click:Connect(function()
+            buttonClickSound:Play()
+            platformTracker:setActive(plat)
+            -- Your existing play functionality here
         end)
+        
+        index = index + 1
+    end
+end
+
+-- Export functions for use in other parts
+return {
+    platformTracker = platformTracker,
+    updatePlatformCreation = updatePlatformCreation,
+    createPlatformVisual = createPlatformVisual,
+    createPlatformListItem = createPlatformListItem
+}
+-- Part 4: Enhanced Recording and Playback System
+
+-- Time Format Display Update
+local function updateTimeDisplay()
+    local date = os.date("!*t")  -- UTC time
+    timeLabel.Text = string.format("Current Date and Time (UTC - YYYY-MM-DD HH:MM:SS formatted): %04d-%02d-%02d %02d:%02d:%02d\nCurrent User's Login: %s", 
+        date.year, date.month, date.day, date.hour, date.min, date.sec,
+        game.Players.LocalPlayer.Name)
+end
+
+-- Start the time update loop
+spawn(function()
+    while wait(1) do
+        updateTimeDisplay()
     end
 end)
 
-stopRecordButton.MouseButton1Click:Connect(function()
-    if recording then
-        recording = false
-        statusLabel.Text = "Status: Stopped Recording"
-        statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
+-- Enhanced Recording System
+local RecordingSystem = {
+    isRecording = false,
+    isReplaying = false,
+    currentRecording = {},
+    recordingStartTime = 0,
+    recordingDuration = 0,
+    frameCount = 0
+}
 
-        local yellowPlatform = Instance.new("Part")
-        yellowPlatform.Size = Vector3.new(5, 1, 5)
-        yellowPlatform.Position = character.PrimaryPart.Position - Vector3.new(0, 3, 0)
-        yellowPlatform.Anchored = true
-        yellowPlatform.BrickColor = BrickColor.Yellow()
-        yellowPlatform.CanCollide = false
-        yellowPlatform.Parent = workspace
+-- Recording status display
+local recordingStatus = Instance.new("TextLabel")
+recordingStatus.Name = "RecordingStatus"
+recordingStatus.Parent = MainFrame
+recordingStatus.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+recordingStatus.BorderColor3 = Color3.fromRGB(0, 255, 0)
+recordingStatus.Position = UDim2.new(0, 10, 0, 320)
+recordingStatus.Size = UDim2.new(1, -20, 0, 60)
+recordingStatus.Font = Enum.Font.Code
+recordingStatus.TextColor3 = Color3.fromRGB(0, 255, 0)
+recordingStatus.TextSize = 12.000
+recordingStatus.TextXAlignment = Enum.TextXAlignment.Left
+recordingStatus.Text = "RECORDING_STATUS: IDLE\nFRAMES: 0\nDURATION: 00:00:00"
 
-        -- Add text label to the yellow platform
-        addTextLabelToPlatform(yellowPlatform, platformCounter)
+-- Recording indicator
+local recordingIndicator = Instance.new("Frame")
+recordingIndicator.Name = "RecordingIndicator"
+recordingIndicator.Parent = MainFrame
+recordingIndicator.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+recordingIndicator.BorderSizePixel = 0
+recordingIndicator.Position = UDim2.new(0, 10, 0, 310)
+recordingIndicator.Size = UDim2.new(0, 10, 0, 10)
+recordingIndicator.Visible = false
 
-        table.insert(yellowPlatforms, yellowPlatform)
-        yellowToRedMapping[yellowPlatform] = platforms[#platforms] -- Map yellow platform to the last red platform
+-- Blink recording indicator
+spawn(function()
+    while wait(0.5) do
+        if RecordingSystem.isRecording then
+            recordingIndicator.Visible = not recordingIndicator.Visible
+        else
+            recordingIndicator.Visible = false
+        end
+    end
+end)
+
+-- Enhanced recording function
+function RecordingSystem:StartRecording()
+    if self.isRecording then return end
+    
+    self.isRecording = true
+    self.recordingStartTime = tick()
+    self.frameCount = 0
+    self.currentRecording = {}
+    
+    -- Play start sound
+    buttonClickSound:Play()
+    
+    -- Update UI
+    recordButton.BackgroundColor3 = Color3.fromRGB(40, 0, 0)
+    recordButton.Text = "REC..."
+    StatusLabel.Text = "STATUS: RECORDING_IN_PROGRESS..."
+    
+    -- Start recording loop
+    spawn(function()
+        while self.isRecording do
+            local character = game.Players.LocalPlayer.Character
+            if character and character:FindFirstChild("HumanoidRootPart") then
+                self.frameCount = self.frameCount + 1
+                local frame = {
+                    position = character.HumanoidRootPart.Position,
+                    rotation = character.HumanoidRootPart.Rotation,
+                    timestamp = tick() - self.recordingStartTime
+                }
+                table.insert(self.currentRecording, frame)
+                
+                -- Update recording status
+                self.recordingDuration = tick() - self.recordingStartTime
+                recordingStatus.Text = string.format(
+                    "RECORDING_STATUS: ACTIVE\nFRAMES: %d\nDURATION: %02d:%02d:%02d",
+                    self.frameCount,
+                    math.floor(self.recordingDuration / 3600),
+                    math.floor(self.recordingDuration / 60) % 60,
+                    math.floor(self.recordingDuration) % 60
+                )
+            end
+            wait(0.033) -- ~30fps recording
+        end
+    end)
+end
+
+function RecordingSystem:StopRecording()
+    if not self.isRecording then return end
+    
+    self.isRecording = false
+    self.recordingDuration = tick() - self.recordingStartTime
+    
+    -- Play stop sound
+    buttonClickSound:Play()
+    
+    -- Update UI
+    recordButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    recordButton.Text = "REC0RD"
+    StatusLabel.Text = "STATUS: RECORDING_STOPPED"
+    
+    -- Create platform and save recording
+    local platform = Instance.new("Part")
+    platform.Size = Vector3.new(5, 1, 5)
+    platform.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position - Vector3.new(0, 3, 0)
+    platform.Anchored = true
+    platform.BrickColor = BrickColor.Red()
+    platform.CanCollide = false
+    platform.Parent = workspace
+    
+    -- Add recording data to platform
+    platformData[platform] = self.currentRecording
+    
+    -- Update platform visualization
+    updatePlatformCreation(platform, "red")
+    
+    -- Show recording stats
+    recordingStatus.Text = string.format(
+        "RECORDING_STATUS: SAVED\nFRAMES: %d\nDURATION: %02d:%02d:%02d",
+        self.frameCount,
+        math.floor(self.recordingDuration / 3600),
+        math.floor(self.recordingDuration / 60) % 60,
+        math.floor(self.recordingDuration) % 60
+    )
+    
+    -- Success notification
+    showSuccess("Recording saved with " .. self.frameCount .. " frames")
+end
+
+-- Enhanced playback system
+function RecordingSystem:PlayRecording(recording)
+    if self.isReplaying then return end
+    
+    self.isReplaying = true
+    local character = game.Players.LocalPlayer.Character
+    
+    -- Play start sound
+    successSound:Play()
+    
+    -- Update UI
+    StatusLabel.Text = "STATUS: PLAYBACK_IN_PROGRESS..."
+    
+    -- Start playback
+    spawn(function()
+        local startTime = tick()
+        local index = 1
+        
+        while index <= #recording and self.isReplaying do
+            local frame = recording[index]
+            local currentTime = tick() - startTime
+            
+            if currentTime >= frame.timestamp then
+                if character and character:FindFirstChild("HumanoidRootPart") then
+                    character:SetPrimaryPartCFrame(
+                        CFrame.new(frame.position) * 
+                        CFrame.fromEulerAnglesXYZ(
+                            math.rad(frame.rotation.X),
+                            math.rad(frame.rotation.Y),
+                            math.rad(frame.rotation.Z)
+                        )
+                    )
+                end
+                index = index + 1
+                
+                -- Update playback status
+                recordingStatus.Text = string.format(
+                    "PLAYBACK_STATUS: ACTIVE\nFRAME: %d/%d\nPROGRESS: %.1f%%",
+                    index,
+                    #recording,
+                    (index / #recording) * 100
+                )
+            end
+            wait(0.033)
+        end
+        
+        self.isReplaying = false
+        StatusLabel.Text = "STATUS: PLAYBACK_COMPLETE"
+        successSound:Play()
+    end)
+end
+
+function RecordingSystem:StopPlayback()
+    if not self.isReplaying then return end
+    
+    self.isReplaying = false
+    buttonClickSound:Play()
+    StatusLabel.Text = "STATUS: PLAYBACK_STOPPED"
+    
+    -- Update status
+    recordingStatus.Text = "RECORDING_STATUS: IDLE\nFRAMES: 0\nDURATION: 00:00:00"
+end
+
+-- Update button handlers
+recordButton.MouseButton1Click:Connect(function()
+    if not RecordingSystem.isRecording then
+        RecordingSystem:StartRecording()
+    else
+        RecordingSystem:StopRecording()
     end
 end)
 
 stopReplayButton.MouseButton1Click:Connect(function()
-    if replaying then
-        shouldStopReplay = true
-        replaying = false
-        statusLabel.Text = string.format("Stopped at Platform %d/%d", currentPlatformIndex-1, totalPlatformsToPlay)
-        statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
-        task.wait(2)
-        statusLabel.Text = "Status: Idle"
-        -- Cancel any ongoing movement
-        if character:FindFirstChild("Humanoid") then
-            character.Humanoid:MoveTo(character.HumanoidRootPart.Position)
-        end
-    end
+    RecordingSystem:StopPlayback()
 end)
 
-destroyButton.MouseButton1Click:Connect(function()
-    for _, platform in ipairs(platforms) do
-        platform:Destroy()
+-- Export recording system
+return {
+    RecordingSystem = RecordingSystem,
+    updateTimeDisplay = updateTimeDisplay
+}
+-- Part 5: Enhanced Save/Load System with Data Encryption
+
+-- Create encryption key (basic XOR encryption for example purposes)
+local encryptionKey = "1x1x1x1_SECURE_KEY"
+
+-- Enhanced save/load interface
+local saveLoadFrame = Instance.new("Frame")
+saveLoadFrame.Name = "SaveLoadFrame"
+saveLoadFrame.Parent = MainFrame
+saveLoadFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+saveLoadFrame.BorderColor3 = Color3.fromRGB(0, 255, 0)
+saveLoadFrame.Position = UDim2.new(0, 10, 0, 380)
+saveLoadFrame.Size = UDim2.new(1, -20, 0, 120)
+
+-- File name input
+local fileNameInput = Instance.new("TextBox")
+fileNameInput.Name = "FileNameInput"
+fileNameInput.Parent = saveLoadFrame
+fileNameInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+fileNameInput.BorderColor3 = Color3.fromRGB(0, 255, 0)
+fileNameInput.Position = UDim2.new(0, 10, 0, 10)
+fileNameInput.Size = UDim2.new(1, -20, 0, 25)
+fileNameInput.Font = Enum.Font.Code
+fileNameInput.PlaceholderText = "ENTER_FILENAME.json"
+fileNameInput.Text = ""
+fileNameInput.TextColor3 = Color3.fromRGB(0, 255, 0)
+fileNameInput.TextSize = 14.000
+
+-- Save/Load progress bar
+local progressBar = Instance.new("Frame")
+progressBar.Name = "ProgressBar"
+progressBar.Parent = saveLoadFrame
+progressBar.BackgroundColor3 = Color3.fromRGB(0, 40, 0)
+progressBar.BorderColor3 = Color3.fromRGB(0, 255, 0)
+progressBar.Position = UDim2.new(0, 10, 0, 45)
+progressBar.Size = UDim2.new(1, -20, 0, 20)
+
+local progressFill = Instance.new("Frame")
+progressFill.Name = "ProgressFill"
+progressFill.Parent = progressBar
+progressFill.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+progressFill.BorderSizePixel = 0
+progressFill.Size = UDim2.new(0, 0, 1, 0)
+
+local progressText = Instance.new("TextLabel")
+progressText.Name = "ProgressText"
+progressText.Parent = progressBar
+progressText.BackgroundTransparency = 1
+progressText.Size = UDim2.new(1, 0, 1, 0)
+progressText.Font = Enum.Font.Code
+progressText.Text = "0%"
+progressText.TextColor3 = Color3.fromRGB(0, 255, 0)
+progressText.TextSize = 14.000
+
+-- Enhanced SaveSystem
+local SaveSystem = {
+    currentChunk = 0,
+    totalChunks = 0,
+    chunkSize = 20,
+    saveData = {},
+    loadedData = {}
+}
+
+-- Basic XOR encryption function
+local function encrypt(data, key)
+    local encrypted = ""
+    for i = 1, #data do
+        local byte = string.byte(data, i)
+        local keyByte = string.byte(key, ((i-1) % #key) + 1)
+        encrypted = encrypted .. string.char(bit32.bxor(byte, keyByte))
     end
-    for _, yellowPlatform in ipairs(yellowPlatforms) do
-        yellowPlatform:Destroy()
-    end
-    platforms = {}
-    yellowPlatforms = {}
-    platformData = {}
-    yellowToRedMapping = {}
-    platformCounter = 0
-    screenGui:Destroy()
-end)
+    return encrypted
+end
 
-deleteButton.MouseButton1Click:Connect(function()
-    -- Delete the last red platform
-    if #platforms > 0 then
-        local lastPlatform = platforms[#platforms]
-        lastPlatform:Destroy()
-        cleanupPlatform(lastPlatform)  -- Removes from platforms array
+-- Basic XOR decryption function (same as encryption)
+local function decrypt(data, key)
+    return encrypt(data, key) -- XOR is its own inverse
+end
 
-        -- Delete corresponding button (only TextButtons)
-        local buttons = {}
-        for _, child in ipairs(scrollFrame:GetChildren()) do
-            if child:IsA("TextButton") then
-                table.insert(buttons, child)
-            end
-        end
-        if #buttons > 0 then
-            buttons[#buttons]:Destroy()
-        end
+-- Update progress bar
+local function updateProgress(progress)
+    progressFill:TweenSize(
+        UDim2.new(progress, 0, 1, 0),
+        Enum.EasingDirection.Out,
+        Enum.EasingStyle.Quad,
+        0.3,
+        true
+    )
+    progressText.Text = string.format("%.0f%%", progress * 100)
+end
 
-        platformCounter -= 1
-        scrollFrame.CanvasSize = UDim2.new(0, 0, 0, #platforms * 30)
-    end
-
-    -- Cleanup yellow platforms
-    for yellowPlatform, redPlatform in pairs(yellowToRedMapping) do
-        if not table.find(platforms, redPlatform) then
-            yellowPlatform:Destroy()
-            yellowToRedMapping[yellowPlatform] = nil
-            table.remove(yellowPlatforms, table.find(yellowPlatforms, yellowPlatform))
-        end
-    end
-end)
-
--- First, add these variables to your variables section at the top
-local saveChunks = {}
-local currentChunkIndex = 0
-local totalChunks = 0
-local CHUNK_SIZE = 20 -- This is the number of platforms per chunk, adjust based on your clipboard size limits
-
--- Replace your existing saveButton.MouseButton1Click with this:
-local saveButton = Instance.new("TextButton")
-saveButton.Parent = frame
-saveButton.BackgroundColor3 = Color3.fromRGB(100, 255, 100)
-saveButton.Size = UDim2.new(0, 90, 0, 30)
-saveButton.Position = UDim2.new(0, 10, 0, 90)
-saveButton.Text = "Save"
-saveButton.TextScaled = true
-
-saveButton.MouseButton1Click:Connect(function()
-    -- First, serialize all platform data
-    local jsonData = serializePlatformData()
+function SaveSystem:PrepareData()
+    local data = {
+        metadata = {
+            version = "1.3.37",
+            timestamp = os.time(),
+            playerName = game.Players.LocalPlayer.Name,
+            created = os.date("!%Y-%m-%d %H:%M:%S")
+        },
+        platforms = {},
+        recordings = {}
+    }
     
-    -- Check if data is too large for clipboard
-    if #jsonData > 190000 then -- Around the limit for most clipboards
-        -- Split the data into chunks based on platforms
-        local allData = HttpService:JSONDecode(jsonData)
-        saveChunks = {}
-        
-        -- Calculate how many chunks we need
-        local redPlatformsCount = #allData.redPlatforms
-        totalChunks = math.ceil(redPlatformsCount / CHUNK_SIZE)
-        
-        -- Create chunks of platform data
-        for chunkIndex = 1, totalChunks do
-            local startIndex = (chunkIndex-1) * CHUNK_SIZE + 1
-            local endIndex = math.min(chunkIndex * CHUNK_SIZE, redPlatformsCount)
-            
-            -- Create a chunk with the appropriate platforms
-            local chunk = {
-                redPlatforms = {},
-                yellowPlatforms = {},
-                mappings = {}
-            }
-            
-            -- Add red platforms for this chunk
-            for i = startIndex, endIndex do
-                if i <= redPlatformsCount then
-                    table.insert(chunk.redPlatforms, allData.redPlatforms[i])
-                end
-            end
-            
-            -- Find and add only the yellow platforms that map to these red platforms
-            for i, mapping in ipairs(allData.mappings) do
-                if mapping >= startIndex and mapping <= endIndex then
-                    table.insert(chunk.yellowPlatforms, allData.yellowPlatforms[i])
-                    -- Adjust the mapping to be relative to the chunk
-                    table.insert(chunk.mappings, mapping - startIndex + 1)
-                end
-            end
-            
-            -- Add the chunk
-            saveChunks[chunkIndex] = HttpService:JSONEncode(chunk)
+    -- Collect platform data
+    for platform, recording in pairs(platformData) do
+        if platform.Parent then -- Check if platform still exists
+            table.insert(data.platforms, {
+                position = {
+                    x = platform.Position.X,
+                    y = platform.Position.Y,
+                    z = platform.Position.Z
+                },
+                color = platform.BrickColor.Name,
+                recording = recording
+            })
         end
+    end
+    
+    return data
+end
+
+function SaveSystem:SaveToFile(filename)
+    if not filename:match("%.json$") then
+        filename = filename .. ".json"
+    end
+    
+    -- Prepare data
+    local data = self:PrepareData()
+    local success, encodedData = pcall(function()
+        return HttpService:JSONEncode(data)
+    end)
+    
+    if not success then
+        showError("Failed to encode data")
+        return
+    end
+    
+    -- Encrypt data
+    local encryptedData = encrypt(encodedData, encryptionKey)
+    
+    -- Split into chunks if too large
+    if #encryptedData > 190000 then
+        self.saveData = encryptedData
+        self.totalChunks = math.ceil(#encryptedData / 190000)
+        self.currentChunk = 1
         
-        -- Save the first chunk
-        currentChunkIndex = 1
-        setclipboard(saveChunks[currentChunkIndex])
-        statusLabel.Text = string.format("Chunk %d/%d copied. Save it, then press Save again for next chunk", 
-                                        currentChunkIndex, totalChunks)
-        statusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+        -- Save first chunk
+        local chunk = string.sub(self.saveData, 1, 190000)
+        setclipboard(chunk)
+        
+        -- Update status
+        StatusLabel.Text = string.format(
+            "STATUS: SAVE_CHUNK_%d_OF_%d_COPIED",
+            self.currentChunk,
+            self.totalChunks
+        )
+        updateProgress(1 / self.totalChunks)
+        
+        -- Show success message
+        showSuccess(string.format(
+            "Chunk %d/%d saved. Press Save again for next chunk",
+            self.currentChunk,
+            self.totalChunks
+        ))
     else
-        -- If data fits in clipboard, just save it directly
-        setclipboard(jsonData)
-        statusLabel.Text = "Platform data copied to clipboard"
-        statusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-        saveChunks = {}  -- Clear any previous chunks
-        currentChunkIndex = 0
-        totalChunks = 0
+        -- Save entire file
+        setclipboard(encryptedData)
+        StatusLabel.Text = "STATUS: FILE_SAVED"
+        updateProgress(1)
+        showSuccess("File saved successfully")
+    end
+end
+
+function SaveSystem:SaveNextChunk()
+    if self.currentChunk < self.totalChunks then
+        self.currentChunk = self.currentChunk + 1
+        local startPos = (self.currentChunk - 1) * 190000 + 1
+        local chunk = string.sub(self.saveData, startPos, startPos + 190000 - 1)
+        setclipboard(chunk)
+        
+        -- Update progress
+        updateProgress(self.currentChunk / self.totalChunks)
+        
+        -- Update status
+        StatusLabel.Text = string.format(
+            "STATUS: SAVE_CHUNK_%d_OF_%d_COPIED",
+            self.currentChunk,
+            self.totalChunks
+        )
+        
+        showSuccess(string.format(
+            "Chunk %d/%d saved. %s",
+            self.currentChunk,
+            self.totalChunks,
+            self.currentChunk == self.totalChunks and "Save complete!" or "Press Save again for next chunk"
+        ))
+    else
+        StatusLabel.Text = "STATUS: SAVE_COMPLETE"
+        showSuccess("All chunks saved successfully")
+    end
+end
+
+function SaveSystem:LoadFromData(inputData)
+    -- Try to decrypt data
+    local decryptedData = decrypt(inputData, encryptionKey)
+    
+    -- Try to decode JSON
+    local success, data = pcall(function()
+        return HttpService:JSONDecode(decryptedData)
+    end)
+    
+    if not success then
+        showError("Invalid save file format")
+        return false
+    end
+    
+    -- Verify metadata
+    if not data.metadata then
+        showError("Invalid save file structure")
+        return false
+    end
+    
+    -- Clear existing platforms
+    for platform, _ in pairs(platformData) do
+        if platform.Parent then
+            platform:Destroy()
+        end
+    end
+    platformData = {}
+    
+    -- Load platforms and recordings
+    local totalPlatforms = #data.platforms
+    for i, platformInfo in ipairs(data.platforms) do
+        -- Create platform
+        local platform = Instance.new("Part")
+        platform.Size = Vector3.new(5, 1, 5)
+        platform.Position = Vector3.new(
+            platformInfo.position.x,
+            platformInfo.position.y,
+            platformInfo.position.z
+        )
+        platform.Anchored = true
+        platform.BrickColor = BrickColor.new(platformInfo.color)
+        platform.CanCollide = false
+        platform.Parent = workspace
+        
+        -- Store recording data
+        platformData[platform] = platformInfo.recording
+        
+        -- Update progress
+        updateProgress(i / totalPlatforms)
+        
+        -- Update platform visualization
+        updatePlatformCreation(platform, platformInfo.color == "Really red" and "red" or "yellow")
+        
+        wait() -- Yield to prevent freezing
+    end
+    
+    StatusLabel.Text = "STATUS: LOAD_COMPLETE"
+    showSuccess("File loaded successfully")
+    return true
+end
+
+-- Update save button handler
+saveButton.MouseButton1Click:Connect(function()
+    local filename = fileNameInput.Text
+    if filename == "" then
+        filename = "macro_recording_" .. os.date("%Y%m%d_%H%M%S")
+    end
+    
+    if SaveSystem.currentChunk > 0 and SaveSystem.currentChunk < SaveSystem.totalChunks then
+        SaveSystem:SaveNextChunk()
+    else
+        SaveSystem:SaveToFile(filename)
     end
 end)
 
--- Add a new button for navigating chunks
-local nextChunkButton = Instance.new("TextButton")
-nextChunkButton.Parent = frame
-nextChunkButton.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
-nextChunkButton.Size = UDim2.new(0, 90, 0, 30)
-nextChunkButton.Position = UDim2.new(0, 120, 0, 90)  -- Next to the save button
-nextChunkButton.Text = "Next Chunk"
-nextChunkButton.TextScaled = true
-
-nextChunkButton.MouseButton1Click:Connect(function()
-    if #saveChunks > 0 and currentChunkIndex < totalChunks then
-        currentChunkIndex = currentChunkIndex + 1
-        setclipboard(saveChunks[currentChunkIndex])
-        statusLabel.Text = string.format("Chunk %d/%d copied. Save it before continuing", 
-                                        currentChunkIndex, totalChunks)
-        statusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-    elseif currentChunkIndex == totalChunks then
-        statusLabel.Text = "All chunks have been copied"
-        statusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-    else
-        statusLabel.Text = "No chunks to copy"
-        statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
-    end
-end)
-
--- TextLabel for instructions
-local pasteLabel = Instance.new("TextLabel")
-pasteLabel.Parent = screenGui
-pasteLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-pasteLabel.Size = UDim2.new(0, 200, 0, 30)
-pasteLabel.Position = UDim2.new(0, 10, 0, 140) -- Adjust position as needed
-pasteLabel.Text = "Paste Platform Data Here"
-pasteLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
-pasteLabel.TextScaled = true
-
--- TextBox for pasting platform data
-local pasteTextBox = Instance.new("TextBox")
-pasteTextBox.Parent = screenGui
-pasteTextBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-pasteTextBox.Size = UDim2.new(0, 200, 0, 50)
-pasteTextBox.Position = UDim2.new(0, 10, 0, 170) -- Adjust position as needed
-pasteTextBox.Text = ""
-pasteTextBox.PlaceholderText = "Paste JSON data here"
-pasteTextBox.ClearTextOnFocus = false
-pasteTextBox.MultiLine = true
-pasteTextBox.TextScaled = true
-
--- Load Button: Paste and deserialize platform data from the TextBox
-local loadButton = Instance.new("TextButton")
-loadButton.Parent = screenGui
-loadButton.BackgroundColor3 = Color3.fromRGB(255, 255, 100)
-loadButton.Size = UDim2.new(0, 90, 0, 30)
-loadButton.Position = UDim2.new(0, 10, 0, 230) -- Adjust position as needed
-loadButton.Text = "Load"
-loadButton.TextScaled = true
-
--- Modify the load button to handle combined chunks and URL loading
-loadButton.MouseButton1Click:Connect(function()
-
-    local loadingChunks = {}
-
-    -- If we have loading chunks, combine them
-    if #loadingChunks > 0 then
-        -- Combine all chunks into one data structure
-        local combinedData = {
-            redPlatforms = {},
-            yellowPlatforms = {},
-            mappings = {}
-        }
-        
-        local redPlatformOffset = 0
-        
-        for _, chunk in ipairs(loadingChunks) do
-            -- Add all red platforms
-            for _, platform in ipairs(chunk.redPlatforms) do
-                table.insert(combinedData.redPlatforms, platform)
-            end
-            
-            -- Add all yellow platforms with adjusted mappings
-            for i, yellowPlatform in ipairs(chunk.yellowPlatforms) do
-                table.insert(combinedData.yellowPlatforms, yellowPlatform)
-                -- Adjust the mapping to account for the offset
-                table.insert(combinedData.mappings, chunk.mappings[i] + redPlatformOffset)
-            end
-            
-            -- Update offset for next chunk
-            redPlatformOffset = redPlatformOffset + #chunk.redPlatforms
-        end
-        
-        -- Convert to JSON and load
-        local combinedJson = HttpService:JSONEncode(combinedData)
-        deserializePlatformData(combinedJson)
-        
-        -- Clear the loading chunks
-        loadingChunks = {}
-        statusLabel.Text = "Combined chunks loaded successfully"
-        statusLabel.TextColor3 = Color3.fromRGB(0, 255,0)
-    else
-        -- Handle stacked JSON objects
-        local input = pasteTextBox.Text
-        
-        -- Clear existing platforms FIRST
-        if #platforms > 0 or #yellowPlatforms > 0 then
-            -- Destroy physical parts
-            for _, platform in ipairs(platforms) do
-                platform:Destroy()
-            end
-            for _, yellowPlatform in ipairs(yellowPlatforms) do
-                yellowPlatform:Destroy()
-            end
-            
-            -- Reset all data structures
-            platforms = {}
-            yellowPlatforms = {}
-            platformData = {}
-            yellowToRedMapping = {}
-            platformCounter = 0
-            
-            -- Clear scroll list
-            scrollFrame:ClearAllChildren()
-            local uiListLayout = Instance.new("UIListLayout")
-            uiListLayout.Parent = scrollFrame
-            uiListLayout.Padding = UDim.new(0, 5)
-            scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
-            
-            statusLabel.Text = "Status: Cleared old platforms"
-            statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
-            task.wait(0.5) -- Give visual feedback
-        end
-        
-        -- Check if input is a URL
-        if input:match("^https?://") then
-            statusLabel.Text = "Loading 0%"
-            local url = input
-            local success, response = pcall(function()
-                return game:HttpGet(url, true, function(content, contentLength)
-                    local progress = math.floor((#content/contentLength)*100)
-                    statusLabel.Text = "Loading "..progress.."%"
-                end)
-            end)
-
-            if success then
-                -- Try to handle stacked JSON objects from URL
-                local combinedData = {
-                    redPlatforms = {},
-                    yellowPlatforms = {},
-                    mappings = {}
-                }
-                
-                local redPlatformOffset = 0
-                local successfulParsing = false
-                
-                -- Split the response by lines or potential JSON objects
-                for jsonStr in response:gmatch("[^\r\n]+") do
-                    local parseSuccess, chunk = pcall(function()
-                        return HttpService:JSONDecode(jsonStr)
-                    end)
-                    
-                    if parseSuccess and type(chunk) == "table" and chunk.redPlatforms then
-                        successfulParsing = true
-                        
-                        -- Add all red platforms
-                        for _, platform in ipairs(chunk.redPlatforms) do
-                            table.insert(combinedData.redPlatforms, platform)
-                        end
-                        
-                        -- Add all yellow platforms with adjusted mappings
-                        for i, yellowPlatform in ipairs(chunk.yellowPlatforms or {}) do
-                            table.insert(combinedData.yellowPlatforms, yellowPlatform)
-                            -- Adjust the mapping to account for the offset
-                            if chunk.mappings and chunk.mappings[i] then
-                                table.insert(combinedData.mappings, chunk.mappings[i] + redPlatformOffset)
-                            end
-                        end
-                        
-                        -- Update offset for next chunk
-                        redPlatformOffset = redPlatformOffset + #chunk.redPlatforms
-                    end
-                end
-                
-                if successfulParsing then
-                    -- Convert to JSON and load the combined data
-                    local combinedJson = HttpService:JSONEncode(combinedData)
-                    deserializePlatformData(combinedJson)
-                    statusLabel.Text = "Stacked platform data from URL loaded successfully"
-                    statusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-                else
-                    -- Try loading as a single JSON object as fallback
-                    local deserializeSuccess = pcall(function()
-                        deserializePlatformData(response)
-                    end)
-                    
-                    if deserializeSuccess then
-                        statusLabel.Text = "Platform data from URL loaded successfully"
-                        statusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-                    else
-                        statusLabel.Text = "Failed to parse platform data from URL"
-                        statusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-                    end
-                end
-            else
-                statusLabel.Text = "Load failed: "..tostring(response):sub(1,50)
-                statusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-            end
-        else
-            if input ~= "" then
-                -- Try to handle stacked JSON objects
-                local combinedData = {
-                    redPlatforms = {},
-                    yellowPlatforms = {},
-                    mappings = {}
-                }
-                
-                local redPlatformOffset = 0
-                local successfulParsing = false
-                
-                -- Split the input by lines or potential JSON objects
-                for jsonStr in input:gmatch("[^\r\n]+") do
-                    local success, chunk = pcall(function()
-                        return HttpService:JSONDecode(jsonStr)
-                    end)
-                    
-                    if success and type(chunk) == "table" and chunk.redPlatforms then
-                        successfulParsing = true
-                        
-                        -- Add all red platforms
-                        for _, platform in ipairs(chunk.redPlatforms) do
-                            table.insert(combinedData.redPlatforms, platform)
-                        end
-                        
-                        -- Add all yellow platforms with adjusted mappings
-                        for i, yellowPlatform in ipairs(chunk.yellowPlatforms or {}) do
-                            table.insert(combinedData.yellowPlatforms, yellowPlatform)
-                            -- Adjust the mapping to account for the offset
-                            if chunk.mappings and chunk.mappings[i] then
-                                table.insert(combinedData.mappings, chunk.mappings[i] + redPlatformOffset)
-                            end
-                        end
-                        
-                        -- Update offset for next chunk
-                        redPlatformOffset = redPlatformOffset + #chunk.redPlatforms
-                    end
-                end
-                
-                if successfulParsing then
-                    -- Convert to JSON and load the combined data
-                    local combinedJson = HttpService:JSONEncode(combinedData)
-                    deserializePlatformData(combinedJson)
-                    statusLabel.Text = "Stacked platform data loaded successfully"
-                    statusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-                else
-                    -- Try loading as a single JSON object as fallback
-                    local success = pcall(function()
-                        deserializePlatformData(input)
-                    end)
-                    
-                    if not success then
-                        statusLabel.Text = "Failed to parse platform data"
-                        statusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-                    end
-                end
-            end
-        end
-    end
-end)
+-- Export save system
+return {
+    SaveSystem = SaveSystem
+}
