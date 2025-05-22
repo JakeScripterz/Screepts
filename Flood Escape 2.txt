@@ -1,0 +1,672 @@
+repeat wait() until game:IsLoaded() or game.Loaded:wait()
+--anticheat bypass all credits to Godking For This script
+game:GetService("ReplicatedStorage").Remote.ReqCharVars.OnClientInvoke = function()return{}end
+-- secondary anticheat bypass thing 
+game:GetService("ReplicatedStorage").Remote.FetchPos.OnClientInvoke = function()return wait(9e9)end
+
+
+-- map list extractor
+getgenv().maps = {}
+
+local script = require(game.ReplicatedStorage.SharedModules.FE2Library)
+for i, v in pairs(script.getOfficialMapData()) do
+    table.insert(maps, v.mapName)
+end
+
+local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+if playerGui.MenuGui then
+    print("MenuGui exists")
+    
+    if playerGui.MenuGui:FindFirstChild("Goals") then
+        local goals = playerGui.MenuGui.Goals
+        
+        if goals.Window and goals.Window.Content and goals.Window.Content.Pages and goals.Window.Content.Pages.Highlights then
+            print("Goals window and Highlights exist")
+            
+            local highlights = goals.Window.Content.Pages.Highlights.Maps
+            
+            for i, v in pairs(highlights:GetChildren()) do
+                if v.Name == "HighlightFrame" then
+                    local pre = string.split(v.MapName.Text, "[")[1]
+                    local mapName = pre:sub(2, #pre - 1)
+                    if not table.find(maps, mapName) then
+                        table.insert(maps, mapName)
+                    end
+                end
+            end
+        else
+            print("Goals window content or Highlights not found, skipping map extraction...")
+        end
+    else
+        print("Goals window doesn't exist, skipping map extraction...")
+    end
+else
+    print("MenuGui doesn't exist, skipping map extraction...")
+end
+wait = task.wait
+
+local clmain = getsenv( game.Players.LocalPlayer.PlayerScripts["CL_MAIN_GameScript"] )
+local save = clmain.newAlert
+if getgenv().wow and debugmode == false then
+	clmain.newAlert('Already Executed!',Color3.new(1,0,0))
+    error('Already Executed')
+else
+    getgenv().wow=''
+end
+
+local char = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:wait()
+local bb = game:service'VirtualUser'
+game:service'Players'.LocalPlayer.Idled:connect(function()
+	bb:CaptureController()
+	bb:ClickButton2(Vector2.new())
+end)
+
+for i,v in ipairs(getnilinstances()) do
+	if v.Name == "CL_AntiExploit" then
+		print('Anti-Cheat Deleted.')
+		v:Destroy()
+	end
+end
+
+getgenv().oof = false
+local votemap = game.Players.LocalPlayer.PlayerGui.GameGui.VoteMap
+local key = -game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer()
+function vote()
+	wait(1)
+	game:GetService("ReplicatedStorage").Remote.UpdMapVote:FireServer(key, 8, 0)
+	if not game.Workspace.Multiplayer:WaitForChild("NewMap", 7) then
+		game:GetService("ReplicatedStorage").Remote.UpdMapVote:FireServer(key, 2, 0)
+	end
+end
+game.Players.PlayerAdded:Connect(function()
+	if getgenv().autoleave == true then
+		game.Players.LocalPlayer:Kick("Auto-Leave is enabled. So you were kicked because a player joined.")	
+	end
+end)
+votemap.Changed:Connect(function(change)
+	if change == "Visible" then
+		if votemap.Visible == true and getgenv().oof == true then
+			print("Voting..")
+			wait()
+			vote()
+		end
+	end
+end)
+
+print("Loaded!")
+local lp = game.Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
+local TS = game:GetService("TweenService")
+local HttpService = game:GetService("HttpService")
+local function Time(targetpos)
+	local tme = (targetpos - lp.Character.HumanoidRootPart.Position).Magnitude / math.random(16, 20)
+	return tme
+end
+local function tween(pos)
+	local toof = TS:Create(lp.Character.HumanoidRootPart, TweenInfo.new(Time(pos), Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {
+		CFrame = CFrame.new(pos)
+	})
+	toof:Play()
+	return toof
+end
+
+local UIS = game:GetService("UserInputService")
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local colors = {
+    BloodThemeColor = Color3.fromRGB(0, 100, 255),
+    Background = Color3.fromRGB(40, 40, 40),
+    Header = Color3.fromRGB(30, 30, 30),
+    TextColor = Color3.fromRGB(255, 255, 255),
+    ElementColor = Color3.fromRGB(60, 60, 60)
+}
+local Window = Library.CreateLib("Flood GUI V4 By Godking", colors)
+local a = Window:NewTab("Auto")
+local s = Window:NewTab("Stat Tracker")
+local l = Window:NewTab("Local-Player")
+local b = Window:NewTab("Blatant")
+local t = Window:NewTab("TAS")
+local k = Window:NewTab("Other")
+local c = Window:NewTab("Credits")
+
+local auto = a:NewSection("Auto")
+local statTracker = s:NewSection("Stat Tracker")
+local loc = l:NewSection("Local Player")
+local blatant = b:NewSection("Blatant")
+local tas = t:NewSection("TAS")
+local other = k:NewSection("Other")
+local credits = c:NewSection("Credits")
+
+-- stat tracker by Moz
+local players = game:GetService("Players")
+local localPlayer = players.LocalPlayer
+local playerGui = localPlayer.PlayerGui
+local coinsAmount = playerGui.MenuGui.Shop.Currencies.Coins.Amount
+local gemsAmount = playerGui.MenuGui.Shop.Currencies.Gems.Amount
+
+local coinsLabel = statTracker:NewLabel("Coins Earned: 0")
+local initialCoins = tonumber(coinsAmount.Text)
+
+local gemsLabel = statTracker:NewLabel("Gems Earned: 0")
+local initialGems = tonumber(gemsAmount.Text)
+
+local levelPath = playerGui.GameGui.HUD.Main.GameStats.Stats.XPStats.Icon.Info
+local levelsLabel = statTracker:NewLabel("Levels Earned: 0")
+local initialLevels = tonumber(levelPath.Text)
+
+    local xpLabel = statTracker:NewLabel("XP Earned: 0")
+
+local coinsEvent = Instance.new("BindableEvent")
+local gemsEvent = Instance.new("BindableEvent")
+
+coinsEvent.Event:Connect(function(coins)
+    coinsLabel:UpdateLabel("Coins Earned: " .. coins)
+end)
+
+gemsEvent.Event:Connect(function(gems)
+    gemsLabel:UpdateLabel("Gems Earned: " .. gems)
+end)
+
+
+local function trackCoins()
+    local currentCoins = tonumber(coinsAmount.Text)
+    if initialCoins then
+        local coinsEarned = currentCoins - initialCoins
+        coinsEvent:Fire(coinsEarned)
+    else
+        initialCoins = currentCoins
+    end
+end
+
+local function trackGems()
+    local currentGems = tonumber(gemsAmount.Text)
+    if initialGems then
+        local gemsEarned = currentGems - initialGems
+        gemsEvent:Fire(gemsEarned)
+    else
+        initialGems = currentGems
+    end
+end
+
+local function trackLevels()
+    local currentLevels = tonumber(levelPath.Text)
+    if currentLevels > initialLevels then
+        local levelsEarned = currentLevels - initialLevels
+        levelsLabel:UpdateLabel("Levels Earned: " .. levelsEarned)
+        initialLevels = currentLevels
+    end
+end
+
+spawn(function()
+    while wait(1) do
+        trackCoins()
+        trackGems()
+        trackLevels()
+    end
+end)
+
+local startTime = os.time()
+
+local timerLabel = statTracker:NewLabel("Timer: 00:00:00")
+
+spawn(function()
+    while true do
+        local currentTime = os.time() - startTime
+        local hours = math.floor(currentTime / 3600)
+        local minutes = math.floor((currentTime % 3600) / 60)
+        local seconds = currentTime % 60
+        local timeString = string.format("%02d:%02d:%02d", hours, minutes, seconds)
+        timerLabel:UpdateLabel("Timer: " .. timeString)
+        wait(1)
+    end
+end)
+--end of stat tracker
+
+
+other:NewKeybind("ToggleUI", "Toggle UI with this keybind.", Enum.KeyCode.J, function()
+    if getgenv().ui == true then
+        clmain.newAlert("UI Disabled!", Color3.fromRGB(255, 0, 0))
+        getgenv().ui = false
+    else
+        clmain.newAlert("UI Enabled!", Color3.fromRGB(0, 60, 255))
+        getgenv().ui = true
+    end
+    Library:ToggleUI()
+end)
+
+other:NewLabel("Discord Invites")
+other:NewButton("Copy Tomato-Hub Invite", "Copies Tomato-Hub invite to clipboard!", function()
+	setclipboard("https://discord.gg/8N2M9fHJqa")
+end)
+other:NewButton("Copy Lexon-Hub Invite", "Copies Lexon-Hub invite to clipboard!", function()
+	setclipboard("https://discord.gg/ng4CN7Vq")
+end)
+getgenv().ui = true
+loc:NewSlider("Walkspeed", "Change your walkspeed!", 100, 20, function(t)
+	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = t
+end)
+loc:NewSlider("JumpPower", "Change your jumppower!", 200, 50, function(t)
+	game.Players.LocalPlayer.Character.Humanoid.JumpPower = t
+end)
+
+loc:NewKeybind("Vip Emote", "Activates Vip emote!", Enum.KeyCode.V, function()
+    local character = game:GetService("Players").LocalPlayer.Character
+    local humanoid = character:WaitForChild("Humanoid")
+
+    local animation = Instance.new("Animation")
+    animation.AnimationId = "rbxassetid://1584520816"
+
+    local emoteAnimationTrack = humanoid:LoadAnimation(animation)
+
+    game:GetService("UserInputService").InputBegan:Connect(function(input)
+        if input.KeyCode == Enum.KeyCode.V then
+            emoteAnimationTrack:Play()
+            wait()
+        end
+        if input.KeyCode == Enum.KeyCode.W then
+            emoteAnimationTrack:Stop()
+            wait()
+        end
+        if input.KeyCode == Enum.KeyCode.A then
+            emoteAnimationTrack:Stop()
+            wait()
+        end
+        if input.KeyCode == Enum.KeyCode.S then
+            emoteAnimationTrack:Stop()
+            wait()
+        end
+        if input.KeyCode == Enum.KeyCode.D then
+            emoteAnimationTrack:Stop()
+            wait()
+        end
+    end)
+end)
+
+local save = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir
+getgenv().godmode = false
+spawn(function()
+	while wait(.04) do
+		if getgenv().godmode == true then
+			getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = function()
+				return 0
+			end
+		else
+			getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = save
+		end
+	end
+end)
+blatant:NewKeybind("Infinite Air", "Infinite Air/God Mode", Enum.KeyCode.R, function()
+	if getgenv().godmode ~= false then
+		clmain.newAlert("Infinite Air Disabled!", Color3.fromRGB(255, 0, 0))
+		getgenv().godmode = false
+	else
+		clmain.newAlert("Infinite Air Enabled!", Color3.fromRGB(0, 255, 0))
+		getgenv().godmode = true
+	end
+end)
+
+--local lp = game:GetService("Players").LocalPlayer --If breaks gui reenable
+local noclipEnabled = false
+
+getgenv().noclip = false
+blatant:NewKeybind("Noclip", "Walk through some walls!", Enum.KeyCode.G, function()
+	lp.Character:WaitForChild("Torso").CanCollide = getgenv().noclip
+	lp.Character:WaitForChild("HumanoidRootPart").CanCollide = getgenv().noclip
+	lp.Character:WaitForChild("BoundingBox").CanCollide = getgenv().noclip
+	if getgenv().noclip ~= false then
+		clmain.newAlert("Noclip Disabled!", Color3.fromRGB(255, 0, 0))
+		getgenv().noclip = false
+	else
+		clmain.newAlert("Noclip Enabled!", Color3.fromRGB(0, 255, 0))
+		getgenv().noclip = true
+	end
+end)
+
+--[[blatant:NewButton("Lag Server", "Equip buddy then press", function()
+	local key = -game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer()
+	for i = 1, 190, 1 do
+		game:GetService("ReplicatedStorage").Remote.ConfirmItem:FireServer(key, 40)
+	end
+end)]]
+
+local infJumpEnabled = false
+
+blatant:NewToggle("Infinite Jump", "Jump while freefalling!", function()
+    infJumpEnabled = not infJumpEnabled
+end)
+
+blatant:NewToggle("Teleport on Ctrl+Click ⚠️", "Toggle teleport on Ctrl+Click", function(toggled)
+    TeleportEnabled = toggled
+end)
+
+local UIS = game:GetService("UserInputService")
+local Player = game.Players.LocalPlayer
+local Mouse = Player:GetMouse()
+
+function GetCharacter()
+    return game.Players.LocalPlayer.Character
+end
+
+function Teleport(pos)
+    local Char = GetCharacter()
+    if Char then
+        Char:MoveTo(pos)
+    end
+end
+
+local function InputHandler(input)
+    if TeleportEnabled and input.UserInputType == Enum.UserInputType.MouseButton1 and UIS:IsKeyDown(Enum.KeyCode.LeftControl) then
+        Teleport(Mouse.Hit.p)
+    end
+end
+
+UIS.InputBegan:Connect(InputHandler)
+
+local camera = game.Workspace.CurrentCamera
+local targetPosition = Vector3.new(-25.5, -144.3449249267578, 138.50001525878906)
+local play = false
+local useCamera = false
+
+local camera = game.Workspace.CurrentCamera
+
+-- Define the target position
+local targetPosition = Vector3.new(-25.5, -144.3449249267578, 138.50001525878906)
+
+auto:NewToggle("Auto-Play (Working) But it was Not By Me", "Will auto-play maps with a TAS! (Will Need TAS files)", function(t)
+	getgenv().play = t
+end)
+getgenv().play = false
+task.spawn(function()
+		while task.wait(0.5) do
+			local S,r = pcall(function()
+				if getgenv().play ~= false then
+					loadstring(game:HttpGet("https://raw.githubusercontent.com/Swelllow/Testing/main/Flood-GUI-main/TAS/TAS%20Player"))
+					"TAS Player Fixed & Optimized By Tomato with help from Epix, Moz and Voiz"
+				end
+			end)
+			if S ~= true then
+				print(r)
+			end
+		end
+end)
+
+--[[Legit = false
+auto:NewToggle("Legit Mode", "Will make you look legit to other players", function(t)
+	Legit = t
+end)]]
+
+local player = game.Players.LocalPlayer
+local character = player.Character
+local camera = workspace.CurrentCamera
+
+getgenv().play = false
+getgenv().infjump = false
+getgenv().oof = false
+
+
+local autoClickEnabled = false
+local clickInterval = 300 -- 5mins
+
+local function clickButton()
+    while autoClickEnabled do
+        wait(clickInterval)
+        VirtualUser:CaptureController()
+        VirtualUser:ClickButton2(Vector2.new())
+    end
+end
+
+auto:NewToggle("Anti-Afk (Working) ", "Prevents AFK kick", function(t)
+    autoClickEnabled = t
+    if t then
+        game:GetService("Players").LocalPlayer.Idled:connect(function()
+            VirtualUser:CaptureController()
+            VirtualUser:ClickButton2(Vector2.new())
+        end)
+        clickButton() -- Start the auto-clicking when the toggle is turned on
+    end
+end)
+
+local toggleIsActive = false
+
+auto:NewToggle("Auto Enter Elevator (Working) ", "Will automatically enter the elevator!", function(isEnabled)
+    toggleIsActive = isEnabled
+
+    while toggleIsActive do
+        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("AddedWaiting"):FireServer()
+        wait(3)  -- Adjust the wait time between each remote call as needed
+    end
+end)
+
+
+local autoPlayEnabled = false
+
+--Auto Rescue and Lost Page
+
+local player = game.Players.LocalPlayer
+local autoTeleportEnabled = false
+
+local function autoTeleport()
+    while autoTeleportEnabled do
+        local character = player.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            local destination = game.Workspace:FindFirstChild("Multiplayer")
+            if destination then
+                destination = destination:FindFirstChild("Map")
+                if destination then
+                    local rescueDestination = destination:FindFirstChild("_Rescue")
+                    local lostPageDestination = destination:FindFirstChild("_LostPage")
+
+                    if rescueDestination then
+                        local contactPart = rescueDestination:FindFirstChild("Contact")
+                        if contactPart and contactPart:IsA("BasePart") then
+                            local humanoidRootPart = character.HumanoidRootPart
+                            humanoidRootPart.CFrame = contactPart.CFrame
+                        end
+                    end
+
+                    if lostPageDestination then
+                        local humanoidRootPart = character.HumanoidRootPart
+                        humanoidRootPart.CFrame = lostPageDestination.CFrame
+                    end
+                end
+            end
+        end
+        wait()
+    end
+end
+
+auto:NewToggle("Auto-Rescue and Lost Pages (Working) ", "Automatically get Rescues and Lost Pages!", function(toggleState)
+    autoTeleportEnabled = toggleState
+    if toggleState then
+        spawn(autoTeleport)
+    end
+end)
+
+--End of Auto Rescue and Lost Page
+
+--[[auto:NewToggle("Auto Rebirth", "Will automatically Rebirth for you!", function(isEnabled)
+    toggleIsActive = isEnabled
+
+    while toggleIsActive do
+        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("ReqRebirth"):FireServer()
+        wait(60) 
+    end
+end)]]
+
+loc:NewToggle("No Fog", "Will automatically remove the fog!", function(t)
+    autoPlayEnabled = t
+    while autoPlayEnabled do
+        game.Lighting.FogEnd = 100000
+        game.Lighting.FogStart = 0
+        game.Lighting.ClockTime = 14
+        game.Lighting.Brightness = 2
+        game.Lighting.GlobalShadows = false
+        wait(1) -- Wait for one second before running the loop again
+    end
+end)
+
+loc:NewToggle("Ultra Low-Detail", "Extreme low-detail for farming (Permanent).", function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Swelllow/Testing/main/Low%20Detail"))()
+end)
+
+
+game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessedEvent)
+    if infJumpEnabled and not gameProcessedEvent then
+        if input.KeyCode == Enum.KeyCode.Space then
+            lp.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end
+end)
+
+--auto:NewToggle("Auto-Vote (Working) ", "Automatically votes! (Will spend coins)", function(t)
+	--getgenv().oof = t
+--end)
+
+auto:NewButton("Download TAS files) ", "Downloads Required TAS files!", function()
+	for i, v in pairs(maps) do
+		local map = HttpService:UrlEncode(v)
+		local su = isfile(v..".json")
+		if su == true then
+			clmain.newAlert(v.." TAS file already exists!",Color3.fromRGB(50,100,255))
+		else
+			local s, r = pcall(function()
+                		local tas = game:HttpGet("https://raw.githubusercontent.com/Swelllow/Testing/main/Flood-GUI-main/TAS%20FILES/"..map..".json")
+				if not string.find(tas, "CFrame") then error(v..' file not exist') end
+				writefile(v..".json", tas,true) -- minfile(tas) removed
+			end)
+			if s then
+				clmain.newAlert("Downloaded "..v.." TAS file succesfully!",Color3.fromRGB(0,255,0))
+			else
+                print(r)
+				clmain.newAlert("Failed to download "..v.." TAS file. :(",Color3.fromRGB(255,0,0))
+			end
+		end
+		wait()
+	end
+	clmain.newAlert("Finished Downloading TAS files")
+end)
+
+tas:NewButton("Create-TAS for CM", "Create a TAS for CM, Press then enter lift.", function()
+    local Fix = coroutine.wrap(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Swelllow/Testing/main/Flood-GUI-main/TAS/TAS%20Recorder%20for%20CM", true))()
+    end)
+    
+    Fix()
+end)
+
+tas:NewButton("Run-Tas) For CM", "For CM only!", function()
+    local Fix = coroutine.wrap(function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/Swelllow/Testing/main/Flood-GUI-main/TAS/TAS%20Player%20for%20CM"))()
+    end)
+    
+    Fix()
+end)
+
+tas:NewButton("Create-TAS", "Create a TAS.", function()
+    local Fix = coroutine.wrap(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Swelllow/Testing/main/Flood-GUI-main/TAS/TAS%20Record%20Fix", true))()
+    end)
+    
+    Fix()
+end)
+
+tas:NewButton("Edit-TAS", "Edit a TAS file.", function()
+    local Fix = coroutine.wrap(function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/Swelllow/Testing/main/Flood-GUI-main/TAS/Tas%20Editor", true))()
+    end)
+
+    Fix()
+end)
+
+local oldindex
+oldindex = hookmetamethod(game, "__index", function(self, b)
+	if tostring(self) == "HumanoidRootPart" and b == "Position" and not checkcaller() then
+		if getgenv().swim == true then
+			return Vector3.new(-23, -153, 0) -- position of lobby water
+		else
+			return oldindex(self, b) -- normal player position
+		end
+	end
+	return oldindex(self, b)
+end)
+
+tas:NewButton("Auto Boost Intensity (Working) ", "Will boost the Intensity!", function()
+    game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("BoostIntensity"):FireServer()
+end)
+
+tas:NewKeybind("Toggle Swim", "Only works while creating TAS.", Enum.KeyCode.T, function()
+	if getgenv().swim == true then
+		getgenv().swim = false
+	else
+		getgenv().swim = true
+	end
+end)
+--[[tas:NewButton("Remove Water (TAS)", "Removes water in tas creator", function()
+    for i,v in pairs(game.Workspace:GetDescendants()) do
+        if string.match(string.lower(v.Name),"water") then
+            v:Destroy()
+        end
+    end
+end)]]
+tas:NewToggle("Auto-Leave (Working) ", "Automatically leaves when player joins!", function(t)
+	getgenv().autoleave = t
+end)
+credits:NewLabel("Script By Godking Cheers Godking ")
+credits:NewLabel("TAS script by Voiz#5668 and Moz")
+credits:NewLabel("TAS File Minifier by iaan#8193")
+credits:NewLabel("Autoplay by Tomato and Moz")
+credits:NewLabel("CM support and other small things by Moz")
+credits:NewLabel("Check Out our other script!! ")
+wait()
+if debugmode == true then
+	clmain.newAlert("Flood GUI v4 loaded in Debug Mode!",Color3.new(0,0,1))
+else
+	clmain.newAlert("Flood GUI v4 Loaded!!! ",nil,nil,"rainbow")
+end
+local oldwrite; oldwrite = hookfunction(writefile,function(name,data,bypass)
+    if bypass ~= true then
+        local Mn = string.gsub(name,'.json','')
+        if table.find(maps,Mn) then
+            clmain.newAlert("Saved "..Mn.." TAS file!",nil,nil,"rainbow")
+            return oldwrite(name,minfile(data))
+        end
+    end
+    return oldwrite(name,data)
+end)
+
+
+--resets character to fix lag bug wow
+game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Health = 0
+
+local success, errorOrResult = pcall(function()
+    local xpEarnedAmount = playerGui.MenuGui.Goals and playerGui.MenuGui.Goals.Window.Content.Pages.Stats.Content.xpEarned.Amount
+    local initialXP = tonumber(xpEarnedAmount and xpEarnedAmount.Text or 0)
+    
+    local xpEvent = Instance.new("BindableEvent")
+    
+    xpEvent.Event:Connect(function(xp)
+        xpLabel:UpdateLabel("XP Earned: " .. xp)
+    end)
+    
+    local function trackXP()
+        if xpEarnedAmount then
+            local currentXP = tonumber(xpEarnedAmount.Text)
+            if initialXP then
+                local xpEarned = currentXP - initialXP
+                xpEvent:Fire(xpEarned)
+            else
+                initialXP = currentXP
+            end
+        end
+    end
+
+    spawn(function()
+        while wait(1) do
+            trackXP()
+        end
+    end)
+end)
+
+if not success then
+    warn("An error occurred: " .. tostring(errorOrResult))
+end 
