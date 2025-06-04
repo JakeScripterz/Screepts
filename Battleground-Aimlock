@@ -1,13 +1,12 @@
 --[[
-    Roblox Script: Lock-On Nearest Player Button GUI (Notification UI, 1s Duration, Reliable Button Text)
+    Roblox Script: Lock-On Nearest Player Button GUI (Retro Roblox UI + SFX)
     - Press the GUI button to rotate your HumanoidRootPart toward the nearest player.
     - Lock-on persists until button is pressed again, which temporarily ignores the last target for 3 seconds.
-    - The UI is draggable, modern, and NOTIFICATIONS are used instead of a status label.
-    - Notification duration is 1 second for all notifications.
-    - Button text is always set reliably (no disappearing).
-    - Fixes "camera stuck at skybox" by never attempting to rotate if the lock vector is too small.
+    - The UI is draggable, styled with a retro/old Roblox look, and plays SFX on press.
+    - Uses notifications for feedback (1 second duration).
     - Place this LocalScript in StarterGui or StarterPlayerScripts.
     - No NPC support (players only).
+    - SFX uses Roblox's classic UI sound.
 ]]
 
 --// SERVICES
@@ -15,7 +14,15 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local StarterGui = game:GetService("StarterGui")
 local TweenService = game:GetService("TweenService")
+local SoundService = game:GetService("SoundService")
 local LocalPlayer = Players.LocalPlayer
+
+--// RETRO SFX SETUP (uses built-in Roblox sound asset)
+local retroSFX = Instance.new("Sound")
+retroSFX.SoundId = "rbxassetid://12221967" -- Old Roblox button click SFX
+retroSFX.Volume = 0.65
+retroSFX.Name = "RetroLockSFX"
+retroSFX.Parent = SoundService
 
 --// GUI CREATION
 local ScreenGui = Instance.new("ScreenGui")
@@ -26,56 +33,63 @@ ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
 local Frame = Instance.new("Frame")
 Frame.Name = "LockOnFrame"
-Frame.Size = UDim2.new(0, 270, 0, 80)
-Frame.Position = UDim2.new(0.5, -135, 0.85, 0)
+Frame.Size = UDim2.new(0, 220, 0, 60)
+Frame.Position = UDim2.new(0.5, -110, 0.88, 0)
 Frame.AnchorPoint = Vector2.new(0.5, 0)
-Frame.BackgroundColor3 = Color3.fromRGB(32, 34, 40)
-Frame.BackgroundTransparency = 0.04
-Frame.BorderSizePixel = 0
+Frame.BackgroundColor3 = Color3.fromRGB(163, 162, 165) -- Classic Roblox gray
+Frame.BorderColor3 = Color3.fromRGB(27, 42, 53) -- Retro border
+Frame.BorderSizePixel = 2
 Frame.Active = true
 Frame.Parent = ScreenGui
 
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 22)
-UICorner.Parent = Frame
+local TitleBar = Instance.new("TextLabel")
+TitleBar.Name = "TitleBar"
+TitleBar.Size = UDim2.new(1, 0, 0, 20)
+TitleBar.Position = UDim2.new(0, 0, 0, 0)
+TitleBar.BackgroundColor3 = Color3.fromRGB(49, 49, 49)
+TitleBar.BorderColor3 = Color3.fromRGB(27, 42, 53)
+TitleBar.BorderSizePixel = 1
+TitleBar.Text = "Lock-On"
+TitleBar.Font = Enum.Font.Legacy
+TitleBar.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleBar.TextSize = 16
+TitleBar.TextXAlignment = Enum.TextXAlignment.Left
+TitleBar.TextYAlignment = Enum.TextYAlignment.Center
+TitleBar.ClipsDescendants = true
+TitleBar.Parent = Frame
 
-local UIStroke = Instance.new("UIStroke")
-UIStroke.Thickness = 3
-UIStroke.Color = Color3.fromRGB(0, 170, 255)
-UIStroke.Transparency = 0.10
-UIStroke.Parent = Frame
-
---// BUTTON
 local LockButton = Instance.new("TextButton")
 LockButton.Name = "LockOnButton"
-LockButton.Size = UDim2.new(1, -44, 0, 40)
-LockButton.Position = UDim2.new(0, 22, 0, 20)
-LockButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-LockButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-LockButton.Text = "🔒 LOCK-ON"
-LockButton.Font = Enum.Font.GothamBlack
-LockButton.TextSize = 23
-LockButton.AutoButtonColor = true
+LockButton.Size = UDim2.new(1, -14, 0, 28)
+LockButton.Position = UDim2.new(0, 7, 0, 26)
+LockButton.BackgroundColor3 = Color3.fromRGB(190, 190, 190)
+LockButton.BorderColor3 = Color3.fromRGB(27, 42, 53)
+LockButton.BorderSizePixel = 2
+LockButton.TextColor3 = Color3.fromRGB(33, 33, 33)
+LockButton.Text = "Lock-On"
+LockButton.Font = Enum.Font.Legacy
+LockButton.TextSize = 18
+LockButton.AutoButtonColor = false
 LockButton.ZIndex = 2
 LockButton.Parent = Frame
 
-local ButtonCorner = Instance.new("UICorner")
-ButtonCorner.CornerRadius = UDim.new(0, 13)
-ButtonCorner.Parent = LockButton
+--// RETRO EFFECT (scanlines overlay)
+local Scanlines = Instance.new("ImageLabel")
+Scanlines.Name = "Scanlines"
+Scanlines.BackgroundTransparency = 1
+Scanlines.Image = "rbxassetid://14897047154" -- Free scanline overlay, replaceable
+Scanlines.Size = UDim2.new(1, 0, 1, 0)
+Scanlines.Position = UDim2.new(0,0,0,0)
+Scanlines.ImageTransparency = 0.57
+Scanlines.Parent = Frame
+Scanlines.ZIndex = 100
 
-local ButtonStroke = Instance.new("UIStroke")
-ButtonStroke.Thickness = 2
-ButtonStroke.Color = Color3.fromRGB(0, 170, 255)
-ButtonStroke.Transparency = 0.13
-ButtonStroke.Parent = LockButton
-
---// BUTTON HOVER ANIMATION
-LockButton.MouseEnter:Connect(function()
-	TweenService:Create(LockButton, TweenInfo.new(0.18), {BackgroundColor3 = Color3.fromRGB(0, 220, 255)}):Play()
-end)
-LockButton.MouseLeave:Connect(function()
-	TweenService:Create(LockButton, TweenInfo.new(0.18), {BackgroundColor3 = Color3.fromRGB(0, 170, 255)}):Play()
-end)
+--// RETRO BUTTON ANIMATION (pressed color flicker)
+local function retroButtonFlicker()
+	LockButton.BackgroundColor3 = Color3.fromRGB(180, 140, 60)
+	wait(0.08)
+	LockButton.BackgroundColor3 = Color3.fromRGB(190, 190, 190)
+end
 
 --// VARIABLES
 local locked = false
@@ -131,7 +145,6 @@ local function rotateToTarget(targetPlayer)
     local flatLook = Vector3.new(lookVec.X, 0, lookVec.Z)
     if flatLook.Magnitude < 0.1 or not flatLook.Unit then return end -- Don't rotate if target is too close or vector is invalid
 
-    -- Defensive: in rare bug cases, flatLook.Unit may error if flatLook is zero vector
     local success, unit = pcall(function() return flatLook.Unit end)
     if not success or not unit then return end
 
@@ -147,11 +160,14 @@ end)
 
 --// BUTTON HANDLER
 LockButton.MouseButton1Click:Connect(function()
-    -- Always set button text immediately to prevent disappearing
+	-- Play retro SFX and visual flicker
+	pcall(function() retroSFX:Play() end)
+	retroButtonFlicker()
+
     if locked then
-        LockButton.Text = "LOCK-ON"
-        LockButton.TextColor3 = Color3.fromRGB(255,255,255)
-        TweenService:Create(LockButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(0, 170, 255)}):Play()
+        LockButton.Text = "Lock-On"
+        LockButton.TextColor3 = Color3.fromRGB(33,33,33)
+        LockButton.BackgroundColor3 = Color3.fromRGB(190, 190, 190)
         ignorePlayer = lockTarget
         ignoreUntil = tick() + 3
         locked = false
@@ -165,17 +181,16 @@ LockButton.MouseButton1Click:Connect(function()
     else
         local nearest = getNearestPlayer()
         if nearest then
-            LockButton.Text = "UNLOCK"
-            LockButton.TextColor3 = Color3.fromRGB(0, 170, 255)
-            TweenService:Create(LockButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255,255,255)}):Play()
+            LockButton.Text = "Unlock"
+            LockButton.TextColor3 = Color3.fromRGB(33,33,33)
+            LockButton.BackgroundColor3 = Color3.fromRGB(190, 190, 190)
             lockTarget = nearest
             locked = true
             notify("Locked-On!", "Now locking on to: " .. (nearest.DisplayName or nearest.Name))
         else
-            LockButton.Text = "🔒 LOCK-ON" -- Make absolutely sure it doesn't disappear
-            LockButton.TextColor3 = Color3.fromRGB(255,255,255)
-            TweenService:Create(LockButton, TweenInfo.new(0.13), {BackgroundColor3 = Color3.fromRGB(255, 80, 80)}):Play()
-            TweenService:Create(LockButton, TweenInfo.new(0.5), {BackgroundColor3 = Color3.fromRGB(0, 170, 255)}):Play()
+            LockButton.Text = "Lock-On"
+            LockButton.TextColor3 = Color3.fromRGB(33,33,33)
+            LockButton.BackgroundColor3 = Color3.fromRGB(190, 190, 190)
             notify("No Players Found", "No nearby players to lock onto!")
         end
     end
@@ -185,28 +200,18 @@ LocalPlayer.CharacterAdded:Connect(function()
     locked = false
     lockTarget = nil
     ignorePlayer = nil
-    LockButton.Text = "🔒 LOCK-ON"
-    LockButton.TextColor3 = Color3.fromRGB(255,255,255)
-    LockButton.BackgroundColor3 = Color3.fromRGB(0,170,255)
+    LockButton.Text = "Lock-On"
+    LockButton.TextColor3 = Color3.fromRGB(33,33,33)
+    LockButton.BackgroundColor3 = Color3.fromRGB(190, 190, 190)
     notify("Ready", "Ready to Lock-On!")
 end)
 
---// DRAGGABLE UI (mouse & touch)
+--// DRAGGABLE UI (mouse & touch, via TitleBar only for retro feel)
 local UserInputService = game:GetService("UserInputService")
 local dragging = false
 local dragStart, startPos
 
-local function updateDrag(input)
-	local delta = input.Position - dragStart
-	Frame.Position = UDim2.new(
-		startPos.X.Scale,
-		startPos.X.Offset + delta.X,
-		startPos.Y.Scale,
-		startPos.Y.Offset + delta.Y
-	)
-end
-
-Frame.InputBegan:Connect(function(input)
+TitleBar.InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 		dragging = true
 		dragStart = input.Position
@@ -219,17 +224,29 @@ Frame.InputBegan:Connect(function(input)
 	end
 end)
 
-Frame.InputChanged:Connect(function(input)
+TitleBar.InputChanged:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
 		if dragging then
-			updateDrag(input)
+			local delta = input.Position - dragStart
+			Frame.Position = UDim2.new(
+				startPos.X.Scale,
+				startPos.X.Offset + delta.X,
+				startPos.Y.Scale,
+				startPos.Y.Offset + delta.Y
+			)
 		end
 	end
 end)
 
 UserInputService.InputChanged:Connect(function(input)
 	if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-		updateDrag(input)
+		local delta = input.Position - dragStart
+		Frame.Position = UDim2.new(
+			startPos.X.Scale,
+			startPos.X.Offset + delta.X,
+			startPos.Y.Scale,
+			startPos.Y.Offset + delta.Y
+		)
 	end
 end)
 
