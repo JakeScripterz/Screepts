@@ -8,6 +8,7 @@
     - Place this LocalScript in StarterGui or StarterPlayerScripts.
     - No NPC support (players only).
     - SFX uses Roblox's classic UI sound.
+    - **Added Notification: "Made by SpookzWasHere. Activate script by pressing the ui button or V" on script execution.**
 ]]
 
 --// SERVICES
@@ -108,6 +109,16 @@ local function notify(title, text)
 		Duration = 1;
 	})
 end
+
+--// SHOW SPookzWasHere NOTIFICATION ON SCRIPT LOAD
+task.spawn(function()
+    -- Show for 1.5 seconds so it doesn't overlap with other notifications
+    StarterGui:SetCore("SendNotification", {
+        Title = "Made by SpookzWasHere";
+        Text = "Activate script by pressing the ui button or V";
+        Duration = 1.5;
+    })
+end)
 
 --// CLEANUP OLD CONNECTIONS
 local function disconnectTargetEvents()
