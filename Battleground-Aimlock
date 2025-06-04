@@ -1,8 +1,9 @@
 --[[
     Roblox Script: Lock-On Nearest Player Button GUI (Retro Roblox UI + SFX)
-    - Press the GUI button to rotate your HumanoidRootPart toward the nearest player.
-    - Lock-on persists until button is pressed again, which temporarily ignores the last target for 3 seconds.
-    - The UI is draggable, styled with a retro/old Roblox look, and plays SFX on press.
+    - Press the GUI button or press V to rotate your HumanoidRootPart toward the nearest player.
+    - Lock-on persists until button is pressed again or V is pressed again, which temporarily ignores the last target for 3 seconds.
+    - If the locked player dies or leaves, lock-off automatically with a notification and reason.
+    - The UI is draggable, styled with a retro/old Roblox look, and plays SFX on press or V key toggle.
     - Uses notifications for feedback (1 second duration).
     - Place this LocalScript in StarterGui or StarterPlayerScripts.
     - No NPC support (players only).
@@ -49,7 +50,7 @@ TitleBar.Position = UDim2.new(0, 0, 0, 0)
 TitleBar.BackgroundColor3 = Color3.fromRGB(49, 49, 49)
 TitleBar.BorderColor3 = Color3.fromRGB(27, 42, 53)
 TitleBar.BorderSizePixel = 1
-TitleBar.Text = "Lock-On"
+TitleBar.Text = "Lock-On     [V]"
 TitleBar.Font = Enum.Font.Legacy
 TitleBar.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleBar.TextSize = 16
@@ -96,6 +97,8 @@ local locked = false
 local ignorePlayer = nil
 local ignoreUntil = 0
 local lockTarget = nil
+local targetDeathConn = nil
+local targetRemovalConn = nil
 
 --// NOTIFICATION FUNCTION (1 second duration)
 local function notify(title, text)
@@ -104,6 +107,51 @@ local function notify(title, text)
 		Text = text or "";
 		Duration = 1;
 	})
+end
+
+--// CLEANUP OLD CONNECTIONS
+local function disconnectTargetEvents()
+	if targetDeathConn then
+		targetDeathConn:Disconnect()
+		targetDeathConn = nil
+	end
+	if targetRemovalConn then
+		targetRemovalConn:Disconnect()
+		targetRemovalConn = nil
+	end
+end
+
+--// AUTO UNLOCK IF TARGET DIES OR LEAVES
+local function watchTarget(targetPlayer)
+	disconnectTargetEvents()
+	if not targetPlayer then return end
+	-- Watch for death
+	local humanoid = targetPlayer.Character and targetPlayer.Character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		targetDeathConn = humanoid.Died:Connect(function()
+			locked = false
+			LockButton.Text = "Lock-On"
+			LockButton.TextColor3 = Color3.fromRGB(33,33,33)
+			LockButton.BackgroundColor3 = Color3.fromRGB(190, 190, 190)
+			notify("Lock-Off", "Target died!")
+			lockTarget = nil
+			disconnectTargetEvents()
+		end)
+	end
+	-- Watch for leaving game
+	targetRemovalConn = targetPlayer.AncestryChanged:Connect(function()
+		if not targetPlayer:IsDescendantOf(Players) then
+			if locked then
+				locked = false
+				LockButton.Text = "Lock-On"
+				LockButton.TextColor3 = Color3.fromRGB(33,33,33)
+				LockButton.BackgroundColor3 = Color3.fromRGB(190, 190, 190)
+				notify("Lock-Off", "Target left the game!")
+				lockTarget = nil
+				disconnectTargetEvents()
+			end
+		end
+	end)
 end
 
 --// FUNCTIONS
@@ -158,8 +206,8 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
---// BUTTON HANDLER
-LockButton.MouseButton1Click:Connect(function()
+--// LOCK/UNLOCK LOGIC (shared by button and V key)
+local function doToggleLock()
 	-- Play retro SFX and visual flicker
 	pcall(function() retroSFX:Play() end)
 	retroButtonFlicker()
@@ -171,12 +219,16 @@ LockButton.MouseButton1Click:Connect(function()
         ignorePlayer = lockTarget
         ignoreUntil = tick() + 3
         locked = false
-        lockTarget = nil
+        disconnectTargetEvents()
         notify("Lock-Off", "Ignoring last player for 3 seconds...")
+        local prevTarget = lockTarget
+        lockTarget = nil
         task.spawn(function()
             local remaining = ignoreUntil - tick()
             if remaining > 0 then task.wait(remaining) end
-            ignorePlayer = nil
+            if ignorePlayer == prevTarget then
+                ignorePlayer = nil
+            end
         end)
     else
         local nearest = getNearestPlayer()
@@ -186,6 +238,7 @@ LockButton.MouseButton1Click:Connect(function()
             LockButton.BackgroundColor3 = Color3.fromRGB(190, 190, 190)
             lockTarget = nearest
             locked = true
+            watchTarget(nearest)
             notify("Locked-On!", "Now locking on to: " .. (nearest.DisplayName or nearest.Name))
         else
             LockButton.Text = "Lock-On"
@@ -193,6 +246,18 @@ LockButton.MouseButton1Click:Connect(function()
             LockButton.BackgroundColor3 = Color3.fromRGB(190, 190, 190)
             notify("No Players Found", "No nearby players to lock onto!")
         end
+    end
+end
+
+--// BUTTON HANDLER
+LockButton.MouseButton1Click:Connect(doToggleLock)
+
+--// KEYBOARD HANDLER (V KEY)
+local UserInputService = game:GetService("UserInputService")
+UserInputService.InputBegan:Connect(function(input, processed)
+    if processed then return end
+    if input.KeyCode == Enum.KeyCode.V then
+        doToggleLock()
     end
 end)
 
@@ -203,11 +268,11 @@ LocalPlayer.CharacterAdded:Connect(function()
     LockButton.Text = "Lock-On"
     LockButton.TextColor3 = Color3.fromRGB(33,33,33)
     LockButton.BackgroundColor3 = Color3.fromRGB(190, 190, 190)
+    disconnectTargetEvents()
     notify("Ready", "Ready to Lock-On!")
 end)
 
 --// DRAGGABLE UI (mouse & touch, via TitleBar only for retro feel)
-local UserInputService = game:GetService("UserInputService")
 local dragging = false
 local dragStart, startPos
 
