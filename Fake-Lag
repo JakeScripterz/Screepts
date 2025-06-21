@@ -1,4 +1,4 @@
--- ðŸŒ€ Fake Lag Script by synt.t
+--Fake Lag Script by SpookzWasHere
 local player = game.Players.LocalPlayer
 local char = player.Character or player.CharacterAdded:Wait()
 local hum = char:WaitForChild("Humanoid")
